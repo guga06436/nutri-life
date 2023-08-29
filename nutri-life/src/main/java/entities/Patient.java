@@ -5,19 +5,24 @@ import lombok.Data;
 import java.util.Date;
 @Data
 public class Patient {
+	private String login;
+	private String password;
 	private String name;
 	private int age;
-	private Date birthdate;
+	private String birthdate;
 	private String cpf;
-	float height;
-	float weight;
+	private float height;
+	private float weight;
 	
-	public Patient(String name, int age, Date birthdate, float height, float weight) {
+	public Patient(String login , String password,String name, int age, String birthdate, float height, float weight) {
+		this.login = login;
+		this.password = password;
 		this.name = name;
 		this.age = age;
 		this.birthdate = birthdate;
 		this.height = height;
 		this.weight = weight;
+
 	}
 
 	@Override
