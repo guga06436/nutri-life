@@ -6,5 +6,5 @@ import java.util.Set;
 import entities.Nutritionist;
 
 public class NutritionistPersistence {
-	Set<Nutritionist> nutritionistPersistence = new HashSet<>();
+	public static Set<Nutritionist> nutritionistPersistence = new HashSet<>();
 }
