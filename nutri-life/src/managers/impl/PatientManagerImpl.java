@@ -22,4 +22,9 @@ public class PatientManagerImpl implements PatientManager{
 		}
 	}
 
+	@Override
+	public Patient retrieve(String login, String password) {
+		return null;
+	}
+
 }
