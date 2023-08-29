@@ -1,7 +1,9 @@
 package entities;
 
-import java.util.Date;
+import lombok.Data;
 
+import java.util.Date;
+@Data
 public class Patient {
 	private String name;
 	private int age;
@@ -15,46 +17,6 @@ public class Patient {
 		this.age = age;
 		this.birthdate = birthdate;
 		this.height = height;
-		this.weight = weight;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public Date getBirthdate() {
-		return birthdate;
-	}
-
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
-
-	public float getHeight() {
-		return height;
-	}
-
-	public void setHeight(float height) {
-		this.height = height;
-	}
-
-	public float getWeight() {
-		return weight;
-	}
-
-	public void setWeight(float weight) {
 		this.weight = weight;
 	}
 
