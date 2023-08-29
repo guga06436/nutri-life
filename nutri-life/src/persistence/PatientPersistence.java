@@ -6,5 +6,5 @@ import java.util.Set;
 import entities.Patient;
 
 public class PatientPersistence {
-	Set<Patient> patientPersistence = new HashSet<>();
+	public static Set<Patient> patientPersistence = new HashSet<>();
 }
