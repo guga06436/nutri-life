@@ -10,10 +10,11 @@ public class Patient {
 	float height;
 	float weight;
 	
-	public Patient(String name, int age, Date birthdate, float height, float weight) {
+	public Patient(String name, int age, Date birthdate, String cpf, float height, float weight) {
 		this.name = name;
 		this.age = age;
 		this.birthdate = birthdate;
+		this.cpf = cpf;
 		this.height = height;
 		this.weight = weight;
 	}
@@ -40,6 +41,14 @@ public class Patient {
 
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
+	}
+	
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
 	}
 
 	public float getHeight() {
@@ -81,5 +90,10 @@ public class Patient {
 		} else if (!cpf.equals(other.cpf))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return name + " (" + cpf + ")";
 	}
 }
