@@ -1,24 +1,34 @@
 package entities;
 
-import java.util.Date;
+import lombok.Data;
 
+import java.util.Date;
+@Data
 public class Patient {
+	private String login;
+	private String password;
 	private String name;
 	private int age;
-	private Date birthdate;
+	private String birthdate;
 	private String cpf;
-	float height;
-	float weight;
+	private float height;
+	private float weight;
 	
+<<<<<<< HEAD:nutri-life/src/entities/Patient.java
 	public Patient(String name, int age, Date birthdate, String cpf, float height, float weight) {
+=======
+	public Patient(String login , String password,String name, int age, String birthdate, float height, float weight) {
+		this.login = login;
+		this.password = password;
+>>>>>>> 97e4376c8af78984b6de5fe9107fbd7ad96bb135:nutri-life/src/main/java/entities/Patient.java
 		this.name = name;
 		this.age = age;
 		this.birthdate = birthdate;
 		this.cpf = cpf;
 		this.height = height;
 		this.weight = weight;
-	}
 
+<<<<<<< HEAD:nutri-life/src/entities/Patient.java
 	public String getName() {
 		return name;
 	}
@@ -65,6 +75,8 @@ public class Patient {
 
 	public void setWeight(float weight) {
 		this.weight = weight;
+=======
+>>>>>>> 97e4376c8af78984b6de5fe9107fbd7ad96bb135:nutri-life/src/main/java/entities/Patient.java
 	}
 
 	@Override

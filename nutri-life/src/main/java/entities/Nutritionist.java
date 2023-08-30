@@ -1,7 +1,9 @@
 package entities;
 
-import java.util.Date;
+import lombok.Data;
 
+import java.util.Date;
+@Data
 public class Nutritionist {
 	private String name;
 	private int age;
@@ -14,39 +16,6 @@ public class Nutritionist {
 		this.birthdate = birthdate;
 		this.crn = crn;
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public Date getBirthdate() {
-		return birthdate;
-	}
-
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
-
-	public String getCrn() {
-		return crn;
-	}
-
-	public void setCrn(String crn) {
-		this.crn = crn;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
