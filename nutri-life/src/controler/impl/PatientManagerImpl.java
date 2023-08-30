@@ -1,7 +1,7 @@
-package managers.impl;
+package controler.impl;
 
-import entities.Patient;
-import managers.PatientManager;
+import model.Patient;
+import controler.PatientManager;
 import persistence.PatientPersistence;
 
 public class PatientManagerImpl implements PatientManager{

@@ -1,6 +1,6 @@
-package managers;
+package controler;
 
-import entities.Nutritionist;
+import model.Nutritionist;
 
 public interface NutritionistManager {
 	boolean add(Nutritionist n);

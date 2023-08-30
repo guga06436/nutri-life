@@ -1,7 +1,7 @@
-package managers.impl;
+package controler.impl;
 
-import entities.Nutritionist;
-import managers.NutritionistManager;
+import model.Nutritionist;
+import controler.NutritionistManager;
 import persistence.NutritionistPersistence;
 
 public class NutritionistManagerImpl implements NutritionistManager{

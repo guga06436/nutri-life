@@ -1,6 +1,6 @@
-package managers;
+package controler;
 
-import entities.Patient;
+import model.Patient;
 
 public interface PatientManager {
 	boolean add(Patient n);

@@ -1,14 +1,17 @@
-package entities;
+package model;
+
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
 public class Patient {
 	private String name;
 	private int age;
 	private Date birthdate;
 	private String cpf;
-	float height;
-	float weight;
+	private float height;
+	private float weight;
 	
 	public Patient(String name, int age, Date birthdate, String cpf, float height, float weight) {
 		this.name = name;
@@ -18,55 +21,7 @@ public class Patient {
 		this.height = height;
 		this.weight = weight;
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public Date getBirthdate() {
-		return birthdate;
-	}
-
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
 	
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-
-	public float getHeight() {
-		return height;
-	}
-
-	public void setHeight(float height) {
-		this.height = height;
-	}
-
-	public float getWeight() {
-		return weight;
-	}
-
-	public void setWeight(float weight) {
-		this.weight = weight;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
