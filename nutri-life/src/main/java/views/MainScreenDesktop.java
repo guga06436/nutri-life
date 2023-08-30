@@ -1,4 +1,5 @@
 package views;
+import application.OptionHandler;
 
 public class MainScreenDesktop
 {
@@ -6,15 +7,18 @@ public class MainScreenDesktop
 
     public void showMenu()
     {
-        System.out.println("aa");
-        //String option = JOptionPane.showInputDialog("Bem vindo ao sistema de SASF!\nEscolha a opcao desejada:\n1-Cadastrar Usuario\n2-Listar Usuarios\n3-Excluir Usuario\n4-Sair","Sua opcao");
+        String data = "Welcome to NutriLife!\n";
+        data += "Choose the desired option:\n";
+        data += "1-Create Nutritionist\n";
+        data += "2-Create Patient\n";
+        data += "3-End Program\n";
+        data += "Your option: ";
 
-        //MainScreenDesktop main = new MainScreenDesktop();
-
-        //main.readUserInput(option);
+        OptionHandler.showInputDialog(data);
     }
 
     public void readUserInput(String option)
     {
+        
     }
 }
