@@ -2,9 +2,11 @@ package model;
 
 
 
+import lombok.Data;
+
 import java.util.Date;
 
-
+@Data
 public class Patient {
 	private String login;
 	private String password;
@@ -23,54 +25,6 @@ public class Patient {
 		this.birthdate = birthdate;
 		this.cpf = cpf;
 		this.height = height;
-		this.weight = weight;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public Date getBirthdate() {
-		return birthdate;
-	}
-
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
-	
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-
-	public float getHeight() {
-		return height;
-	}
-
-	public void setHeight(float height) {
-		this.height = height;
-	}
-
-	public float getWeight() {
-		return weight;
-	}
-
-	public void setWeight(float weight) {
 		this.weight = weight;
 	}
 

@@ -7,6 +7,7 @@ import model.Patient;
 import exceptions.ExceptionLogin;
 import exceptions.ExceptionPassword;
 import exceptions.ExceptionNotFound;
+import exceptions.ExceptionRegister;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +19,7 @@ import java.util.Scanner;
 
 public class PatientFormView {
 
-    private PatientManager patientManager;
+    private static PatientManager patientManager;
 
     /*lida com registro dos pacientes*/
     public PatientFormView(){
@@ -27,7 +28,7 @@ public class PatientFormView {
 
 
 
-    public void () {
+    public void view() throws ExceptionRegister {
 
         Scanner sc = new Scanner(System.in);
 
@@ -71,29 +72,12 @@ public class PatientFormView {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        try {
-            Patient loggedInPatient = patientManager.retrieve(login, password);
+        Patient loggedInPatient = patientManager.retrieve(login, password);
 
-            System.out.println("Login successful for patient" + loggedInPatient.getName());
-        } catch (ExceptionNotFound e) {
-            System.out.println("Patient not found");
-        } catch (ExceptionPassword e) {
-            System.out.println("Invalid password");
-        } catch (ExceptionLogin e) {
-            System.out.println("Failed login");
-        }
+        System.out.println("Login successful for patient" + loggedInPatient.getName());
 
     }
 
-    /* Busca de paciente existente*/
-    private static Patient findPatientByLogin(String login) {
-        for (Patient patient : patients) {
-            if (patient.getLogin().equals(login)) {
-                return patient;
-            }
-        }
-        return null;
-    }
 
     private static Date parseBirthdate(String birthdate) {
         try {
@@ -104,7 +88,7 @@ public class PatientFormView {
         }
     }
 
-    private static void register(Scanner scanner) {
+    private static void register(Scanner scanner) throws ExceptionRegister {
 
         System.out.print("Name: ");
         String name = scanner.nextLine();
@@ -136,6 +120,10 @@ public class PatientFormView {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
+        if (password.length() < 8 || password.length() > 20) {
+            throw new ExceptionRegister("Password lenght must be between 8 and 20.");
+        }
+
         Patient newPatient = new Patient(login, password, name, age, date, height, weight);
         boolean registerSuccess = patientManager.add(newPatient);
 
@@ -152,12 +140,6 @@ public class PatientFormView {
             throw new ExceptionRegister("Login must not be empty.");
         } else if (login.matches(".*\\d.*")) {
             throw new ExceptionRegister("Login must not contain numbers.");
-        }
-
-        System.out.print("Password: ");
-        String password = sc.next();
-        if (password.length() < 8 || password.length() > 20) {
-            throw new ExceptionRegister("Password lenght must be between 8 and 20.");
         }
     }
 
