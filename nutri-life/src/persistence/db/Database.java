@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 import com.mysql.jdbc.Connection;
@@ -14,7 +15,7 @@ public class Database {
 	private Database() {	
 	}
 	
-	public static void getConnection() {
+	public static Connection getConnection() {
 		
 		if(conn == null) {
 			try {
@@ -26,9 +27,11 @@ public class Database {
 				e.printStackTrace();
 			}
 		}
+		
+		return conn;
 	}
 	
-	public static Properties loadProperties() {
+	private static Properties loadProperties() {
 		try(FileInputStream fis = new FileInputStream("db.properties")){
 			Properties props = new Properties();
 			props.load(fis);
@@ -40,5 +43,17 @@ public class Database {
 		}
 		
 		return null;
+	}
+	
+	public static void closeStatement(Statement st) {
+		
+		try {
+			if(st != null) {
+				st.close();
+			}
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
