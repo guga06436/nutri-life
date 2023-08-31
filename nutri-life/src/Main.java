@@ -5,7 +5,7 @@ public class Main
     public static void main(String[] args)
     {
         MainScreenDesktop application = new MainScreenDesktop();
-        application.showMenu();
+        application.run();
         //System.out.println(a.toString());
     }
 }
