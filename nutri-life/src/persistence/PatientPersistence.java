@@ -27,6 +27,8 @@ public class PatientPersistence {
 		p.setCpf(rs.getString("cpf"));
 		p.setHeight(rs.getFloat("height"));
 		p.setWeight(rs.getFloat("weight"));
+		p.setUsername(rs.getString("username"));
+		p.setPassword(rs.getString("password"));
 		
 		return p;
 	}
@@ -36,13 +38,16 @@ public class PatientPersistence {
 		int rowsAffected = -1;
 		
 		try {
-			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Patient(name, age, cpf, heigth, weight) VALUES(?,?,?,?,?)");
+			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Patient(name, age, cpf, heigth, weight, "+ 
+															"username, password) VALUES(?,?,?,?,?,?,?)");
 			
 			ps.setString(1, p.getName());
 			ps.setInt(2, p.getAge());
 			ps.setString(3, p.getCpf());
 			ps.setFloat(4, p.getHeight());
 			ps.setFloat(5, p.getWeight());
+			ps.setString(6, p.getUsername());
+			ps.setString(7, p.getPassword());
 			
 			rowsAffected = ps.executeUpdate();
 			

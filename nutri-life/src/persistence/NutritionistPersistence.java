@@ -20,11 +20,14 @@ public class NutritionistPersistence {
 		int rowsAffected = -1;
 		
 		try {
-			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Nutricionist(name, age, crn) VALUES(?,?,?)");
+			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Nutricionist(name, age, crn, username, password)" + 
+															" VALUES(?,?,?,?,?)");
 			
 			ps.setString(1, n.getName());
 			ps.setInt(2, n.getAge());
 			ps.setString(3, n.getCrn());
+			ps.setString(4, n.getUsername());
+			ps.setString(5, n.getPassword());
 			
 			rowsAffected = ps.executeUpdate();
 			
