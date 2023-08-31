@@ -9,12 +9,16 @@ public class Nutritionist {
 	private int age;
 	private Date birthdate;
 	private String crn;
+	private String login;
+	private String password;
 	
-	public Nutritionist(String name, int age, Date birthdate, String crn) {
+	public Nutritionist(String name, int age, Date birthdate, String crn, String login, String password) {
 		this.name = name;
 		this.age = age;
 		this.birthdate = birthdate;
 		this.crn = crn;
+		this.login = login;
+		this.password = password;
 	}
 	@Override
 	public int hashCode() {
