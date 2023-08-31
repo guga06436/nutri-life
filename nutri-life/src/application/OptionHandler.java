@@ -24,4 +24,9 @@ public class OptionHandler
     {
         System.out.println(data);
     }
+
+    public static void onExitProgram()
+    {
+        in.close();
+    }
 }

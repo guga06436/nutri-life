@@ -1,6 +1,6 @@
 package views;
 
-import entities.Patient;
+import model.Patient;
 import exceptions.ExceptionLogin;
 import exceptions.ExceptionPassword;
 import exceptions.ExceptionNotFound;
@@ -17,6 +17,7 @@ public class PatientFormView {
 
     /*Lista de armazenamento = melhorar o método de armazenamento*/
     private static List<Patient> patients = new ArrayList<>();
+
     public static void main (String[] args) {
 
         Scanner sc = new Scanner(System.in);

@@ -1,11 +1,11 @@
 package views;
 
-import entities.Nutritionist;
+import model.Nutritionist;
 import exceptions.ExceptionLogin;
 import exceptions.ExceptionNotFound;
 import exceptions.ExceptionPassword;
 import exceptions.ExceptionRegister;
-import managers.impl.NutritionistManagerImpl;
+import controler.impl.NutritionistManagerImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
