@@ -13,6 +13,10 @@ public class Patient {
 	private float height;
 	private float weight;
 	
+	public Patient() {
+		
+	}
+	
 	public Patient(String name, int age, Date birthdate, String cpf, float height, float weight) {
 		this.name = name;
 		this.age = age;
