@@ -18,7 +18,7 @@ public class PatientFormView {
     /*Lista de armazenamento = melhorar o método de armazenamento*/
     private static List<Patient> patients = new ArrayList<>();
 
-    public static void main (String[] args) {
+    public void () {
 
         Scanner sc = new Scanner(System.in);
 
@@ -130,6 +130,20 @@ public class PatientFormView {
         patients.add(newPatient);
 
         System.out.println("Registration successful for patient: " + newPatient.getName());
+
+        if (login.length() > 12) {
+            throw new ExceptionRegister("Login must not be of length above 12.");
+        } else if (login.isEmpty()) {
+            throw new ExceptionRegister("Login must not be empty.");
+        } else if (login.matches(".*\\d.*")) {
+            throw new ExceptionRegister("Login must not contain numbers.");
+        }
+
+        System.out.print("Password: ");
+        String password = sc.next();
+        if (password.length() < 8 || password.length() > 20) {
+            throw new ExceptionRegister("Password lenght must be between 8 and 20.");
+        }
     }
 
 }
