@@ -3,6 +3,7 @@ package persistence.db;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -50,6 +51,17 @@ public class Database {
 		try {
 			if(st != null) {
 				st.close();
+			}
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void closeResultSet(ResultSet rs) {
+		try {
+			if(rs != null) {
+				rs.close();
 			}
 		}
 		catch(SQLException e) {
