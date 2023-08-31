@@ -1,25 +1,24 @@
 package views;
 
+
+import controler.impl.NutritionistManagerImpl;
 import model.Nutritionist;
-import exceptions.ExceptionLogin;
 import exceptions.ExceptionNotFound;
 import exceptions.ExceptionPassword;
 import exceptions.ExceptionRegister;
-import controler.impl.NutritionistManagerImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 public class NutritionistFormView {
 
-    /* MELHORAR ARMAZENAMENTO */
-    private static List<Nutritionist> nutritionists = new ArrayList<>();
+    private NutritionistManagerImpl manager;
 
-    public NutritionistFormView() { }
+    public NutritionistFormView() {
+        manager = new NutritionistManagerImpl();
+    }
 
     public void menu() {
         System.out.println("-=-=-=-=-=-= NUTRI LIFE =-=-=-=-=-=-");
@@ -66,7 +65,7 @@ public class NutritionistFormView {
             throw new ExceptionRegister("Login must not be of length above 12.");
         } else if (login.isEmpty()) {
             throw new ExceptionRegister("Login must not be empty.");
-        } else if (login.matches(".*\\d.*")) {
+        } else if (login.matches(".\\d.")) {
             throw new ExceptionRegister("Login must not contain numbers.");
         }
 
@@ -76,10 +75,14 @@ public class NutritionistFormView {
             throw new ExceptionRegister("Password lenght must be between 8 and 20.");
         }
 
-        /* AJEITAR POSTERIORMENTE! */
         Nutritionist nutri = new Nutritionist(name, age, date, crn, login, password);
-        nutritionists.add(nutri);
-        System.out.println("Registration successful for nutritionist: " + nutri.getName());
+        boolean registerSuccess = manager.add(nutri);
+
+        if (registerSuccess) {
+            System.out.println("Registration successful for nutritionist: " + nutri.getName());
+        } else {
+            System.out.println("Registration failed for nutritionist: " + nutri.getName());
+        }
     }
 
     public void signIn(Scanner sc) throws ExceptionPassword, ExceptionNotFound {
@@ -90,27 +93,14 @@ public class NutritionistFormView {
         System.out.print("Password: ");
         String password = sc.next();
 
-        Nutritionist loggedInNutritionist = findNutritionistByLogin(login);
-
-        if (loggedInNutritionist == null) {
-            throw new ExceptionNotFound("Nutritionist not found");
+        try {
+            Nutritionist loggedInNutritionist = manager.retrieve(login, password);
+            System.out.println("Login successful for nutritionist: " + loggedInNutritionist.getName());
+        } catch (ExceptionNotFound e) {
+            System.out.println("Login Failed: " + e.getMessage());
+        } catch (ExceptionPassword e) {
+            System.out.println("Password Failed: " + e.getMessage());
         }
-
-        if (!loggedInNutritionist.getPassword().equals(password)) {
-            throw new ExceptionPassword("Invalid password");
-        }
-
-        sc.close();
-
-        System.out.println("Login successful for nutritionist: " + loggedInNutritionist.getName());
     }
 
-    private static Nutritionist findNutritionistByLogin(String login) {
-        for (Nutritionist nutritionist : nutritionists) {
-            if (nutritionist.getLogin().equals(login)) {
-                return nutritionist;
-            }
-        }
-        return null;
-    }
 }

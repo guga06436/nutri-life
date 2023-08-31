@@ -1,6 +1,8 @@
 package controler.impl;
 
 import controler.NutritionistManager;
+import exceptions.ExceptionNotFound;
+import exceptions.ExceptionPassword;
 import model.Nutritionist;
 import persistence.NutritionistPersistence;
 
@@ -22,4 +24,19 @@ public class NutritionistManagerImpl implements NutritionistManager{
             System.out.println(n);
         }
     }
+
+	@Override
+	public Nutritionist retrieve(String login, String password) throws ExceptionNotFound, ExceptionPassword {
+		/* Usado para verificar o login */
+
+		/*if (loggedInNutritionist == null) {
+			throw new ExceptionNotFound("Nutritionist not found");
+		}
+
+		if (!loggedInNutritionist.getPassword().equals(password)) {
+			throw new ExceptionPassword("Invalid password");
+		}*/
+
+		return null;
+	}
 }
