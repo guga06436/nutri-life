@@ -1,24 +1,48 @@
 package views;
 import application.OptionHandler;
+import views.NutritionistFormView;
+import views.PatientFormView;
 
 public class MainScreenDesktop
 {
     public MainScreenDesktop() {}
 
-    public void showMenu()
+    public void run()
     {
-        String data = "Welcome to NutriLife!\n";
-        data += "Choose the desired option:\n";
-        data += "1-Create Nutritionist\n";
-        data += "2-Create Patient\n";
-        data += "3-End Program\n";
-        data += "Your option: ";
+        NutritionistFormView nutritionistView = new NutritionistFormView();
+        PatientFormView patientView = new PatientFormView();
 
-        OptionHandler.showInputDialog(data);
+        while(true)
+        {
+            showMenu();
+
+            switch(OptionHandler.readIntegerInput())
+            {
+                case 1:
+
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    OptionHandler.onExitProgram();
+                    System.exit(0);
+                    return;
+                default:
+                    OptionHandler.showMessage("Invalid Option");
+                    continue;
+            }
+        }
     }
 
-    public void readUserInput(String option)
+    void showMenu()
     {
-        
+        OptionHandler.showMessage("""
+                        Welcome to NutriLife!
+                        Choose the desired option:
+                        1-Create Nutritionist
+                        2-Create Patient
+                        3-End Program
+                        Your option: """
+                    );
     }
 }
