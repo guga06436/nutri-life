@@ -35,6 +35,9 @@ public class NutritionistPersistence {
 		catch(SQLException e) {
 			e.printStackTrace();
 		}
+		finally {
+			Database.closeStatement(ps);
+		}
 		
 		return false;
 	}
