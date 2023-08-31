@@ -1,20 +1,20 @@
 package model;
 
 import lombok.Data;
-
-import java.util.Date;
 @Data
 public class Nutritionist {
 	private String name;
 	private int age;
-	private Date birthdate;
 	private String crn;
+	private String username;
+	private String password;
 	
-	public Nutritionist(String name, int age, Date birthdate, String crn) {
+	public Nutritionist(String name, int age, String crn, String username, String password) {
 		this.name = name;
 		this.age = age;
-		this.birthdate = birthdate;
 		this.crn = crn;
+		this.username = username;
+		this.password = password;
 	}
 	@Override
 	public int hashCode() {

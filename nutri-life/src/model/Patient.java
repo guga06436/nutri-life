@@ -2,28 +2,28 @@ package model;
 
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class Patient {
 	private String name;
 	private int age;
-	private Date birthdate;
 	private String cpf;
 	private float height;
 	private float weight;
+	private String username;
+	private String password;
 	
 	public Patient() {
 		
 	}
 	
-	public Patient(String name, int age, Date birthdate, String cpf, float height, float weight) {
+	public Patient(String name, int age, String cpf, float height, float weight, String username, String password) {
 		this.name = name;
 		this.age = age;
-		this.birthdate = birthdate;
 		this.cpf = cpf;
 		this.height = height;
 		this.weight = weight;
+		this.username = username;
+		this.password = password;
 	}
 	
 	@Override
