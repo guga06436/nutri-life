@@ -6,6 +6,5 @@ public class Main
     {
         MainScreenDesktop application = new MainScreenDesktop();
         application.run();
-        //System.out.println(a.toString());
     }
 }
