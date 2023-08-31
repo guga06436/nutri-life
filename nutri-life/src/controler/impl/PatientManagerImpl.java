@@ -1,23 +1,28 @@
 package controler.impl;
 
-import model.Patient;
+import java.util.List;
+
 import controler.PatientManager;
+import model.Patient;
 import persistence.PatientPersistence;
 
 public class PatientManagerImpl implements PatientManager{
+	private PatientPersistence pp;
 	
 	public PatientManagerImpl() {
-		
+		pp = new PatientPersistence();
 	}
 	
 	@Override
 	public boolean add(Patient n) {
-		return PatientPersistence.patientPersistence.add(n);
+		return pp.add(n);
 	}
 
 	@Override
 	public void listAll() {
-		for(Patient p : PatientPersistence.patientPersistence) {
+		List<Patient> patients = pp.listAll();
+		
+		for(Patient p : patients) {
 			System.out.println(p);
 		}
 	}
