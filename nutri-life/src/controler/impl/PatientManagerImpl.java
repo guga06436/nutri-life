@@ -5,6 +5,8 @@ import java.util.List;
 import controler.PatientManager;
 import model.Patient;
 import persistence.PatientPersistence;
+import exceptions.ExceptionPassword;
+import exceptions.ExceptionNotFound;
 
 public class PatientManagerImpl implements PatientManager{
 	private PatientPersistence pp;
@@ -29,6 +31,18 @@ public class PatientManagerImpl implements PatientManager{
 
 	@Override
 	public Patient retrieve(String login, String password) {
-		return null;
+
+		Patient loggedInPatient = pp.retrieve(login, password);
+
+		if (loggedInPatient == null) {
+			throw new ExceptionNotFound("Patient not found");
+		}
+
+		if (!loggedInPatient.getPassword().equals(password)) {
+			throw new ExceptionPassword("Invalid Password");
+		}
+
+		return loggedInPatient;
+
 	}
 }

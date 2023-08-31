@@ -1,5 +1,8 @@
 package views;
 
+
+import controler.PatientManager;
+import controler.impl.PatientManagerImpl;
 import model.Patient;
 import exceptions.ExceptionLogin;
 import exceptions.ExceptionPassword;
@@ -15,8 +18,14 @@ import java.util.Scanner;
 
 public class PatientFormView {
 
-    /*Lista de armazenamento = melhorar o método de armazenamento*/
-    private static List<Patient> patients = new ArrayList<>();
+    private PatientManager patientManager;
+
+    /*lida com registro dos pacientes*/
+    public PatientFormView(){
+        patientManager = new PatientManagerImpl();
+    }
+
+
 
     public void () {
 
@@ -62,17 +71,18 @@ public class PatientFormView {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        Patient loggedInPatient = findPatientByLogin(login);
+        try {
+            Patient loggedInPatient = patientManager.retrieve(login, password);
 
-        if (loggedInPatient == null) {
-            throw new ExceptionNotFound("Patient not found");
+            System.out.println("Login successful for patient" + loggedInPatient.getName());
+        } catch (ExceptionNotFound e) {
+            System.out.println("Patient not found");
+        } catch (ExceptionPassword e) {
+            System.out.println("Invalid password");
+        } catch (ExceptionLogin e) {
+            System.out.println("Failed login");
         }
 
-        if (!loggedInPatient.getPassword().equals(password)) {
-            throw new ExceptionPassword("Invalid password");
-        }
-
-        System.out.println("Login successful for patient: " + loggedInPatient.getName());
     }
 
     /* Busca de paciente existente*/
@@ -127,9 +137,14 @@ public class PatientFormView {
         String password = scanner.nextLine();
 
         Patient newPatient = new Patient(login, password, name, age, date, height, weight);
-        patients.add(newPatient);
+        boolean registerSuccess = patientManager.add(newPatient);
 
-        System.out.println("Registration successful for patient: " + newPatient.getName());
+        /*Condição de Sucesso*/
+        if (registerSuccess) {
+            System.out.println("Success" + newPatient.getName());
+        } else {
+            System.out.println("Failed" + newPatient.getName());
+        }
 
         if (login.length() > 12) {
             throw new ExceptionRegister("Login must not be of length above 12.");
