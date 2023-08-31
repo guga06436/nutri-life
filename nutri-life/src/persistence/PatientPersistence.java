@@ -1,13 +1,14 @@
 package persistence;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
-import model.Nutritionist;
 import model.Patient;
 import persistence.db.Database;
 
@@ -16,6 +17,18 @@ public class PatientPersistence {
 	
 	public PatientPersistence() {
 		conn = Database.getConnection();
+	}
+	
+	private Patient instantiatePatient(ResultSet rs) throws SQLException{
+		Patient p = new Patient();
+		
+		p.setName(rs.getString("name"));
+		p.setAge(rs.getInt("age"));
+		p.setCpf(rs.getString("cpf"));
+		p.setHeight(rs.getFloat("height"));
+		p.setWeight(rs.getFloat("weight"));
+		
+		return p;
 	}
 	
 	public boolean add(Patient p) {
@@ -45,5 +58,30 @@ public class PatientPersistence {
 		}
 		
 		return false;
+	}
+	
+	public List<Patient> listAll(){
+		List<Patient> patients = new ArrayList<>();
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.createStatement();
+			
+			rs = st.executeQuery("SELECT * FROM Patient");
+			
+			while(rs.next()) {
+				patients.add(instantiatePatient(rs));
+			}
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(st);
+		}
+		
+		return patients;
 	}
 }
