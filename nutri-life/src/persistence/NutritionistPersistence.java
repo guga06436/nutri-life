@@ -1,18 +1,21 @@
 package persistence;
 import java.sql.SQLException;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+
 import model.Nutritionist;
 import persistence.db.Database;
+import persistence.db.exception.InfraException;
 
 public class NutritionistPersistence {
 	private Connection conn;
 	
-	public NutritionistPersistence() {
+	public NutritionistPersistence() throws InfraException{
 		conn = Database.getConnection();
 	}
 	
-	public boolean add(Nutritionist n) {
+	public boolean add(Nutritionist n) throws InfraException {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 
@@ -33,7 +36,7 @@ public class NutritionistPersistence {
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			throw new InfraException(e.getMessage());
 		}
 		finally {
 			Database.closeStatement(ps);

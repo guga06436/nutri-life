@@ -4,15 +4,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+
 import model.Patient;
 import persistence.db.Database;
+import persistence.db.exception.InfraException;
 
 public class PatientPersistence {
 	private Connection conn;
 	
-	public PatientPersistence() {
+	public PatientPersistence() throws InfraException{
 		conn = Database.getConnection();
 	}
 	
@@ -30,7 +33,7 @@ public class PatientPersistence {
 		return p;
 	}
 	
-	public boolean add(Patient p) {
+	public boolean add(Patient p) throws InfraException {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 
@@ -54,7 +57,7 @@ public class PatientPersistence {
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			throw new InfraException(e.getMessage());
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -63,7 +66,7 @@ public class PatientPersistence {
 		return false;
 	}
 	
-	public List<Patient> listAll(){
+	public List<Patient> listAll() throws InfraException{
 		List<Patient> patients = new ArrayList<>();
 		Statement st = null;
 		ResultSet rs = null;
@@ -78,7 +81,7 @@ public class PatientPersistence {
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			throw new InfraException(e.getMessage());
 		}
 		finally {
 			Database.closeResultSet(rs);
