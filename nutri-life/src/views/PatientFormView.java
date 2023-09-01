@@ -5,12 +5,12 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import controler.PatientManager;
-import controler.impl.PatientManagerImpl;
-import exceptions.ExceptionLogin;
-import exceptions.ExceptionNotFound;
-import exceptions.ExceptionPassword;
-import exceptions.ExceptionRegister;
+import controller.PatientManager;
+import controller.exceptions.ExceptionLogin;
+import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionPassword;
+import controller.exceptions.ExceptionRegister;
+import controller.impl.PatientManagerImpl;
 import model.Patient;
 
 public class PatientFormView {
