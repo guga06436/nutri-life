@@ -1,28 +1,26 @@
 package model;
 
-
-
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class Patient {
-	private String login;
+	private String username;
 	private String password;
 	private String name;
 	private int age;
-	private Date birthdate;
 	private String cpf;
 	private float height;
 	private float weight;
+	
+	public Patient() {
+		
+	}
 
-	public Patient(String login , String password,String name, int age, Date birthdate, float height, float weight){
-		this.login = login;
+	public Patient(String username , String password, String name, String cpf, int age, float height, float weight){
+		this.username = username;
 		this.password = password;
 		this.name = name;
 		this.age = age;
-		this.birthdate = birthdate;
 		this.cpf = cpf;
 		this.height = height;
 		this.weight = weight;
