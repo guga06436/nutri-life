@@ -10,13 +10,15 @@ import java.util.Properties;
 
 import com.mysql.jdbc.Connection;
 
+import persistence.db.exception.InfraException;
+
 public class Database {
 	private static Connection conn;
 	
 	private Database() {	
 	}
 	
-	public static Connection getConnection() {
+	public static Connection getConnection() throws InfraException{
 		
 		if(conn == null) {
 			try {
@@ -25,14 +27,14 @@ public class Database {
 				conn = (Connection) DriverManager.getConnection(url, props);
 			}
 			catch(SQLException e) {
-				e.printStackTrace();
+				throw new InfraException(e.getMessage());
 			}
 		}
 		
 		return conn;
 	}
 	
-	private static Properties loadProperties() {
+	private static Properties loadProperties() throws InfraException{
 		try(FileInputStream fis = new FileInputStream("db.properties")){
 			Properties props = new Properties();
 			props.load(fis);
@@ -40,13 +42,11 @@ public class Database {
 			return props;
 		}
 		catch(IOException e) {
-			e.printStackTrace();
+			throw new InfraException("Database access credentials error.");
 		}
-		
-		return null;
 	}
 	
-	public static void closeStatement(Statement st) {
+	public static void closeStatement(Statement st) throws InfraException{
 		
 		try {
 			if(st != null) {
@@ -54,18 +54,18 @@ public class Database {
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			throw new InfraException("Resource closing error.");
 		}
 	}
 	
-	public static void closeResultSet(ResultSet rs) {
+	public static void closeResultSet(ResultSet rs) throws InfraException{
 		try {
 			if(rs != null) {
 				rs.close();
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			throw new InfraException("Resource closing error.");
 		}
 	}
 }
