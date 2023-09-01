@@ -1,7 +1,7 @@
-package controler;
+package controller;
 
-import exceptions.ExceptionNotFound;
-import exceptions.ExceptionPassword;
+import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionPassword;
 import model.Nutritionist;
 
 public interface NutritionistManager {
