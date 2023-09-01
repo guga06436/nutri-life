@@ -1,21 +1,33 @@
-package controler.impl;
+package controller.impl;
 
-import controler.NutritionistManager;
-import exceptions.ExceptionNotFound;
-import exceptions.ExceptionPassword;
+import controller.NutritionistManager;
+import controller.exceptions.DatabaseException;
+import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionPassword;
 import model.Nutritionist;
 import persistence.NutritionistPersistence;
+import persistence.db.exception.InfraException;
 
 public class NutritionistManagerImpl implements NutritionistManager{
 	private NutritionistPersistence np;
 	
 	public NutritionistManagerImpl() {
-		np = new NutritionistPersistence();
+		try {
+			np = new NutritionistPersistence();
+		}
+		catch(InfraException e) {
+			throw new DatabaseException("Could not connect to the database."); 
+		}
 	}
 	
 	@Override
 	public boolean add(Nutritionist n) {
-		return np.add(n);
+		try {
+			return np.add(n);
+		}
+		catch(InfraException e) {
+			throw new DatabaseException("Unable to create a nutritionist.");
+		}
 	}
 
 	@Override
