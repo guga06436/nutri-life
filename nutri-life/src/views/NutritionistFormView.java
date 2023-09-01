@@ -5,10 +5,10 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import controler.impl.NutritionistManagerImpl;
-import exceptions.ExceptionNotFound;
-import exceptions.ExceptionPassword;
-import exceptions.ExceptionRegister;
+import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionPassword;
+import controller.exceptions.ExceptionRegister;
+import controller.impl.NutritionistManagerImpl;
 import model.Nutritionist;
 
 public class NutritionistFormView {
