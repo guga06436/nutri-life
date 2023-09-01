@@ -1,5 +1,7 @@
 package views;
 import application.OptionHandler;
+import exceptions.ExceptionNotFound;
+import exceptions.ExceptionPassword;
 import exceptions.ExceptionRegister;
 import views.NutritionistFormView;
 import views.PatientFormView;
@@ -20,12 +22,20 @@ public class MainScreenDesktop
             switch(OptionHandler.readIntegerInput())
             {
                 case 1:
-                    nutritionistView.menu();
+                    try {
+                        nutritionistView.run();
+                    } catch (ExceptionRegister e) {
+                        e.printStackTrace();
+                    } catch (ExceptionPassword e) {
+                        e.printStackTrace();
+                    } catch (ExceptionNotFound e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 2:
                     try
                     {
-                        patientView.view();
+                        patientView.run();
                     }
                     catch(ExceptionRegister err){};
                     break;

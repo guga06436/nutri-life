@@ -28,7 +28,7 @@ public class PatientFormView {
 
 
 
-    public void view() throws ExceptionRegister {
+    public void run() throws ExceptionRegister {
 
         Scanner sc = new Scanner(System.in);
 

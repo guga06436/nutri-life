@@ -20,10 +20,33 @@ public class NutritionistFormView {
         manager = new NutritionistManagerImpl();
     }
 
-    public void menu() {
-        System.out.println("-=-=-=-=-=-= NUTRI LIFE =-=-=-=-=-=-");
-        System.out.println("[1] - Register");
-        System.out.println("[2] - Sign In");
+    public void run() throws ExceptionRegister, ExceptionPassword, ExceptionNotFound {
+
+        Scanner sc = new Scanner(System.in);
+
+        while(true){
+            System.out.println("[1] Sign In");
+            System.out.println("[2] Register");
+            System.out.println("[3] Exit");
+            System.out.print("Choose an option: ");
+            int option = sc.nextInt();
+            sc.nextLine();
+
+            switch (option) {
+                case 1:
+                    signIn(sc);
+                    break;
+                case 2:
+                    register(sc);
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    sc.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid option");
+            }
+        }
     }
 
     private static Date parseBirthdate(String birthdate) {
