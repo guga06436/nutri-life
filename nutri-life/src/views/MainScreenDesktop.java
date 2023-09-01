@@ -1,10 +1,8 @@
 package views;
 import application.OptionHandler;
-import exceptions.ExceptionNotFound;
-import exceptions.ExceptionPassword;
-import exceptions.ExceptionRegister;
-import views.NutritionistFormView;
-import views.PatientFormView;
+import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionPassword;
+import controller.exceptions.ExceptionRegister;
 
 public class MainScreenDesktop
 {
