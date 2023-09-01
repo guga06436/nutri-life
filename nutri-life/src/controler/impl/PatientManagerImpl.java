@@ -5,8 +5,6 @@ import java.util.List;
 import controler.PatientManager;
 import model.Patient;
 import persistence.PatientPersistence;
-import exceptions.ExceptionPassword;
-import exceptions.ExceptionNotFound;
 
 public class PatientManagerImpl implements PatientManager{
 	private PatientPersistence pp;
@@ -33,6 +31,6 @@ public class PatientManagerImpl implements PatientManager{
 	public Patient retrieve(String login, String password) {
 
 		/*usado pro getlogin*/
-
+		return null;
 	}
 }

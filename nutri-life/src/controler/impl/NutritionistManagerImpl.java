@@ -15,15 +15,8 @@ public class NutritionistManagerImpl implements NutritionistManager{
 	
 	@Override
 	public boolean add(Nutritionist n) {
-		return n.add(n);
+		return np.add(n);
 	}
-
-    @Override
-    public void listAll() {
-        for(Nutritionist n: NutritionistPersistence.nutritionistPersistence) {
-            System.out.println(n);
-        }
-    }
 
 	@Override
 	public Nutritionist retrieve(String login, String password) throws ExceptionNotFound, ExceptionPassword {
