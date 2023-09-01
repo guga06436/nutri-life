@@ -1,4 +1,4 @@
-package exceptions;
+package controller.exceptions;
 
 public class ExceptionPassword extends Exception {
     /* Caso o usuário não esteja cadastrado*/
