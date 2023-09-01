@@ -1,5 +1,6 @@
 package views;
 import application.OptionHandler;
+import exceptions.ExceptionRegister;
 import views.NutritionistFormView;
 import views.PatientFormView;
 
@@ -19,9 +20,14 @@ public class MainScreenDesktop
             switch(OptionHandler.readIntegerInput())
             {
                 case 1:
-
+                    nutritionistView.menu();
                     break;
                 case 2:
+                    try
+                    {
+                        patientView.view();
+                    }
+                    catch(ExceptionRegister err){};
                     break;
                 case 3:
                     OptionHandler.onExitProgram();
@@ -36,13 +42,13 @@ public class MainScreenDesktop
 
     void showMenu()
     {
-        OptionHandler.showMessage("""
-                        Welcome to NutriLife!
-                        Choose the desired option:
-                        1-Create Nutritionist
-                        2-Create Patient
-                        3-End Program
-                        Your option: """
+        OptionHandler.showMessage(
+                        "Welcome to NutriLife!\n" +
+                        "Choose the desired option:\n" +
+                        "1-Create Nutritionist\n" +
+                        "2-Create Patient\n" +
+                        "3-End Program\n" +
+                        "Your option: "
                     );
     }
 }
