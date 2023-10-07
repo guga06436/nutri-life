@@ -22,13 +22,13 @@ public class PatientPersistence {
 	private Patient instantiatePatient(ResultSet rs) throws SQLException{
 		Patient p = new Patient();
 		
-		p.setName(rs.getString("name"));
+		p.setName(rs.getString("patient_name"));
 		p.setAge(rs.getInt("age"));
 		p.setCpf(rs.getString("cpf"));
 		p.setHeight(rs.getFloat("height"));
 		p.setWeight(rs.getFloat("weight"));
 		p.setUsername(rs.getString("username"));
-		p.setPassword(rs.getString("password"));
+		p.setPassword(rs.getString("patient_password"));
 
 		return p;
 	}
@@ -38,9 +38,8 @@ public class PatientPersistence {
 		int rowsAffected = -1;
 
 		try {
-			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Patient(name, age, cpf, heigth, weight) VALUES(?,?,?,?,?)");
-			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Patient(name, age, cpf, heigth, weight, "+ 
-															"username, password) VALUES(?,?,?,?,?,?,?)");
+			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Patient(patient_name, age, cpf, height, weight, "+ 
+															"username, patient_password) VALUES(?,?,?,?,?,?,?)");
 
 			ps.setString(1, p.getName());
 			ps.setInt(2, p.getAge());
@@ -89,5 +88,34 @@ public class PatientPersistence {
 		}
 		
 		return patients;
+	}
+	
+	public Patient retrieve(String username, String password) throws InfraException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Patient patient = null;
+		
+		try {
+			ps = (PreparedStatement) conn.prepareStatement("SELECT * FROM Patient WHERE username = ? AND "
+				  +	"patient_password = ?");
+			
+			ps.setString(1, username);
+			ps.setString(2, password);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				patient = instantiatePatient(rs);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return patient;
 	}
 }
