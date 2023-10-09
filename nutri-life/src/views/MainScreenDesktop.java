@@ -1,5 +1,5 @@
 package views;
-import application.OptionHandler;
+import handlers.OptionHandler;
 import controller.exceptions.ExceptionNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;

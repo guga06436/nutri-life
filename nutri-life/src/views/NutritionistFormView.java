@@ -10,13 +10,18 @@ import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
 import controller.impl.NutritionistManagerImpl;
 import model.Nutritionist;
+import persistence.db.exception.InfraException;
 
 public class NutritionistFormView {
 
     private NutritionistManagerImpl manager;
 
     public NutritionistFormView() {
-        manager = new NutritionistManagerImpl();
+        try {
+			manager = new NutritionistManagerImpl();
+		} catch (InfraException e) {
+			System.out.println(e.getMessage()); // Melhorar tratamento
+		}
     }
 
     public void run() throws ExceptionRegister, ExceptionPassword, ExceptionNotFound {
@@ -107,7 +112,12 @@ public class NutritionistFormView {
         } 
 
         Nutritionist nutri = new Nutritionist(name, age, crn, username, password);
-        boolean registerSuccess = manager.add(nutri);
+        boolean registerSuccess = false;
+		try {
+			registerSuccess = manager.add(nutri);
+		} catch (InfraException e) {
+			System.out.println(e.getMessage()); // Melhorar Tratamento
+		}
 
         if (registerSuccess) {
             System.out.println("Registration successful for nutritionist: " + nutri.getName());
