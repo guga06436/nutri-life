@@ -12,7 +12,7 @@ import persistence.db.exception.InfraException;
 public class NutritionistPersistence {
 	private Connection conn;
 	
-	public NutritionistPersistence() throws InfraException{
+	public NutritionistPersistence() throws InfraException {
 		conn = Database.getConnection();
 	}
 	
@@ -49,7 +49,7 @@ public class NutritionistPersistence {
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException(e.getMessage());
+			throw new InfraException("Unable to create a nutritionist.");
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -77,7 +77,7 @@ public class NutritionistPersistence {
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException(e.getMessage());
+			throw new InfraException(e.getMessage()); // Change Exception
 		}
 		finally {
 			Database.closeResultSet(rs);
