@@ -10,6 +10,7 @@ import persistence.db.exception.InfraException;
 public class Facade 
 {
     private static Facade instance = null;
+    
     private NutritionistFormView nutritionistFormView;
     private PatientFormView patientFormView;
 
