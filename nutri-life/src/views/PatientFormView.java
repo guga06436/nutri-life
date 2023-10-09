@@ -12,6 +12,7 @@ import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
 import controller.impl.PatientManagerImpl;
 import model.Patient;
+import persistence.db.exception.InfraException;
 
 public class PatientFormView {
 
@@ -19,7 +20,11 @@ public class PatientFormView {
 
     /*lida com registro dos pacientes*/
     public PatientFormView(){
-        patientManager = new PatientManagerImpl();
+        try {
+			patientManager = new PatientManagerImpl();
+		} catch (InfraException e) {
+			e.printStackTrace();
+		}
     }
 
     public void run() throws ExceptionRegister {
@@ -161,7 +166,12 @@ public class PatientFormView {
         } 
 
         Patient newPatient = new Patient(username, password, name, cpf, age, height, weight);
-        boolean registerSuccess = patientManager.add(newPatient);
+        boolean registerSuccess = false;
+		try {
+			registerSuccess = patientManager.add(newPatient);
+		} catch (InfraException e) {
+			System.out.println(e.getMessage());
+		}
 
         /*Condição de Sucesso*/
         if (registerSuccess) {
