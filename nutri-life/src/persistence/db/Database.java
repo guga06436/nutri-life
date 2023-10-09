@@ -18,23 +18,23 @@ public class Database {
 	private Database() {	
 	}
 	
-	public static Connection getConnection() throws InfraException{
+	public static Connection getConnection() throws InfraException {
 		
 		if(conn == null) {
 			try {
 				Properties props = loadProperties();
-				String url = props.getProperty("url");
+				String url = props.getProperty("durl");
 				conn = (Connection) DriverManager.getConnection(url, props);
 			}
 			catch(SQLException e) {
-				throw new InfraException(e.getMessage());
+				throw new InfraException("Could not connect to the database.");
 			}
 		}
 		
 		return conn;
 	}
 	
-	private static Properties loadProperties() throws InfraException{
+	private static Properties loadProperties() throws InfraException {
 		try(FileInputStream fis = new FileInputStream("db.properties")){
 			Properties props = new Properties();
 			props.load(fis);
