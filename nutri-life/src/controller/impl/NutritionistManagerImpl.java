@@ -1,7 +1,6 @@
 package controller.impl;
 
 import controller.NutritionistManager;
-import controller.exceptions.DatabaseException;
 import controller.exceptions.ExceptionNotFound;
 import controller.exceptions.ExceptionPassword;
 import model.Nutritionist;
@@ -11,23 +10,13 @@ import persistence.db.exception.InfraException;
 public class NutritionistManagerImpl implements NutritionistManager{
 	private NutritionistPersistence np;
 	
-	public NutritionistManagerImpl() {
-		try {
-			np = new NutritionistPersistence();
-		}
-		catch(InfraException e) {
-			throw new DatabaseException("Could not connect to the database."); 
-		}
+	public NutritionistManagerImpl() throws InfraException {
+		np = new NutritionistPersistence();
 	}
 	
 	@Override
-	public boolean add(Nutritionist n) {
-		try {
-			return np.add(n);
-		}
-		catch(InfraException e) {
-			throw new DatabaseException("Unable to create a nutritionist.");
-		}
+	public boolean add(Nutritionist n) throws InfraException {
+		return np.add(n);
 	}
 
 	@Override
