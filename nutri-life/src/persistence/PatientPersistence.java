@@ -56,7 +56,7 @@ public class PatientPersistence {
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException(e.getMessage());
+			throw new InfraException("Unable to create a patient.");
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -80,7 +80,7 @@ public class PatientPersistence {
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException(e.getMessage());
+			throw new InfraException("Unable to retrive all patients.");
 		}
 		finally {
 			Database.closeResultSet(rs);
