@@ -9,6 +9,7 @@ import persistence.db.exception.InfraException;
 
 public class Facade 
 {
+    private static Facade instance = null;
     private NutritionistFormView nutritionistFormView;
     private PatientFormView patientFormView;
 
@@ -22,6 +23,15 @@ public class Facade
 
         nutritionistManager = new NutritionistManagerImpl();
         patientManager = new PatientManagerImpl();
+    }
+
+    public static Facade getInstance() throws InfraException
+    {
+        if (instance == null)
+        {
+            instance = new Facade();
+        }
+        return instance;
     }
 
     public boolean addNutritionist(Nutritionist n) 
