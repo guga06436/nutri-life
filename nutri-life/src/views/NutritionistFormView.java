@@ -38,14 +38,12 @@ public class NutritionistFormView {
             switch (option) {
                 case 1:
                     signIn(sc);
-                    break;
                 case 2:
                     register(sc);
-                    break;
                 case 3:
                     System.out.println("Exiting...");
                     sc.onExitProgram();
-                    System.exit(0);
+                    break;
                 default:
                     System.out.println("Invalid option");
             }

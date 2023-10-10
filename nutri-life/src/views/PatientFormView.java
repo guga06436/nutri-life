@@ -1,7 +1,5 @@
 package views;
 
-
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,14 +46,12 @@ public class PatientFormView {
                     } catch (ExceptionNotFound e){
                         System.out.println("Login failed: Patient not found");
                     }
-                    break;
                 case 2:
                     register(sc);
-                    break;
                 case 3:
                     System.out.println("Exiting...");
                     sc.onExitProgram();
-                    System.exit(0);
+                    break;
                 default:
                     System.out.println("Invalid option");
             }
