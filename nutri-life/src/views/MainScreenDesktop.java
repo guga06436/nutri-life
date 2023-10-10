@@ -29,14 +29,12 @@ public class MainScreenDesktop
                     } catch (ExceptionNotFound e) {
                         e.printStackTrace();
                     }
-                    break;
                 case 2:
                     try
                     {
                         patientView.run();
                     }
                     catch(ExceptionRegister err){};
-                    break;
                 case 3:
                     OptionHandler.onExitProgram();
                     System.exit(0);
@@ -53,9 +51,9 @@ public class MainScreenDesktop
         OptionHandler.showMessage(
                         "Welcome to NutriLife!\n" +
                         "Choose the desired option:\n" +
-                        "1-Create Nutritionist\n" +
-                        "2-Create Patient\n" +
-                        "3-End Program\n" +
+                        "1- Nutritionist Page\n" +
+                        "2- Patient Page\n" +
+                        "3- End Program\n" +
                         "Your option: "
                     );
     }

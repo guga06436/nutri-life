@@ -5,39 +5,39 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import controller.PatientManager;
 import controller.exceptions.ExceptionLogin;
 import controller.exceptions.ExceptionNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
-import controller.impl.PatientManagerImpl;
+import handlers.OptionHandler;
 import model.Patient;
 import persistence.db.exception.InfraException;
+import service.Facade;
 
 public class PatientFormView {
 
-    private static PatientManager patientManager;
+    private static Facade manager;
 
     /*lida com registro dos pacientes*/
     public PatientFormView(){
         try {
-			patientManager = new PatientManagerImpl();
+            manager = new Facade();
 		} catch (InfraException e) {
-			e.printStackTrace();
+            System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later."); // Melhorar tratamento
 		}
     }
 
     public void run() throws ExceptionRegister {
 
-        Scanner sc = new Scanner(System.in);
+        OptionHandler sc = new OptionHandler();
 
         while(true){
             System.out.println("[1] Sign In");
             System.out.println("[2] Register");
             System.out.println("[3] Exit");
             System.out.print("Choose an option: ");
-            int option = sc.nextInt();
-            sc.nextLine();
+            int option = sc.readIntegerInput();
+            sc.readLineInput();
 
             switch (option) {
                 case 1:
@@ -54,7 +54,7 @@ public class PatientFormView {
                     break;
                 case 3:
                     System.out.println("Exiting...");
-                    sc.close();
+                    sc.onExitProgram();
                     System.exit(0);
                 default:
                     System.out.println("Invalid option");
@@ -62,79 +62,48 @@ public class PatientFormView {
         }
     }
 
-    public void view() throws ExceptionRegister {
-
-        Scanner sc = new Scanner(System.in);
-
-        while(true){
-            System.out.println("[1] Sign In");
-            System.out.println("[2] Register");
-            System.out.println("[3] Exit");
-            System.out.print("Choose an option: ");
-            int option = sc.nextInt();
-            sc.nextLine();
-
-            switch (option) {
-                case 1:
-                    try {
-                        signIn(sc);
-                    } catch (ExceptionLogin | ExceptionPassword e) {
-                        System.out.println("Login failed: " + e.getMessage());
-                    } catch (ExceptionNotFound e){
-                        System.out.println("Login failed: Patient not found");
-                    }
-                    break;
-                case 2:
-                    register(sc);
-                    break;
-                case 3:
-                    System.out.println("Exiting...");
-                    sc.close();
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid option");
-            }
-        }
-    }
-
-    private static void signIn(Scanner scanner) throws ExceptionLogin, ExceptionPassword, ExceptionNotFound {
+    private static void signIn(OptionHandler scanner) throws ExceptionLogin, ExceptionPassword, ExceptionNotFound {
 
         System.out.print("Login: ");
-        String login = scanner.nextLine();
+        String login = scanner.readLineInput();
 
         System.out.print("Password: ");
-        String password = scanner.nextLine();
+        String password = scanner.readLineInput();
 
-        Patient loggedInPatient = patientManager.retrieve(login, password);
-
-        System.out.println("Login successful for patient" + loggedInPatient.getName());
-
+        try {
+            Patient loggedInPatient = manager.retrievePatient(login, password);
+            System.out.println("Login successful for patient" + loggedInPatient.getName());
+        } catch (ExceptionNotFound e) {
+            System.out.println("Login Failed: " + e.getMessage());
+        } catch (ExceptionPassword e) {
+            System.out.println("Password Failed: " + e.getMessage());
+        }
     }
 
-    private static void register(Scanner scanner) throws ExceptionRegister {
+    private static void register(OptionHandler scanner) throws ExceptionRegister {
 
         System.out.print("Name: ");
-        String name = scanner.nextLine();
+        String name = scanner.readLineInput();
 
         System.out.print("Age: ");
-        int age = scanner.nextInt();
-        scanner.nextLine();
+        int age = scanner.readIntegerInput();
+        scanner.readLineInput();
         
         System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
+        String cpf = scanner.readStringInput();
 
         System.out.print("Height: ");
-        float height = scanner.nextFloat();
+        float height = scanner.readFloatInput();
 
         System.out.print("Weight: ");
-        float weight = scanner.nextFloat();
-        scanner.nextLine();
+        float weight = scanner.readFloatInput();
+        scanner.readLineInput();
 
         System.out.print("Username: ");
-        String username = scanner.nextLine();
+        String username = scanner.readStringInput();
 
         System.out.print("Password: ");
-        String password = scanner.nextLine();
+        String password = scanner.readStringInput();
 
         if (password.length() < 8 || password.length() > 20) {
             throw new ExceptionRegister("Password lenght must be between 8 and 20.");
@@ -168,7 +137,7 @@ public class PatientFormView {
         Patient newPatient = new Patient(username, password, name, cpf, age, height, weight);
         boolean registerSuccess = false;
 		try {
-			registerSuccess = patientManager.add(newPatient);
+			registerSuccess = manager.addPatient(newPatient);
 		} catch (InfraException e) {
 			System.out.println(e.getMessage());
 		}

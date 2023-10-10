@@ -1,4 +1,4 @@
-package application;
+package handlers;
 import java.util.Scanner;
 
 public class OptionHandler
@@ -18,6 +18,11 @@ public class OptionHandler
     public static int readIntegerInput()
     {
         return in.nextInt();
+    }
+
+    public static float readFloatInput()
+    {
+        return in.nextFloat();
     }
 
     public static void showMessage(String data)
