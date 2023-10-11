@@ -1,4 +1,4 @@
-package application;
+package handlers;
 import java.util.Scanner;
 
 public class OptionHandler
