@@ -15,8 +15,10 @@ public class Food {
 	private float lipids;
 	private float fibers;
 	private Map<String, Float> vitamins;
+	private float portion;
+	private String portionUnit;
 	
-	public Food(String name, FoodGroup foodGroup, float calories, float proteins, float carbohydrates, float lipids, float fibers, Map<String, Float> vitamins) {
+	public Food(String name, FoodGroup foodGroup, float calories, float proteins, float carbohydrates, float lipids, float fibers, Map<String, Float> vitamins, float portion, String portionUnit) {
 		this.name = name;
 		this.foodGroup = foodGroup;
 		this.calories = calories;
@@ -25,6 +27,8 @@ public class Food {
 		this.lipids = lipids;
 		this.fibers = fibers;
 		this.vitamins = vitamins;
+		this.portion = portion;
+		this.portionUnit = portionUnit;
 	}
 
 	@Override
