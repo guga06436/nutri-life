@@ -20,6 +20,11 @@ public class OptionHandler
         return in.nextInt();
     }
 
+    public static float readFloatInput()
+    {
+        return in.nextFloat();
+    }
+
     public static void showMessage(String data)
     {
         System.out.println(data);

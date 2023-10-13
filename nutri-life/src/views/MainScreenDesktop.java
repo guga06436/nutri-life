@@ -1,8 +1,5 @@
 package views;
 import handlers.OptionHandler;
-import controller.exceptions.ExceptionNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
 
 public class MainScreenDesktop
 {
@@ -20,30 +17,18 @@ public class MainScreenDesktop
             switch(OptionHandler.readIntegerInput())
             {
                 case 1:
-                    try {
-                        nutritionistView.run();
-                    } catch (ExceptionRegister e) {
-                        e.printStackTrace();
-                    } catch (ExceptionPassword e) {
-                        e.printStackTrace();
-                    } catch (ExceptionNotFound e) {
-                        e.printStackTrace();
-                    }
+                    nutritionistView.run();
                     break;
                 case 2:
-                    try
-                    {
-                        patientView.run();
-                    }
-                    catch(ExceptionRegister err){};
+                    patientView.run();
                     break;
                 case 3:
                     OptionHandler.onExitProgram();
                     System.exit(0);
-                    return;
+                    break;
                 default:
                     OptionHandler.showMessage("Invalid Option");
-                    continue;
+                    break;
             }
         }
     }
@@ -53,9 +38,9 @@ public class MainScreenDesktop
         OptionHandler.showMessage(
                         "Welcome to NutriLife!\n" +
                         "Choose the desired option:\n" +
-                        "1-Create Nutritionist\n" +
-                        "2-Create Patient\n" +
-                        "3-End Program\n" +
+                        "1- Nutritionist Page\n" +
+                        "2- Patient Page\n" +
+                        "3- End Program\n" +
                         "Your option: "
                     );
     }
