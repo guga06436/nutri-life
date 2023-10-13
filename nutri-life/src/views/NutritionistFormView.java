@@ -16,6 +16,7 @@ public class NutritionistFormView {
 			this.manager = Facade.getInstance();
 		} catch (InfraException e) {
 			System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later."); // Melhorar tratamento
+            e.printStackTrace();
             System.exit(1);
 		}
     }
@@ -40,7 +41,6 @@ public class NutritionistFormView {
                     break;
                 case 3:
                     System.out.println("Exiting...");
-                    OptionHandler.onExitProgram();
                     running = false;
                     break;
                 default:

@@ -41,7 +41,6 @@ public class PatientFormView {
                     break;
                 case 3:
                     System.out.println("Exiting...");
-                    OptionHandler.onExitProgram();
                     running = false;
                     break;
                 default:

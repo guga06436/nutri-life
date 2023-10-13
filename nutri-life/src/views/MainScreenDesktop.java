@@ -18,14 +18,17 @@ public class MainScreenDesktop
             {
                 case 1:
                     nutritionistView.run();
+                    break;
                 case 2:
                     patientView.run();
+                    break;
                 case 3:
                     OptionHandler.onExitProgram();
                     System.exit(0);
-                    return;
+                    break;
                 default:
                     OptionHandler.showMessage("Invalid Option");
+                    break;
             }
         }
     }

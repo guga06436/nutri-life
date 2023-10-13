@@ -24,47 +24,26 @@ public class Facade {
     }
 
     public boolean addNutritionist(String name, int age, String crn, String username, String password) throws InfraException, ExceptionRegister {
-        try {
-            return nutritionistManager.add(name, age, crn, username, password);
-        } catch (InfraException e) {
-            // Handle exceptions if necessary
-            e.printStackTrace();
-            throw new InfraException(e.getMessage());
-        }
+        return nutritionistManager.add(name, age, crn, username, password);
     }
 
     public Nutritionist retrieveNutritionist(String login, String password) throws InfraException, ExceptionLogin {
         try {
             return nutritionistManager.retrieve(login, password);
         } catch (ExceptionNotFound | ExceptionPassword e) {
-            // Handle exceptions if necessary
-            e.printStackTrace();
             throw new ExceptionLogin(e.getMessage());
-        } catch (InfraException e) {
-            e.printStackTrace();
-            throw new InfraException(e.getMessage());
         }
     }
 
-    public boolean addPatient(String username , String password, String name, String cpf, int age, float height, float weight) throws ExceptionRegister, InfraException {
-        try {
-            return patientManager.add(username , password, name, cpf, age, height, weight);
-        } catch (InfraException e) {
-            e.printStackTrace();
-            throw new InfraException(e.getMessage());
-        }
+    public boolean addPatient(String username, String password, String name, String cpf, int age, float height, float weight) throws ExceptionRegister, InfraException {
+        return patientManager.add(username, password, name, cpf, age, height, weight);
     }
 
     public Patient retrievePatient(String login, String password) throws InfraException, ExceptionLogin {
         try {
             return patientManager.retrieve(login, password);
         } catch (ExceptionNotFound | ExceptionPassword e) {
-            // Handle exceptions if necessary
-            e.printStackTrace();
             throw new ExceptionLogin(e.getMessage());
-        } catch (InfraException e) {
-            e.printStackTrace();
-            throw new InfraException(e.getMessage());
         }
     }
 
