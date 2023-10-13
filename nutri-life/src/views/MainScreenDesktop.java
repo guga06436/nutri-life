@@ -1,8 +1,5 @@
 package views;
 import handlers.OptionHandler;
-import controller.exceptions.ExceptionNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
 
 public class MainScreenDesktop
 {
@@ -20,28 +17,15 @@ public class MainScreenDesktop
             switch(OptionHandler.readIntegerInput())
             {
                 case 1:
-                    try {
-                        nutritionistView.run();
-                    } catch (ExceptionRegister e) {
-                        e.printStackTrace();
-                    } catch (ExceptionPassword e) {
-                        e.printStackTrace();
-                    } catch (ExceptionNotFound e) {
-                        e.printStackTrace();
-                    }
+                    nutritionistView.run();
                 case 2:
-                    try
-                    {
-                        patientView.run();
-                    }
-                    catch(ExceptionRegister err){};
+                    patientView.run();
                 case 3:
                     OptionHandler.onExitProgram();
                     System.exit(0);
                     return;
                 default:
                     OptionHandler.showMessage("Invalid Option");
-                    continue;
             }
         }
     }

@@ -1,10 +1,6 @@
 package views;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import controller.exceptions.ExceptionNotFound;
-import controller.exceptions.ExceptionPassword;
+import controller.exceptions.ExceptionLogin;
 import controller.exceptions.ExceptionRegister;
 import handlers.OptionHandler;
 import model.Nutritionist;
@@ -17,124 +13,91 @@ public class NutritionistFormView {
 
     public NutritionistFormView() {
         try {
-			manager = new Facade();
+			this.manager = Facade.getInstance();
 		} catch (InfraException e) {
 			System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later."); // Melhorar tratamento
+            System.exit(1);
 		}
     }
 
-    public void run() throws ExceptionRegister, ExceptionPassword, ExceptionNotFound {
+    public void run() {
 
-        OptionHandler sc = new OptionHandler();
-
-        while(true){
+        boolean running = true;
+        while(running){
             System.out.println("[1] Sign In");
             System.out.println("[2] Register");
             System.out.println("[3] Exit");
             System.out.print("Choose an option: ");
-            int option = sc.readIntegerInput();
-            sc.readLineInput();
+            int option = OptionHandler.readIntegerInput();
+            OptionHandler.readLineInput();
 
             switch (option) {
                 case 1:
-                    signIn(sc);
+                    signIn();
+                    break;
                 case 2:
-                    register(sc);
+                    register();
+                    break;
                 case 3:
                     System.out.println("Exiting...");
-                    sc.onExitProgram();
+                    OptionHandler.onExitProgram();
+                    running = false;
                     break;
                 default:
                     System.out.println("Invalid option");
+                    break;
             }
         }
     }
 
-    public void register(OptionHandler sc) throws ExceptionRegister {
+    public void register() {
 
         System.out.print("Name: ");
-        String name = sc.readLineInput();
+        String name = OptionHandler.readLineInput();
 
         System.out.print("Age: ");
-        int age = sc.readIntegerInput();
-        if (age < 18) {
-            throw new ExceptionRegister("Age must be equal or above 18.");
-        }
+        int age = OptionHandler.readIntegerInput();
 
         System.out.print("CRN: ");
-        String crn = sc.readStringInput();
+        String crn = OptionHandler.readStringInput();
 
         System.out.print("Username: ");
-        String username = sc.readStringInput();
-        if (username.length() > 12) {
-            throw new ExceptionRegister("Login must not be of length above 12.");
-        } else if (username.isEmpty()) {
-            throw new ExceptionRegister("Login must not be empty.");
-        } else if (username.matches(".\\d.")) {
-            throw new ExceptionRegister("Login must not contain numbers.");
-        }
+        String username = OptionHandler.readStringInput();
 
         System.out.print("Password: ");
-        String password = sc.readStringInput();
-        if (password.length() < 8 || password.length() > 20) {
-            throw new ExceptionRegister("Password lenght must be between 8 and 20.");
-        }
-        
-        Pattern pattern = Pattern.compile("\\d");
-        Matcher matcher = pattern.matcher(password);
-        
-        int count = 0;
-        while (matcher.find()) {
-            count++;
-        }
-        
-        if(count < 2) {
-        	throw new ExceptionRegister("The password must have at least 2 numbers");
-        }
-        
-        boolean containsLetters = false;
+        String password = OptionHandler.readStringInput();
 
-        for (char c : password.toCharArray()) {
-            if (Character.isLetter(c)) {
-                containsLetters = true;
-                break; // Se encontrar uma letra, sai do loop
-            }
-        }
-
-        if (!containsLetters) {
-            throw new ExceptionRegister("The password msut have at least 1 letter");
-        } 
-
-        Nutritionist nutri = new Nutritionist(name, age, crn, username, password);
         boolean registerSuccess = false;
 		try {
-			registerSuccess = manager.addNutritionist(nutri);
+			registerSuccess = this.manager.addNutritionist(name, age, crn, username, password);
 		} catch (InfraException e) {
 			System.out.println(e.getMessage()); // Melhorar Tratamento
-		}
+		} catch (ExceptionRegister e) {
+            System.out.println(e.getMessage());
+        }
 
         if (registerSuccess) {
-            System.out.println("Registration successful for nutritionist: " + nutri.getName());
+            System.out.println("Registration successful for nutritionist.");
         } else {
-            System.out.println("Registration failed for nutritionist: " + nutri.getName());
+            System.out.println("Registration failed for nutritionist.");
         }
     }
 
-    public void signIn(OptionHandler sc) throws ExceptionPassword, ExceptionNotFound {
+    public void signIn() {
 
         System.out.print("Username: ");
-        String username = sc.readStringInput();
+        String username = OptionHandler.readStringInput();
 
         System.out.print("Password: ");
-        String password = sc.readStringInput();
+        String password = OptionHandler.readStringInput();
 
         try {
-            Nutritionist loggedInNutritionist = manager.retrieveNutritionist(username, password);
+            Nutritionist loggedInNutritionist = this.manager.retrieveNutritionist(username, password);
             System.out.println("Login successful for nutritionist: " + loggedInNutritionist.getName());
-        } catch (ExceptionNotFound e) {
+        } catch (ExceptionLogin e) {
             System.out.println("Login Failed: " + e.getMessage());
-        } catch (ExceptionPassword e) {
-            System.out.println("Password Failed: " + e.getMessage());
+        } catch (InfraException e) {
+            System.out.println("Error with our database, please come again after we fix it.");
         }
     }
 
