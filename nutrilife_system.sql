@@ -31,3 +31,12 @@ CREATE TABLE Nutritionist(
     
     PRIMARY KEY(nutritionist_id)
 );
+
+CREATE TABLE Administrator(
+	admin_id					INT AUTO_INCREMENT,
+    admin_name					VARCHAR(50) NOT NULL,
+    username 					VARCHAR(90) NOT NULL,
+    admin_password				VARCHAR(50) NOT NULL,
+    
+    PRIMARY KEY(admin_id)
+);
