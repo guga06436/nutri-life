@@ -12,7 +12,7 @@ public class Nutritionist {
 	public Nutritionist() {
 
 	}
-
+	
 	public Nutritionist(String name, int age, String crn, String username, String password) {
 		this.name = name;
 		this.age = age;
