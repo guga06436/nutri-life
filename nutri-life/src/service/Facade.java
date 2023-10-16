@@ -45,7 +45,7 @@ public class Facade
         {
             patientManager.listAll();
             nutritionistManager.listAll();
-            mealPlanManager.listAll();
+            //mealPlanManager.listAll();
             //foodManager.listAll();
             //recipeManager.listAll();
         }
