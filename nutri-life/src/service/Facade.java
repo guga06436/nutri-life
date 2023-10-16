@@ -4,54 +4,59 @@ import model.*;
 import controller.*;
 import controller.impl.*;
 import controller.exceptions.*;
+import model.reports.IReportable;
+import model.reports.Report;
 import persistence.db.exception.InfraException;
 
-public class Facade {
-    private static Facade instance = null;
-    private final NutritionistManager nutritionistManager;
-    private final PatientManager patientManager;
+import java.util.List;
 
-    private Facade() throws InfraException {
-        nutritionistManager = new NutritionistManagerImpl();
+public class Facade
+{
+    private static Facade instance = null;
+
+    private final PatientManager patientManager;
+    private final MealPlanManager mealPlanManager;
+    //private final FoodManager foodManager;
+    private final NutritionistManager nutritionistManager;
+    private final AdminManager adminManager;
+    //private final RecipeManager recipeManager;
+
+    private Facade() throws InfraException
+    {
         patientManager = new PatientManagerImpl();
+        mealPlanManager = new MealPlanManagerImpl();
+        //foodManager = new FoodManagerImpl();
+        nutritionistManager = new NutritionistManagerImpl();
+        adminManager = new AdminManagerImpl();
     }
 
-    public static Facade getInstance() throws InfraException {
-        if (instance == null) {
+    public static synchronized Facade getInstance() throws InfraException
+    {
+        if (instance == null)
+        {
             instance = new Facade();
         }
         return instance;
     }
 
-    public boolean addNutritionist(String name, int age, String crn, String username, String password) throws InfraException, ExceptionRegister {
-        return nutritionistManager.add(name, age, crn, username, password);
-    }
-
-    public Nutritionist retrieveNutritionist(String login, String password) throws InfraException, ExceptionLogin {
-        try {
-            return nutritionistManager.retrieve(login, password);
-        } catch (ExceptionNotFound | ExceptionPassword e) {
-            throw new ExceptionLogin(e.getMessage());
-        }
-    }
-
-    public boolean addPatient(String username, String password, String name, String cpf, int age, float height, float weight) throws ExceptionRegister, InfraException {
-        return patientManager.add(username, password, name, cpf, age, height, weight);
-    }
-
-    public Patient retrievePatient(String login, String password) throws InfraException, ExceptionLogin {
-        try {
-            return patientManager.retrieve(login, password);
-        } catch (ExceptionNotFound | ExceptionPassword e) {
-            throw new ExceptionLogin(e.getMessage());
-        }
-    }
-
-    public void listAllPatients() {
-        try {
+    public void listAll()
+    {
+        try
+        {
             patientManager.listAll();
-        } catch (InfraException e) {
+            nutritionistManager.listAll();
+            mealPlanManager.listAll();
+            //foodManager.listAll();
+            //recipeManager.listAll();
+        }
+        catch (InfraException e)
+        {
             e.printStackTrace();
         }
+    }
+
+    public void generateReport(Report reportGenerator, List<IReportable> reports)
+    {
+        reportGenerator.generateReport(reports);
     }
 }
