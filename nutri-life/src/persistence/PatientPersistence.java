@@ -13,7 +13,7 @@ import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
 public class PatientPersistence {
-	private Connection conn;
+	private static Connection conn;
 	
 	public PatientPersistence() throws InfraException{
 		conn = Database.getConnection();
