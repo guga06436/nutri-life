@@ -11,6 +11,10 @@ public class MealPlan {
     private Date creationDate;
     private String goals; 
     private List<Recipe> recipeList;
+    
+    public MealPlan() {
+    	
+    }
 
     public MealPlan(String name, Date creationDate, String goals, List<Recipe> recipeList) {
         this.name = name;
