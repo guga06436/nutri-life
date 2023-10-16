@@ -1,16 +1,15 @@
 package persistence;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
 
 import model.Nutritionist;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
 public class NutritionistPersistence {
-	private Connection conn;
+	private static Connection conn;
 	
 	public NutritionistPersistence() throws InfraException {
 		conn = Database.getConnection();
@@ -33,7 +32,7 @@ public class NutritionistPersistence {
 		int rowsAffected = -1;
 
 		try {
-			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Nutritionist(nutritionist_name, age, crn, username, nutritionist_password)" + 
+			ps = conn.prepareStatement("INSERT INTO Nutritionist(nutritionist_name, age, crn, username, nutritionist_password)" + 
 															" VALUES(?,?,?,?,?)");
 
 			ps.setString(1, n.getName());
@@ -64,7 +63,7 @@ public class NutritionistPersistence {
 		Nutritionist nutricionist = null;
 		
 		try {
-			ps = (PreparedStatement) conn.prepareStatement("SELECT * FROM Nutritionist WHERE username = ? AND "
+			ps = conn.prepareStatement("SELECT * FROM Nutritionist WHERE username = ? AND "
 															+	"nutritionist_password = ?");
 			
 			ps.setString(1, username);
