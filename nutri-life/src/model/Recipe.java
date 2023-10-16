@@ -8,18 +8,22 @@ import lombok.Data;
 @Data
 public class Recipe {
 	private String name;
-	private Map<String, FoodPortion> portionedIngredients;
+	private Map<Food, Map<Float, String>> portionedIngredients;
 	private List<String> sequenceSteps;
 	
-	public Recipe(String name, Map<String, FoodPortion> portionedIngredients, List<String> sequenceSteps) {
+	public Recipe() {
+		
+	}
+	
+	public Recipe(String name, Map<Food, Map<Float, String>> portionedIngredients, List<String> sequenceSteps) {
 		this.name = name;
 		this.portionedIngredients = portionedIngredients;
 		this.sequenceSteps = sequenceSteps;
 	}
 	
 	// Adds a new ingredient to the recipe
-	public void addNewIngredient(String name, FoodPortion foodPortion) {
-		portionedIngredients.put(name,  foodPortion);
+	public void addNewIngredient(Food food, Map<Float, String> portionedFood) {
+		portionedIngredients.put(food,  portionedFood);
 	}
 	
 	// Adds a new step to the preparation sequence

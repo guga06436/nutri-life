@@ -1,3 +1,4 @@
+package model;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,6 +16,10 @@ public class MealPlan {
         this.creationDate = creationDate;
         this.goals = goals;
         this.recipeList = recipeList;
+    }
+  
+    public void addNewRecipe(Recipe recipe) {
+    	recipeList.add(recipe);
     }
 
 }

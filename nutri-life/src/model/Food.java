@@ -18,6 +18,10 @@ public class Food {
 	private float portion;
 	private String portionUnit;
 	
+	public Food() {
+		
+	}
+	
 	public Food(String name, FoodGroup foodGroup, float calories, float proteins, float carbohydrates, float lipids, float fibers, Map<String, Float> vitamins, float portion, String portionUnit) {
 		this.name = name;
 		this.foodGroup = foodGroup;

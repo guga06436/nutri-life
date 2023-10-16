@@ -1,19 +1,18 @@
 package persistence;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-
 import model.Patient;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
 public class PatientPersistence {
-	private Connection conn;
+	private static Connection conn;
 	
 	public PatientPersistence() throws InfraException{
 		conn = Database.getConnection();
@@ -38,7 +37,7 @@ public class PatientPersistence {
 		int rowsAffected = -1;
 
 		try {
-			ps = (PreparedStatement) conn.prepareStatement("INSERT INTO Patient(patient_name, age, cpf, height, weight, "+ 
+			ps = conn.prepareStatement("INSERT INTO Patient(patient_name, age, cpf, height, weight, "+ 
 															"username, patient_password) VALUES(?,?,?,?,?,?,?)");
 
 			ps.setString(1, p.getName());
@@ -96,8 +95,7 @@ public class PatientPersistence {
 		Patient patient = null;
 		
 		try {
-			ps = (PreparedStatement) conn.prepareStatement("SELECT * FROM Patient WHERE username = ? AND "
-				  +	"patient_password = ?");
+			ps = conn.prepareStatement("SELECT * FROM Patient WHERE username = ? AND patient_password = ?");
 			
 			ps.setString(1, username);
 			ps.setString(2, password);
