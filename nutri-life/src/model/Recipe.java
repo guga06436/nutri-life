@@ -11,6 +11,10 @@ public class Recipe {
 	private Map<Food, Map<Float, String>> portionedIngredients;
 	private List<String> sequenceSteps;
 	
+	public Recipe() {
+		
+	}
+	
 	public Recipe(String name, Map<Food, Map<Float, String>> portionedIngredients, List<String> sequenceSteps) {
 		this.name = name;
 		this.portionedIngredients = portionedIngredients;
