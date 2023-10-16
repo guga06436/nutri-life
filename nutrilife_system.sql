@@ -100,7 +100,7 @@ CREATE TABLE FoodRecipe(
 CREATE TABLE MealPlan(
 	mealplan_id					INT AUTO_INCREMENT,
     mealplan_name				VARCHAR(60) NOT NULL,
-    data_creation				TIMESTAMP NOT NULL,
+    date_creation				TIMESTAMP NOT NULL,
     goals 						MEDIUMTEXT NOT NULL,
     patient_id 					INT NOT NULL,
     
