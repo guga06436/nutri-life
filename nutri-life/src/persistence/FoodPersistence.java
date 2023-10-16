@@ -60,6 +60,10 @@ public class FoodPersistence {
 		catch(SQLException e) {
 			throw new InfraException("Unable to retrive all food information");
 		}
+		finally{
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
 		
 		return vitamins;
 	}
@@ -82,6 +86,10 @@ public class FoodPersistence {
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to retrieve a food ID");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
 		}
 		
 		return id;
@@ -106,6 +114,10 @@ public class FoodPersistence {
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to retrieve food");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
 		}
 		
 		return food;
