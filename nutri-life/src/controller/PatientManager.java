@@ -1,10 +1,13 @@
 package controller;
 
+import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionPassword;
+import controller.exceptions.ExceptionRegister;
 import model.Patient;
 import persistence.db.exception.InfraException;
 
 public interface PatientManager {
-	boolean add(Patient n) throws InfraException;
+	boolean add(String username , String password, String name, String cpf, int age, float height, float weight) throws InfraException, ExceptionRegister;
 	void listAll() throws InfraException;
-	Patient retrieve(String login, String password);
+	Patient retrieve(String login, String password) throws InfraException, ExceptionNotFound, ExceptionPassword;
 }

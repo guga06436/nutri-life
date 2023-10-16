@@ -8,9 +8,9 @@ public class Nutritionist {
 	private String crn;
 	private String username;
 	private String password;
-	
+
 	public Nutritionist() {
-		
+
 	}
 	
 	public Nutritionist(String name, int age, String crn, String username, String password) {
@@ -45,8 +45,9 @@ public class Nutritionist {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name + "(" + crn + ")";
-	}}
+	}
+}
