@@ -9,14 +9,17 @@ import controller.exceptions.ExceptionNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
 import model.Patient;
-import persistence.PatientPersistence;
+import persistence.Persistence;
 import persistence.db.exception.InfraException;
+import persistence.impl.FactoryPatient;
 
 public class PatientManagerImpl implements PatientManager{
-	private final PatientPersistence pp;
+	private static FactoryPatient fp;
+	private static Persistence<Patient> persistence;
 	
 	public PatientManagerImpl() throws InfraException {
-		pp = new PatientPersistence();
+		fp = new FactoryPatient();
+		persistence = fp.getPersistence();
 	}
 
 	@Override
@@ -27,7 +30,7 @@ public class PatientManagerImpl implements PatientManager{
 		validateAge(age);
 
 		Patient p = new Patient(username, password, name, cpf, age, height, weight);
-		return pp.add(p);
+		return persistence.insert(p);
 	}
 
 	private void validateUsername(String username) throws ExceptionRegister {
@@ -78,7 +81,7 @@ public class PatientManagerImpl implements PatientManager{
 
 	@Override
 	public void listAll() throws InfraException {
-		List<Patient> patients = pp.listAll();
+		List<Patient> patients = persistence.listAll();
 		
 		for(Patient p : patients) {
 			System.out.println(p);
@@ -86,16 +89,16 @@ public class PatientManagerImpl implements PatientManager{
 	}
 
 	@Override
-	public Patient retrieve(String login, String password) throws InfraException, ExceptionNotFound, ExceptionPassword {
+	public Patient retrieve(String username, String password) throws InfraException, ExceptionNotFound, ExceptionPassword {
+		Patient p = new Patient();
+		
+		p.setUsername(username);
+		p.setPassword(password);
+		
+		Patient patient = persistence.retrieve(p);
 
-		Patient p = pp.retrieve(login, password);
-
-		if (p == null) {
+		if (patient == null) {
 			throw new ExceptionNotFound("Nutritionist not found");
-		}
-
-		if (!p.getPassword().equals(password)) {
-			throw new ExceptionPassword("Invalid password");
 		}
 
 		return p;
