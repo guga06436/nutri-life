@@ -1,5 +1,7 @@
 package persistence;
 
+import persistence.db.exception.InfraException;
+
 public interface Factory<T> {
-	T getPersistence();
+	T getPersistence() throws InfraException;
 }
