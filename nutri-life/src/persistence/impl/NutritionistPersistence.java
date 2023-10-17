@@ -45,19 +45,19 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			ps.setString(5, nutritionist.getPassword());
 
 			rowsAffected = ps.executeUpdate();
-
-			if(rowsAffected > 0) {
-				return true;
-			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to create a nutritionist.");
+			throw new InfraException("Unable to create a nutritionist");
 		}
 		catch(NullPointerException e) {
 			throw new InfraException("Unable to insert nutritionist: null argument in method call");
 		}
 		finally {
 			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
 		}
 		
 		return false;
