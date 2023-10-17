@@ -9,6 +9,7 @@ public class MainScreenDesktop
     {
         NutritionistFormView nutritionistView = new NutritionistFormView();
         PatientFormView patientView = new PatientFormView();
+        AdminFormView adminView = new AdminFormView();
 
         while(true)
         {
@@ -23,6 +24,8 @@ public class MainScreenDesktop
                     patientView.run();
                     break;
                 case 3:
+                    adminView.run();
+                case 4:
                     OptionHandler.onExitProgram();
                     System.exit(0);
                     break;
@@ -40,6 +43,7 @@ public class MainScreenDesktop
                         "Choose the desired option:\n" +
                         "1- Nutritionist Page\n" +
                         "2- Patient Page\n" +
+                        "3- Admin Page\n" +
                         "3- End Program\n" +
                         "Your option: "
                     );
