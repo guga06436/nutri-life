@@ -34,7 +34,7 @@ public class PatientPersistence implements Persistence<Patient>{
 	}
 	
 	@Override
-	public boolean insert(Patient p) throws InfraException {
+	public boolean insert(Patient patient) throws InfraException {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 
@@ -42,25 +42,28 @@ public class PatientPersistence implements Persistence<Patient>{
 			ps = conn.prepareStatement("INSERT INTO Patient(patient_name, age, cpf, height, weight, "+ 
 															"username, patient_password) VALUES(?,?,?,?,?,?,?)");
 
-			ps.setString(1, p.getName());
-			ps.setInt(2, p.getAge());
-			ps.setString(3, p.getCpf());
-			ps.setFloat(4, p.getHeight());
-			ps.setFloat(5, p.getWeight());
-			ps.setString(6, p.getUsername());
-			ps.setString(7, p.getPassword());
+			ps.setString(1, patient.getName());
+			ps.setInt(2, patient.getAge());
+			ps.setString(3, patient.getCpf());
+			ps.setFloat(4, patient.getHeight());
+			ps.setFloat(5, patient.getWeight());
+			ps.setString(6, patient.getUsername());
+			ps.setString(7, patient.getPassword());
 
 			rowsAffected = ps.executeUpdate();
-
-			if(rowsAffected > 0) {
-				return true;
-			}
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to create a patient.");
 		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to insert a patient: null argument in method call");
+		}
 		finally {
 			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
 		}
 		
 		return false;
@@ -96,29 +99,32 @@ public class PatientPersistence implements Persistence<Patient>{
 	public Patient retrieve(Patient patient) throws InfraException{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Patient patient = null;
+		Patient pat = null;
 		
 		try {
 			ps = conn.prepareStatement("SELECT * FROM Patient WHERE username = ? AND patient_password = ?");
 			
-			ps.setString(1, username);
-			ps.setString(2, password);
+			ps.setString(1, patient.getUsername());
+			ps.setString(2, patient.getPassword());
 			
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				patient = instantiatePatient(rs);
+				pat = instantiatePatient(rs);
 			}
 		}
 		catch(SQLException e) {
 			throw new InfraException(e.getMessage());
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to find a patient: null argument in method call");
 		}
 		finally {
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
 		
-		return patient;
+		return pat;
 	}
 
 	@Override
