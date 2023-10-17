@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import model.Nutritionist;
 import persistence.Persistence;
@@ -97,6 +98,12 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 
 	@Override
 	public Nutritionist delete(Nutritionist object) throws InfraException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Nutritionist> listAll() throws InfraException {
 		// TODO Auto-generated method stub
 		return null;
 	}
