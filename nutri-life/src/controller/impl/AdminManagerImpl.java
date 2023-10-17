@@ -13,11 +13,12 @@ import persistence.db.exception.InfraException;
 import persistence.impl.FactoryAdmin;
 
 public class AdminManagerImpl implements AdminManager {
-	private final static FactoryAdmin fa = new FactoryAdmin();
+	private static FactoryAdmin fa;
 	private static Persistence<Admin> persistence;
 
     public AdminManagerImpl() throws InfraException {
-    	persistence = fa.getPersistence();
+		fa = new FactoryAdmin();
+		persistence = fa.getPersistence();
     }
     
 	private void validateUsername(String username) throws ExceptionRegister {
