@@ -54,7 +54,7 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			throw new InfraException("Unable to create a nutritionist.");
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to find a nutritionist: null argument in method call");
+			throw new InfraException("Unable to insert nutritionist: null argument in method call");
 		}
 		finally {
 			Database.closeStatement(ps);
