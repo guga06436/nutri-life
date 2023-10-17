@@ -1,21 +1,26 @@
 package controller.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import controller.NutritionistManager;
 import controller.exceptions.ExceptionNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
+import model.MealPlan;
 import model.Nutritionist;
-import persistence.NutritionistPersistence;
+import persistence.Persistence;
 import persistence.db.exception.InfraException;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import persistence.impl.FactoryNutritionist;
+import persistence.impl.NutritionistPersistence;
 
 public class NutritionistManagerImpl implements NutritionistManager{
-	private final NutritionistPersistence np;
+	private static FactoryNutritionist fn;
+	private static Persistence<Nutritionist> persistence;
 	
 	public NutritionistManagerImpl() throws InfraException {
-		np = new NutritionistPersistence();
+		fn = new FactoryNutritionist();
+		persistence = fn.getPersistence();
 	}
 
 	@Override
@@ -26,7 +31,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 		validatePassword(password);
 
 		Nutritionist n = new Nutritionist(name, age, crn, username, password);
-		return np.add(n);
+		return persistence.insert(n);
 	}
 
 	private void validateAge(int age) throws ExceptionRegister {
@@ -83,16 +88,15 @@ public class NutritionistManagerImpl implements NutritionistManager{
 	}
 
 	@Override
-	public Nutritionist retrieve(String login, String password) throws InfraException, ExceptionNotFound, ExceptionPassword {
+	public Nutritionist retrieve(String username, String password) throws InfraException, ExceptionNotFound, ExceptionPassword {
+		Nutritionist n = new Nutritionist();
+		n.setUsername(username);
+		n.setPassword(password);
+		
+		Nutritionist nutritionist = persistence.retrieve(n);
 
-		Nutritionist n = np.retrieve(login, password);
-
-		if (n == null) {
+		if (nutritionist == null) {
 			throw new ExceptionNotFound("Nutritionist not found");
-		}
-
-		if (!n.getPassword().equals(password)) {
-			throw new ExceptionPassword("Invalid password");
 		}
 
 		return n;
