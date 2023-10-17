@@ -6,7 +6,7 @@ import model.Admin;
 import persistence.db.exception.InfraException;
 
 public interface AdminManager {
-    boolean insert(Admin n) throws InfraException;
+    boolean insert(String name, String email, String username, String password) throws InfraException;
     Admin retrieve(String username, String password) throws ExceptionNotFound, ExceptionPassword, InfraException;
     void generateReport() throws InfraException;
 }
