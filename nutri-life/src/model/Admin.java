@@ -7,6 +7,10 @@ public class Admin {
     private String email;
     private String username;
     private String password;
+    
+    public Admin() {
+    	
+    }
 
     public Admin(String name, String email, String username, String password) {
         this.name = name;
