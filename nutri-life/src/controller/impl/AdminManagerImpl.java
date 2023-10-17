@@ -1,11 +1,11 @@
 package controller.impl;
 
 import controller.AdminManager;
-import model.Admin;
-import persistence.db.exception.InfraException;
 import controller.exceptions.ExceptionNotFound;
 import controller.exceptions.ExceptionPassword;
-import persistence.AdminPersistence;
+import model.Admin;
+import persistence.db.exception.InfraException;
+import persistence.impl.AdminPersistence;
 
 public class AdminManagerImpl implements AdminManager {
     private AdminPersistence ap;
@@ -20,7 +20,7 @@ public class AdminManagerImpl implements AdminManager {
     }
 
     @Override
-    public Admin retrieve(String login, String password) throws ExceptionNotFound, ExceptionPassword, InfraException {
+    public Admin retrieve(String username, String password) throws ExceptionNotFound, ExceptionPassword, InfraException {
         //return ap.retrieve(login, password);
         return null;
     }
