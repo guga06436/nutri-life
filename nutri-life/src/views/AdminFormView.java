@@ -1,7 +1,7 @@
 package views;
 
 import controller.AdminManager;
-import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionEntityNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
 import controller.impl.AdminManagerImpl;
@@ -91,7 +91,7 @@ public class AdminFormView {
             Admin loggedInAdmin = adminManager.retrieve(username, password);
             System.out.println("Login successful for administrator: " + loggedInAdmin.getName());
             //AdminActionsView adminActionsView = new AdminActionsView();
-        } catch (ExceptionPassword | ExceptionNotFound e) {
+        } catch (ExceptionPassword | ExceptionEntityNotFound e) {
             System.out.println("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
             System.out.println("Error with our database, please come again after we fix it.");

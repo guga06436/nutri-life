@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import controller.PatientManager;
-import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionEntityNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
 import model.Patient;
@@ -89,7 +89,7 @@ public class PatientManagerImpl implements PatientManager{
 	}
 
 	@Override
-	public Patient retrieve(String username, String password) throws InfraException, ExceptionNotFound, ExceptionPassword {
+	public Patient retrieve(String username, String password) throws InfraException, ExceptionEntityNotFound, ExceptionPassword {
 		Patient p = new Patient();
 		
 		p.setUsername(username);
@@ -98,7 +98,7 @@ public class PatientManagerImpl implements PatientManager{
 		Patient patient = persistence.retrieve(p);
 
 		if (patient == null) {
-			throw new ExceptionNotFound("Nutritionist not found");
+			throw new ExceptionEntityNotFound("Nutritionist not found");
 		}
 
 		return p;
