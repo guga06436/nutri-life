@@ -1,7 +1,9 @@
-package model.reports;
-import handlers.OptionHandler;
+package model;
 
 import java.util.List;
+
+import handlers.OptionHandler;
+import model.IReportable;
 
 public class PDFReport extends Report
 {

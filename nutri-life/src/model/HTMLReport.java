@@ -1,7 +1,8 @@
-package model.reports;
-import handlers.OptionHandler;
+package model;
 
 import java.util.List;
+
+import handlers.OptionHandler;
 
 public class HTMLReport extends Report
 {
