@@ -4,10 +4,13 @@ import persistence.Factory;
 import persistence.db.exception.InfraException;
 
 public class FactoryMealPlan implements Factory<MealPlanPersistence>{
-
-	@Override
-	public MealPlanPersistence getPersistence() throws InfraException {
-		return new MealPlanPersistence();
+	private static MealPlanPersistence mpp = null;
+	
+	public FactoryMealPlan() throws InfraException {
+		mpp = new MealPlanPersistence();
 	}
-
+	
+	public MealPlanPersistence getPersistence() throws InfraException {
+		return mpp;
+	}
 }
