@@ -1,4 +1,4 @@
-package views;
+/*package views;
 
 import controller.exceptions.ExceptionMealPlan;
 import handlers.OptionHandler;
@@ -109,4 +109,4 @@ public class MealPlanView {
             }
         }
     }
-}
+}*/
