@@ -4,15 +4,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import controller.NutritionistManager;
-import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionEntityNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
-import model.MealPlan;
 import model.Nutritionist;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryNutritionist;
-import persistence.impl.NutritionistPersistence;
 
 public class NutritionistManagerImpl implements NutritionistManager{
 	private static FactoryNutritionist fn;
@@ -88,7 +86,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 	}
 
 	@Override
-	public Nutritionist retrieve(String username, String password) throws InfraException, ExceptionNotFound, ExceptionPassword {
+	public Nutritionist retrieve(String username, String password) throws InfraException, ExceptionEntityNotFound, ExceptionPassword {
 		Nutritionist n = new Nutritionist();
 		n.setUsername(username);
 		n.setPassword(password);
@@ -96,7 +94,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 		Nutritionist nutritionist = persistence.retrieve(n);
 
 		if (nutritionist == null) {
-			throw new ExceptionNotFound("Nutritionist not found");
+			throw new ExceptionEntityNotFound("Nutritionist not found");
 		}
 
 		return n;

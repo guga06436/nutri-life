@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import controller.AdminManager;
-import controller.exceptions.ExceptionNotFound;
+import controller.exceptions.ExceptionEntityNotFound;
 import controller.exceptions.ExceptionPassword;
 import controller.exceptions.ExceptionRegister;
 import model.Admin;
@@ -71,7 +71,7 @@ public class AdminManagerImpl implements AdminManager {
     }
 
     @Override
-    public Admin retrieve(String username, String password) throws ExceptionNotFound, ExceptionPassword, InfraException {
+    public Admin retrieve(String username, String password) throws ExceptionEntityNotFound, ExceptionPassword, InfraException {
     	Admin admin = new Admin();
     	admin.setUsername(username);
     	admin.setPassword(password);
@@ -79,7 +79,7 @@ public class AdminManagerImpl implements AdminManager {
         Admin aux = persistence.retrieve(admin);
         
         if(aux == null) {
-        	throw new ExceptionNotFound("Admin not found");
+        	throw new ExceptionEntityNotFound("Admin not found");
         }
         
         return aux;
