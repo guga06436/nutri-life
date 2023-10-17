@@ -30,7 +30,7 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 	}	
 	
 	@Override
-	public boolean insert(Nutritionist n) throws InfraException {
+	public boolean insert(Nutritionist nutritionist) throws InfraException {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 
@@ -38,11 +38,11 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			ps = conn.prepareStatement("INSERT INTO Nutritionist(nutritionist_name, age, crn, username, nutritionist_password)" + 
 															" VALUES(?,?,?,?,?)");
 
-			ps.setString(1, n.getName());
-			ps.setInt(2, n.getAge());
-			ps.setString(3, n.getCrn());
-			ps.setString(4, n.getUsername());
-			ps.setString(5, n.getPassword());
+			ps.setString(1, nutritionist.getName());
+			ps.setInt(2, nutritionist.getAge());
+			ps.setString(3, nutritionist.getCrn());
+			ps.setString(4, nutritionist.getUsername());
+			ps.setString(5, nutritionist.getPassword());
 
 			rowsAffected = ps.executeUpdate();
 
@@ -52,6 +52,9 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to create a nutritionist.");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to find a nutritionist: null argument in method call");
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -64,30 +67,33 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 	public Nutritionist retrieve(Nutritionist nutritionist) throws InfraException{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Nutritionist nutricionist = null;
+		Nutritionist nutri = null;
 		
 		try {
 			ps = conn.prepareStatement("SELECT * FROM Nutritionist WHERE username = ? AND "
 															+	"nutritionist_password = ?");
 			
-			ps.setString(1, username);
-			ps.setString(2, password);
+			ps.setString(1, nutritionist.getUsername());
+			ps.setString(2, nutritionist.getPassword());
 			
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				nutricionist = instantiateNutritionist(rs);
+				nutri = instantiateNutritionist(rs);
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException(e.getMessage()); // Change Exception
+			throw new InfraException("Unable to retrieve a nutritionist"); // Change Exception
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to find a nutritionist: null argument in method call");
 		}
 		finally {
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
 		
-		return nutricionist;
+		return nutri;
 	}
 
 	@Override
