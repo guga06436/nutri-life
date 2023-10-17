@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Patient;
+import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
-public class PatientPersistence {
+public class PatientPersistence implements Persistence<Patient>{
 	private static Connection conn;
 	
 	public PatientPersistence() throws InfraException{
@@ -32,7 +33,8 @@ public class PatientPersistence {
 		return p;
 	}
 	
-	public boolean add(Patient p) throws InfraException {
+	@Override
+	public boolean insert(Patient p) throws InfraException {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 
@@ -89,7 +91,8 @@ public class PatientPersistence {
 		return patients;
 	}
 	
-	public Patient retrieve(String username, String password) throws InfraException{
+	@Override
+	public Patient retrieve(Patient patient) throws InfraException{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Patient patient = null;
@@ -115,5 +118,17 @@ public class PatientPersistence {
 		}
 		
 		return patient;
+	}
+
+	@Override
+	public boolean update(Patient object) throws InfraException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Patient delete(Patient object) throws InfraException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

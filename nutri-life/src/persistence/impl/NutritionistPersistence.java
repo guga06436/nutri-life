@@ -5,10 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import model.Nutritionist;
+import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
-public class NutritionistPersistence {
+public class NutritionistPersistence implements Persistence<Nutritionist>{
 	private static Connection conn;
 	
 	public NutritionistPersistence() throws InfraException {
@@ -27,7 +28,8 @@ public class NutritionistPersistence {
 		return nutritionist;
 	}	
 	
-	public boolean add(Nutritionist n) throws InfraException {
+	@Override
+	public boolean insert(Nutritionist n) throws InfraException {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 
@@ -57,7 +59,8 @@ public class NutritionistPersistence {
 		return false;
 	}
 	
-	public Nutritionist retrieve(String username, String password) throws InfraException{
+	@Override
+	public Nutritionist retrieve(Nutritionist nutritionist) throws InfraException{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Nutritionist nutricionist = null;
@@ -84,5 +87,17 @@ public class NutritionistPersistence {
 		}
 		
 		return nutricionist;
+	}
+
+	@Override
+	public boolean update(Nutritionist object) throws InfraException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Nutritionist delete(Nutritionist object) throws InfraException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
