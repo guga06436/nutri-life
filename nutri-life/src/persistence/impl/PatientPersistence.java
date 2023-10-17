@@ -66,6 +66,7 @@ public class PatientPersistence implements Persistence<Patient>{
 		return false;
 	}
 	
+	@Override
 	public List<Patient> listAll() throws InfraException{
 		List<Patient> patients = new ArrayList<>();
 		Statement st = null;
