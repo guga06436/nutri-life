@@ -10,8 +10,11 @@ import model.Admin;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryAdmin;
+import service.LogService;
+import service.impl.LogAdapter;
 
 public class AdminManagerImpl implements AdminManager {
+	private static final LogService log = new LogAdapter();
 	private static FactoryAdmin fa;
 	private static Persistence<Admin> persistence;
 
@@ -21,6 +24,7 @@ public class AdminManagerImpl implements AdminManager {
 			persistence = fa.getPersistence();
     	}
     	catch(InfraException e) {
+    		log.logException(e);
     		throw e;
     	}
     }
@@ -66,26 +70,46 @@ public class AdminManagerImpl implements AdminManager {
 	}
 
     @Override
-	public boolean insert(String name, String email, String username, String password) throws InfraException, RegisterException {
-		validateUsername(username);
-		validatePassword(password);
-		
-		Admin admin = new Admin(name, email, username, password);
-		return persistence.insert(admin);
+	public boolean insert(String name, String email, String username, String password) throws RegisterException, InfraException {
+		try {
+			validateUsername(username);
+			validatePassword(password);
+			
+			Admin admin = new Admin(name, email, username, password);
+			
+			return persistence.insert(admin);
+		} catch (RegisterException e) {
+			log.logException(e);
+			throw e;
+		}
+		catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
     }
 
     @Override
-    public Admin retrieve(String username, String password) throws EntityNotFoundException, InfraException {
+    public Admin retrieve(String username, String password) throws EntityNotFoundException, InfraException{
     	Admin admin = new Admin();
     	admin.setUsername(username);
     	admin.setPassword(password);
     	
-        Admin aux = persistence.retrieve(admin);
-        
-        if(aux == null) {
-        	throw new EntityNotFoundException("Admin not found");
-        }
-        
+    	Admin aux = null;
+    	
+    	try {
+			aux = persistence.retrieve(admin);
+			
+	        if(aux == null) {
+	        	String message = "Admin not found";
+	        	
+	        	log.logDebug(message + ": [username: " + username + "] [password: " + password + "]");
+	        	throw new EntityNotFoundException(message);
+	        }
+		} catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
+
         return aux;
     }
 
