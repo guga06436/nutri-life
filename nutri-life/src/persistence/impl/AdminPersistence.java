@@ -111,8 +111,33 @@ public class AdminPersistence implements Persistence<Admin>{
 
 	@Override
 	public int retrieveId(Admin object) throws InfraException {
-		// TODO Auto-generated method stub
-		return 0;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int adminId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT admin_id FROM SystemAdministrator WHERE admin_name = ? AND username = ?");
+			
+			ps.setString(1, object.getName());
+			ps.setString(2, object.getUsername());
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				adminId = rs.getInt(1);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve admin ID");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve admin ID: null argument in method call");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+	
+		return adminId;
 	}
 
 }
