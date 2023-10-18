@@ -11,25 +11,43 @@ import model.Patient;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryPatient;
+import service.LogService;
+import service.impl.LogAdapter;
 
 public class PatientManagerImpl implements PatientManager{
+	private static final LogService log = new LogAdapter();
 	private static FactoryPatient fp;
 	private static Persistence<Patient> persistence;
 	
 	public PatientManagerImpl() throws InfraException {
-		fp = new FactoryPatient();
-		persistence = fp.getPersistence();
+		try {
+			fp = new FactoryPatient();
+			persistence = fp.getPersistence();
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 
 	@Override
 	public boolean add(String username , String password, String name, String cpf, int age, float height, float weight) throws InfraException, RegisterException {
-
-		validateUsername(username);
-		validatePassword(password);
-		validateAge(age);
-
-		Patient p = new Patient(username, password, name, cpf, age, height, weight);
-		return persistence.insert(p);
+		try {
+			validateUsername(username);
+			validatePassword(password);
+			validateAge(age);
+	
+			Patient p = new Patient(username, password, name, cpf, age, height, weight);
+			return persistence.insert(p);
+		}
+		catch(RegisterException e) {
+			log.logException(e);
+			throw e;
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 
 	private void validateUsername(String username) throws RegisterException {
@@ -80,10 +98,16 @@ public class PatientManagerImpl implements PatientManager{
 
 	@Override
 	public void listAll() throws InfraException {
-		List<Patient> patients = persistence.listAll();
-		
-		for(Patient p : patients) {
-			System.out.println(p);
+		try {
+			List<Patient> patients = persistence.listAll();
+			
+			for(Patient p : patients) {
+				System.out.println(p);
+			}
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
 		}
 	}
 
@@ -91,15 +115,24 @@ public class PatientManagerImpl implements PatientManager{
 	public Patient retrieve(String username, String password) throws InfraException, EntityNotFoundException {
 		Patient p = new Patient();
 		
-		p.setUsername(username);
-		p.setPassword(password);
-		
-		Patient patient = persistence.retrieve(p);
-
-		if (patient == null) {
-			throw new EntityNotFoundException("Nutritionist not found");
+		try {
+			p.setUsername(username);
+			p.setPassword(password);
+			
+			Patient patient = persistence.retrieve(p);
+	
+			if (patient == null) {
+				String message = "Nutritionist not found";
+				
+				log.logDebug(message + " [username: " + username + "] [password: " + password + "]");
+				throw new EntityNotFoundException(message);
+			}
+	
+			return p;
 		}
-
-		return p;
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 }
