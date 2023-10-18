@@ -4,9 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import controller.AdminManager;
-import controller.exceptions.ExceptionEntityNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
 import model.Admin;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
@@ -17,23 +16,28 @@ public class AdminManagerImpl implements AdminManager {
 	private static Persistence<Admin> persistence;
 
     public AdminManagerImpl() throws InfraException {
-		fa = new FactoryAdmin();
-		persistence = fa.getPersistence();
+    	try {
+			fa = new FactoryAdmin();
+			persistence = fa.getPersistence();
+    	}
+    	catch(InfraException e) {
+    		throw e;
+    	}
     }
     
-	private void validateUsername(String username) throws ExceptionRegister {
+	private void validateUsername(String username) throws RegisterException {
 		if (username.length() > 12) {
-			throw new ExceptionRegister("Login must not be longer than 12 characters.");
+			throw new RegisterException("Login must not be longer than 12 characters.");
 		} else if (username.isEmpty()) {
-			throw new ExceptionRegister("Login must not be empty.");
+			throw new RegisterException("Login must not be empty.");
 		} else if (username.matches(".*\\d.*")) {
-			throw new ExceptionRegister("Login must not contain numbers.");
+			throw new RegisterException("Login must not contain numbers.");
 		}
 	}
 
-	private void validatePassword(String password) throws ExceptionRegister {
+	private void validatePassword(String password) throws RegisterException {
 		if (password.length() < 8 || password.length() > 20) {
-			throw new ExceptionRegister("Password length must be between 8 and 20.");
+			throw new RegisterException("Password length must be between 8 and 20.");
 		}
 
 		Pattern pattern = Pattern.compile("\\d");
@@ -45,7 +49,7 @@ public class AdminManagerImpl implements AdminManager {
 		}
 
 		if (count < 2) {
-			throw new ExceptionRegister("The password must have at least 2 numbers.");
+			throw new RegisterException("The password must have at least 2 numbers.");
 		}
 
 		boolean containsLetters = false;
@@ -57,12 +61,12 @@ public class AdminManagerImpl implements AdminManager {
 		}
 
 		if (!containsLetters) {
-			throw new ExceptionRegister("The password must have at least 1 letter.");
+			throw new RegisterException("The password must have at least 1 letter.");
 		}
 	}
 
     @Override
-	public boolean insert(String name, String email, String username, String password) throws InfraException, ExceptionRegister {
+	public boolean insert(String name, String email, String username, String password) throws InfraException, RegisterException {
 		validateUsername(username);
 		validatePassword(password);
 		
@@ -71,7 +75,7 @@ public class AdminManagerImpl implements AdminManager {
     }
 
     @Override
-    public Admin retrieve(String username, String password) throws ExceptionEntityNotFound, ExceptionPassword, InfraException {
+    public Admin retrieve(String username, String password) throws EntityNotFoundException, InfraException {
     	Admin admin = new Admin();
     	admin.setUsername(username);
     	admin.setPassword(password);
@@ -79,7 +83,7 @@ public class AdminManagerImpl implements AdminManager {
         Admin aux = persistence.retrieve(admin);
         
         if(aux == null) {
-        	throw new ExceptionEntityNotFound("Admin not found");
+        	throw new EntityNotFoundException("Admin not found");
         }
         
         return aux;

@@ -5,9 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import controller.PatientManager;
-import controller.exceptions.ExceptionEntityNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
 import model.Patient;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
@@ -23,7 +22,7 @@ public class PatientManagerImpl implements PatientManager{
 	}
 
 	@Override
-	public boolean add(String username , String password, String name, String cpf, int age, float height, float weight) throws InfraException, ExceptionRegister {
+	public boolean add(String username , String password, String name, String cpf, int age, float height, float weight) throws InfraException, RegisterException {
 
 		validateUsername(username);
 		validatePassword(password);
@@ -33,19 +32,19 @@ public class PatientManagerImpl implements PatientManager{
 		return persistence.insert(p);
 	}
 
-	private void validateUsername(String username) throws ExceptionRegister {
+	private void validateUsername(String username) throws RegisterException {
 		if (username.length() > 12) {
-			throw new ExceptionRegister("Login must not be longer than 12 characters.");
+			throw new RegisterException("Login must not be longer than 12 characters.");
 		} else if (username.isEmpty()) {
-			throw new ExceptionRegister("Login must not be empty.");
+			throw new RegisterException("Login must not be empty.");
 		} else if (username.matches(".*\\d.*")) {
-			throw new ExceptionRegister("Login must not contain numbers.");
+			throw new RegisterException("Login must not contain numbers.");
 		}
 	}
 
-	private void validatePassword(String password) throws ExceptionRegister {
+	private void validatePassword(String password) throws RegisterException {
 		if (password.length() < 8 || password.length() > 20) {
-			throw new ExceptionRegister("Password length must be between 8 and 20.");
+			throw new RegisterException("Password length must be between 8 and 20.");
 		}
 
 		Pattern pattern = Pattern.compile("\\d");
@@ -57,7 +56,7 @@ public class PatientManagerImpl implements PatientManager{
 		}
 
 		if (count < 2) {
-			throw new ExceptionRegister("The password must have at least 2 numbers.");
+			throw new RegisterException("The password must have at least 2 numbers.");
 		}
 
 		boolean containsLetters = false;
@@ -69,13 +68,13 @@ public class PatientManagerImpl implements PatientManager{
 		}
 
 		if (!containsLetters) {
-			throw new ExceptionRegister("The password must have at least 1 letter.");
+			throw new RegisterException("The password must have at least 1 letter.");
 		}
 	}
 
-	private void validateAge(int age) throws ExceptionRegister {
+	private void validateAge(int age) throws RegisterException {
 		if (age < 18) {
-			throw new ExceptionRegister("Age must be equal or above 18.");
+			throw new RegisterException("Age must be equal or above 18.");
 		}
 	}
 
@@ -89,7 +88,7 @@ public class PatientManagerImpl implements PatientManager{
 	}
 
 	@Override
-	public Patient retrieve(String username, String password) throws InfraException, ExceptionEntityNotFound, ExceptionPassword {
+	public Patient retrieve(String username, String password) throws InfraException, EntityNotFoundException {
 		Patient p = new Patient();
 		
 		p.setUsername(username);
@@ -98,7 +97,7 @@ public class PatientManagerImpl implements PatientManager{
 		Patient patient = persistence.retrieve(p);
 
 		if (patient == null) {
-			throw new ExceptionEntityNotFound("Nutritionist not found");
+			throw new EntityNotFoundException("Nutritionist not found");
 		}
 
 		return p;
