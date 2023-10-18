@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Admin;
@@ -85,6 +86,7 @@ public class AdminPersistence implements Persistence<Admin>{
 			throw new InfraException("Unable to retrieve an admin: null argument in method call");
 		}
 		finally {
+			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
 		
@@ -105,8 +107,32 @@ public class AdminPersistence implements Persistence<Admin>{
 
 	@Override
 	public List<Admin> listAll() throws InfraException {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Admin> allAdmin = null;
+		
+		try {
+			allAdmin = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT * FROM SystemAdministrator");
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				allAdmin.add(instantiateAdmin(rs));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve all administrators");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve all administrators: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return allAdmin;
 	}
 
 	@Override
@@ -134,6 +160,7 @@ public class AdminPersistence implements Persistence<Admin>{
 			throw new InfraException("Unable to retrieve admin ID: null argument in method call");
 		}
 		finally {
+			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
 	
