@@ -4,7 +4,6 @@ import lombok.Data;
 @Data
 public class Admin {
     private String name;
-    private String email;
     private String username;
     private String password;
     
@@ -12,9 +11,8 @@ public class Admin {
     	
     }
 
-    public Admin(String name, String email, String username, String password) {
+    public Admin(String name, String username, String password) {
         this.name = name;
-        this.email = email;
         this.username = username;
         this.password = password;
     }
@@ -48,7 +46,6 @@ public class Admin {
     public String toString() {
         return "Admin{" +
                 "name='" + name + '\'' +
-                ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
