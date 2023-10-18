@@ -15,15 +15,24 @@ import model.Recipe;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryMealPlan;
+import service.LogService;
+import service.impl.LogAdapter;
 
 @Data
 public class MealPlanManagerImpl implements MealPlanManager{
+	private static final LogService log = new LogAdapter();
 	private static FactoryMealPlan fmp;
 	private static Persistence<MealPlan> persistence;
 	
 	public MealPlanManagerImpl() throws InfraException {
-		fmp = new FactoryMealPlan();
-		persistence = fmp.getPersistence();
+		try {
+			fmp = new FactoryMealPlan();
+			persistence = fmp.getPersistence();
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 	
 	@Override
