@@ -10,25 +10,43 @@ import model.Nutritionist;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryNutritionist;
+import service.LogService;
+import service.impl.LogAdapter;
 
 public class NutritionistManagerImpl implements NutritionistManager{
+	private static final LogService log = new LogAdapter();
 	private static FactoryNutritionist fn;
 	private static Persistence<Nutritionist> persistence;
 	
 	public NutritionistManagerImpl() throws InfraException {
-		fn = new FactoryNutritionist();
-		persistence = fn.getPersistence();
+		try {
+			fn = new FactoryNutritionist();
+			persistence = fn.getPersistence();
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 
 	@Override
-	public boolean add(String name, int age, String crn, String username, String password) throws InfraException, RegisterException {
-
-		validateAge(age);
-		validateUsername(username);
-		validatePassword(password);
-
-		Nutritionist n = new Nutritionist(name, age, crn, username, password);
-		return persistence.insert(n);
+	public boolean add(String name, int age, String crn, String username, String password) throws RegisterException, InfraException {
+		try {
+			validateAge(age);
+			validateUsername(username);
+			validatePassword(password);
+	
+			Nutritionist n = new Nutritionist(name, age, crn, username, password);
+			return persistence.insert(n);
+		}
+		catch(RegisterException e) {
+			log.logException(e);
+			throw e;
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 
 	private void validateAge(int age) throws RegisterException {
@@ -86,16 +104,25 @@ public class NutritionistManagerImpl implements NutritionistManager{
 
 	@Override
 	public Nutritionist retrieve(String username, String password) throws InfraException, EntityNotFoundException {
-		Nutritionist n = new Nutritionist();
-		n.setUsername(username);
-		n.setPassword(password);
-		
-		Nutritionist nutritionist = persistence.retrieve(n);
-
-		if (nutritionist == null) {
-			throw new EntityNotFoundException("Nutritionist not found");
+		try {
+			Nutritionist n = new Nutritionist();
+			n.setUsername(username);
+			n.setPassword(password);
+			
+			Nutritionist nutritionist = persistence.retrieve(n);
+	
+			if (nutritionist == null) {
+				String message = "Nutritionist not found";
+				
+				log.logDebug(message + "[username: " + username + "] [password: " + password + "]");
+				throw new EntityNotFoundException(message);
+			}
+	
+			return n;
 		}
-
-		return n;
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 }
