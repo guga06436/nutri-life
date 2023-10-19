@@ -114,10 +114,10 @@ public class PatientPersistence implements Persistence<Patient>{
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException(e.getMessage());
+			throw new InfraException("Unable to retrieve a patient");
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to find a patient: null argument in method call");
+			throw new InfraException("Unable to retrieve a patient: null argument in method call");
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -128,13 +128,50 @@ public class PatientPersistence implements Persistence<Patient>{
 	}
 
 	@Override
-	public boolean update(Patient object) throws InfraException {
+	public int retrieveId(Patient object) throws InfraException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int patientId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT patient_id FROM Patient WHERE cpf = ?");
+			
+			ps.setString(1, object.getCpf());
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				patientId = rs.getInt(1);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve patient ID");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve patient ID: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return patientId;
+	}
+
+	@Override
+	public boolean update(Patient object, int id) throws InfraException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public Patient delete(Patient object) throws InfraException {
+	public boolean delete(Patient object) throws InfraException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Patient retrieveById(int id) throws InfraException {
 		// TODO Auto-generated method stub
 		return null;
 	}
