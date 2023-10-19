@@ -5,11 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import model.Food;
 import model.Recipe;
+import persistence.Factory;
 import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
@@ -114,16 +116,87 @@ public class RecipePersistence implements Persistence<Recipe>{
 			throw new InfraException("Unable to insert a recipe: null argument in method call");
 		}
 		finally {
+			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
 		
 		return confirmationStoring;
 	}
+	
+	private Map<Food, Map<Float, String>> retrievePortionedIngredients(int recipeId) throws InfraException, NullPointerException{
+		FactoryFood factory = new FactoryFood();
+		FoodPersistence foodPersistence = null;
+		Map<Food, Map<Float, String>> portionedIngredients = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {			
+			portionedIngredients = new HashMap<>();
+			
+			ps = conn.prepareStatement("SELECT * FROM FoodRecipe WHERE recipe_id = ?");
+			
+			ps.setInt(1, recipeId);
+			
+			rs = ps.executeQuery();
+			
+			foodPersistence = factory.getPersistence();
+			Map<Float, String> portioning = null;
+			while(rs.next()) {
+				portioning = new HashMap<>();
+				int foodId = rs.getInt("food_id");
+				
+				Food food = foodPersistence.retrieveById(foodId);
+
+				if(food == null) {
+					throw new NullPointerException();
+				}
+				
+				portioning.put(rs.getFloat("portion"), rs.getString("portion_unit"));
+				
+				portionedIngredients.put(food, portioning);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve recipe information");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return portionedIngredients;
+	}
 
 	@Override
 	public Recipe retrieve(Recipe object) throws InfraException {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int recipeId = -1;
+		
+		try {
+			recipeId = retrieveId(object);
+			
+			if(recipeId != -1) {
+				ps = conn.prepareStatement("SELECT * FROM Recipe WHERE recipe_id = ?");
+				
+				ps.setInt(1, recipeId);
+				
+				rs = ps.executeQuery();
+				
+				while(rs.next()) {
+					Recipe recipe = new Recipe();
+					
+					recipe.setName(rs.getString("recipe_name"));
+					
+				}
+			}
+		}
+		catch() {
+			
+		}
+		finally {
+			
+		}
 	}
 
 	@Override
@@ -173,5 +246,11 @@ public class RecipePersistence implements Persistence<Recipe>{
 		}
 		
 		return recipeId;
+	}
+
+	@Override
+	public Recipe retrieveById(int id) throws InfraException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
