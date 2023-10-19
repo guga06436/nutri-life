@@ -32,6 +32,14 @@ CREATE TABLE Nutritionist(
     PRIMARY KEY(nutritionist_id)
 );
 
+CREATE TABLE PatientNutritionist(
+	patient_id 					INT NOT NULL,
+    nutritionist_id 			INT,
+    
+    PRIMARY KEY(patient_id),
+    FOREIGN KEY(patient_id) REFERENCES Patient(patient_id)
+);
+
 CREATE TABLE SystemAdministrator(
 	admin_id					INT AUTO_INCREMENT,
     admin_name					VARCHAR(50) NOT NULL,
