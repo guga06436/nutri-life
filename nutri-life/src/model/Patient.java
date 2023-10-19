@@ -19,7 +19,7 @@ public class Patient {
 		
 	}
 
-	public Patient(String username , String password, String name, String cpf, int age, float height, float weight, MealPlan mealPlan){
+	public Patient(String username , String password, String name, String cpf, int age, float height, float weight){
 		this.username = username;
 		this.password = password;
 		this.name = name;
