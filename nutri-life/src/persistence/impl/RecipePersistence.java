@@ -5,13 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import model.Food;
 import model.Recipe;
-import persistence.Factory;
 import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
@@ -166,12 +166,17 @@ public class RecipePersistence implements Persistence<Recipe>{
 		
 		return portionedIngredients;
 	}
+	
+	private List<String> sequenceSteps(String steps){
+		return Arrays.asList(steps.split("\\?"));
+	}
 
 	@Override
 	public Recipe retrieve(Recipe object) throws InfraException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int recipeId = -1;
+		Recipe recipe = null;
 		
 		try {
 			recipeId = retrieveId(object);
@@ -184,19 +189,26 @@ public class RecipePersistence implements Persistence<Recipe>{
 				rs = ps.executeQuery();
 				
 				while(rs.next()) {
-					Recipe recipe = new Recipe();
+					recipe = new Recipe();
 					
 					recipe.setName(rs.getString("recipe_name"));
-					
+					recipe.setPortionedIngredients(retrievePortionedIngredients(recipeId));
+					recipe.setSequenceSteps(sequenceSteps(rs.getString("sequence_steps")));
 				}
 			}
 		}
-		catch() {
-			
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve a recipe");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to insert a recipe: null argument in method call");
 		}
 		finally {
-			
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
 		}
+		
+		return recipe;
 	}
 
 	@Override
