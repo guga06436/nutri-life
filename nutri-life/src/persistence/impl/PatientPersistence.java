@@ -172,7 +172,32 @@ public class PatientPersistence implements Persistence<Patient>{
 
 	@Override
 	public Patient retrieveById(int id) throws InfraException {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Patient patient = null;
+		
+		try {
+			ps = conn.prepareStatement("SELECT * FROM Patient WHERE patient_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				patient = instantiatePatient(rs);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve a patient");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve a patient: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return patient;
 	}
 }
