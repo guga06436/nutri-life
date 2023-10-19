@@ -39,7 +39,8 @@ public class MealManagerImpl implements MealManager {
         try {
             validateTime(hour, minutes, seconds);
 
-            Time time = new Time(hour, minutes, seconds);
+
+            String time = hour + ":" + minutes + ":" + seconds;
             Meal m = new Meal(name, portionedIngredients, time);
             return persistence.insert(m);
         } catch(RegisterException e) {
@@ -113,7 +114,6 @@ public class MealManagerImpl implements MealManager {
         if (mealPlan.getRecipeList() == null || mealPlan.getRecipeList().size() > 0) {
             throw new IllegalArgumentException("Meal plan recipe list cannot be empty");
         }
-
         // You can add more attribute checks here as needed.
     }
 
