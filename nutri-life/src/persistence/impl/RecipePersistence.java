@@ -262,7 +262,36 @@ public class RecipePersistence implements Persistence<Recipe>{
 
 	@Override
 	public Recipe retrieveById(int id) throws InfraException {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Recipe recipe = null;
+		
+		try {
+			ps = conn.prepareStatement("SELECT * FROM Recipe WHERE recipe_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				recipe = new Recipe();
+				
+				recipe.setName(rs.getString("recipe_name"));
+				recipe.setPortionedIngredients(retrievePortionedIngredients(id));
+				recipe.setSequenceSteps(sequenceSteps(rs.getString("sequence_steps")));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve a recipe");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to insert a recipe: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return recipe;
 	}
 }
