@@ -218,10 +218,43 @@ public class RecipePersistence implements Persistence<Recipe>{
 		return false;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
-	public Recipe delete(Recipe object) throws InfraException {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean delete(Recipe object) throws InfraException {
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			ps = conn.prepareStatement("DELETE FROM Recipe WHERE recipe_id = ?");
+			
+			ps.setInt(1, retrieveId(object));
+			
+			rowsAffected = ps.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				rowsAffected = -1;
+				ps = conn.prepareStatement("DELETE FROM FoodRecipe WHERE recipe_id = ?");
+				
+				ps.setInt(1, retrieveId(object));
+				
+				rowsAffected = ps.executeUpdate();
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Cannot delete a recipe");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Cannot delete a recipe: null argument in method call");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	@Override
