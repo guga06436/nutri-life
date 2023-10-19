@@ -166,7 +166,36 @@ public class PatientPersistence implements Persistence<Patient>{
 
 	@Override
 	public boolean delete(Patient object) throws InfraException {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			int patientId = retrieveId(object);
+			
+			if(patientId < 0) {
+				throw new InfraException("Unable to delete a patient from the database");
+			}
+			
+			ps = conn.prepareStatement("DELETE FROM Patient WHERE patient_id = ?");
+			
+			ps.setInt(1, patientId);
+			
+			rowsAffected = ps.executeUpdate();
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to delete a patient from the database");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to delete a patient from the database: null argument in method call");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
