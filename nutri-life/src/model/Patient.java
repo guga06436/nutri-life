@@ -12,11 +12,14 @@ public class Patient {
 	private float height;
 	private float weight;
 	
+	private MealPlan mealPlan;
+	private Nutritionist nutritionist;
+	
 	public Patient() {
 		
 	}
 
-	public Patient(String username , String password, String name, String cpf, int age, float height, float weight){
+	public Patient(String username , String password, String name, String cpf, int age, float height, float weight, MealPlan mealPlan){
 		this.username = username;
 		this.password = password;
 		this.name = name;
