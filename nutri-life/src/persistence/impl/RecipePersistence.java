@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -225,8 +226,35 @@ public class RecipePersistence implements Persistence<Recipe>{
 
 	@Override
 	public List<Recipe> listAll() throws InfraException {
-		// TODO Auto-generated method stub
-		return null;
+		Statement st = null;
+		ResultSet rs = null;
+		List<Recipe> allRecipes = null;
+		
+		try {
+			st = conn.createStatement();
+			
+			rs = st.executeQuery("SELECT * FROM Recipe");
+			
+			allRecipes = new ArrayList<>();
+			while(rs.next()) {
+				Recipe recipe = new Recipe();		
+				
+				recipe.setName(rs.getString("recipe_name"));
+				recipe.setPortionedIngredients(retrievePortionedIngredients(retrieveId(recipe)));
+				recipe.setSequenceSteps(sequenceSteps(rs.getString("sequence_steps")));
+				
+				allRecipes.add(recipe);
+			}			
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve all recipes");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(st);
+		}
+		
+		return allRecipes;
 	}
 
 	@Override
