@@ -202,7 +202,7 @@ public class RecipePersistence implements Persistence<Recipe>{
 			throw new InfraException("Unable to retrieve a recipe");
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to insert a recipe: null argument in method call");
+			throw new InfraException("Unable to retrieve a recipe: null argument in method call");
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -211,10 +211,91 @@ public class RecipePersistence implements Persistence<Recipe>{
 		
 		return recipe;
 	}
+	
+	private boolean updatePortionedIngredients(Map<Food, Map<Float, String>> portionedIngredients, int recipeId) throws InfraException{
+		FactoryFood factory = new FactoryFood();
+		FoodPersistence foodPersistence = null;
+		PreparedStatement ps = null;
+		boolean updateConfirmation = false;
+		int rowsAffected = -1;
+		
+		try {						
+			foodPersistence = factory.getPersistence();
+			
+			for(Food food : portionedIngredients.keySet()) {
+				
+				if(foodPersistence.update(food)) {
+					ps = conn.prepareStatement("UPDATE FoodRecipe SET portion = ?, portion_unit = ? WHERE recipe_id = ?");
+					
+					for(float portion : portionedIngredients.get(food).keySet()) {
+						ps.setFloat(1, portion);
+						ps.setString(2, portionedIngredients.get(food).get(portion));
+						ps.setInt(3, recipeId);
+					}
+					
+					rowsAffected = ps.executeUpdate();
+					
+					if(rowsAffected < 0) {
+						throw new InfraException("Unable to update recipe information");
+					}
+				}
+			}
+			
+			updateConfirmation = true;
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to update recipe information");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		return updateConfirmation;
+	}
 
 	@Override
-	public boolean update(Recipe object) throws InfraException {
-		// TODO Auto-generated method stub
+	public boolean update(Recipe object, int id) throws InfraException {
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		boolean updateConfirmation = true;
+		
+		try {
+			Recipe recipe = retrieveById(id);
+			
+			if(recipe == null) {
+				insert(object);
+			}
+			
+			recipe.setName(object.getName());
+			recipe.setPortionedIngredients(object.getPortionedIngredients());
+			recipe.setSequenceSteps(object.getSequenceSteps());
+			
+			ps = conn.prepareStatement("UPDATE Recipe SET recipe_name = ?, sequence_steps = ? WHERE recipe_id = ?");
+			
+			ps.setString(1, object.getName());
+			ps.setString(2, sequenceSteps(object.getSequenceSteps()));
+			ps.setInt(3, id);
+			
+			rowsAffected = ps.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				updateConfirmation = updatePortionedIngredients(object.getPortionedIngredients(), id);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to update a recipe");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to update a recipe: null argument in method call");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(updateConfirmation) {
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -346,7 +427,7 @@ public class RecipePersistence implements Persistence<Recipe>{
 			throw new InfraException("Unable to retrieve a recipe");
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to insert a recipe: null argument in method call");
+			throw new InfraException("Unable to retrieve a recipe: null argument in method call");
 		}
 		finally {
 			Database.closeResultSet(rs);
