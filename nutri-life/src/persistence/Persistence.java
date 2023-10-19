@@ -10,4 +10,6 @@ public interface Persistence<T> {
 	boolean update(T object) throws InfraException;
 	T delete(T object) throws InfraException;
 	List<T> listAll() throws InfraException;
+	int retrieveId(T object) throws InfraException;
+	T retrieveById(int id) throws InfraException;
 }
