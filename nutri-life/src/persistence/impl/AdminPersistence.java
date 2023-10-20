@@ -94,18 +94,6 @@ public class AdminPersistence implements Persistence<Admin>{
 	}
 
 	@Override
-	public boolean update(Admin object) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Admin delete(Admin object) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public List<Admin> listAll() throws InfraException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -123,9 +111,6 @@ public class AdminPersistence implements Persistence<Admin>{
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to retrieve all administrators");
-		}
-		catch(NullPointerException e) {
-			throw new InfraException("Unable to retrieve all administrators: null argument in method call");
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -167,4 +152,92 @@ public class AdminPersistence implements Persistence<Admin>{
 		return adminId;
 	}
 
+	@Override
+	public boolean update(Admin object, int id) throws InfraException {
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			ps = conn.prepareStatement("UPDATE SystemAdministrator SET admin_name = ?, username = ?, admin_password = ? "
+										+ "WHERE admin_id = ?");
+			
+			ps.setString(1, object.getName());
+			ps.setString(2, object.getUsername());
+			ps.setString(3,  object.getPassword());
+			ps.setInt(4, id);
+			
+			rowsAffected = ps.executeUpdate();
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to update system administrator information");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to update system administrator information: null argument in method call");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean delete(Admin object) throws InfraException {
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			ps = conn.prepareStatement("DELETE FROM SystemAdministrator WHERE username = ? AND admin_password = ?");
+			ps.setString(1, object.getUsername());
+			ps.setString(2, object.getPassword());
+			
+			rowsAffected = ps.executeUpdate();
+		}
+		catch(SQLException e) {
+			throw new InfraException("Cannot delete a system administrator");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Cannot delete a system administrator: null argument in method call");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public Admin retrieveById(int id) throws InfraException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Admin admin = null;
+		
+		try {
+			ps = conn.prepareStatement("SELECT * FROM SystemAdministrator WHERE admin_id = ?");
+			ps.setInt(1, id);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				admin = instantiateAdmin(rs);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve a system administrator");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return admin;
+	}
 }
