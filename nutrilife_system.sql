@@ -124,3 +124,24 @@ CREATE TABLE RecipeMealPlan(
     FOREIGN KEY(recipe_id) REFERENCES Recipe(recipe_id),
     FOREIGN KEY(mealplan_id) REFERENCES MealPlan(mealplan_id)
 );
+
+CREATE TABLE Meal(
+	meal_id 					INT AUTO_INCREMENT,
+    meal_name 					VARCHAR(15) NOT NULL,
+    meal_time 					VARCHAR(10) NOT NULL,
+    
+    PRIMARY KEY(meal_id)
+);
+
+CREATE TABLE FoodMeal(
+    food_id 					INT NOT NULL,
+    portion						DECIMAL NOT NULL,
+    portion_unit				VARCHAR(20) NOT NULL,
+    meal_id						INT NOT NULL,
+    
+	CONSTRAINT food_meal_non_negative_portion CHECK (portion > 0.0),
+    
+    PRIMARY KEY(food_id, meal_id),
+    FOREIGN KEY(food_id) REFERENCES Food(food_id),
+    FOREIGN KEY(meal_id) REFERENCES Meal(meal_id)
+);
