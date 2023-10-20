@@ -12,6 +12,10 @@ public class Meal {
 	
 	private MealPlan mealPlan;
 	
+	public Meal() {
+		
+	}
+	
 	public Meal(String name, String time, Map<Food, Map<Float, String>> portionedFoods, MealPlan mealPlan) {
 		this.name = name;
 		this.time = time;
