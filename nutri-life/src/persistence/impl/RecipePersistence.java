@@ -12,27 +12,28 @@ import java.util.List;
 import java.util.Map;
 
 import model.Food;
+import model.MealPlan;
 import model.Recipe;
 import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
 public class RecipePersistence implements Persistence<Recipe>{
-	private static FactoryFood factoryFood;
-	private static FoodPersistence foodPersistence;
 	private static Connection conn;
 	
 	public RecipePersistence() throws InfraException {
 		conn = Database.getConnection();
-		factoryFood = new FactoryFood();
-		foodPersistence = factoryFood.getPersistence();
 	}
 	
 	private boolean insertPortionedIngredients(Map<Food, Map<Float, String>> portionedIngredients, int recipeId) throws InfraException {
+		FactoryFood factoryFood = new FactoryFood();
+		FoodPersistence foodPersistence = null;
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 		
 		try {
+			foodPersistence = factoryFood.getPersistence();
+			
 			for(Food food : portionedIngredients.keySet()) {
 				Food aux = foodPersistence.retrieve(food);
 				
@@ -85,6 +86,8 @@ public class RecipePersistence implements Persistence<Recipe>{
 
 	@Override
 	public boolean insert(Recipe object) throws InfraException {
+		FactoryMealPlan factoryMp = new FactoryMealPlan();
+		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int rowsAffected = -1;
@@ -92,11 +95,21 @@ public class RecipePersistence implements Persistence<Recipe>{
 		boolean confirmationStoring = false;
 		
 		try {
-			ps = conn.prepareStatement("INSERT INTO Recipe(recipe_name, sequence_steps) VALUES " + 
+			mpPersistence = factoryMp.getPersistence();
+			
+			int mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
+			
+			if(mealPlanId < 0) {
+				mpPersistence.insert(object.getMealPlan());
+				mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
+			}
+			
+			ps = conn.prepareStatement("INSERT INTO Recipe(recipe_name, sequence_steps, mealplan_id) VALUES " + 
 										"(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setString(1, object.getName());
 			ps.setString(2, sequenceSteps(object.getSequenceSteps()));
+			ps.setInt(3, mealPlanId);
 			
 			rowsAffected = ps.executeUpdate();
 			
@@ -174,6 +187,8 @@ public class RecipePersistence implements Persistence<Recipe>{
 
 	@Override
 	public Recipe retrieve(Recipe object) throws InfraException {
+		FactoryMealPlan factoryMp = new FactoryMealPlan();
+		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int recipeId = -1;
@@ -189,12 +204,21 @@ public class RecipePersistence implements Persistence<Recipe>{
 				
 				rs = ps.executeQuery();
 				
+				mpPersistence = factoryMp.getPersistence();
 				while(rs.next()) {
 					recipe = new Recipe();
 					
 					recipe.setName(rs.getString("recipe_name"));
 					recipe.setPortionedIngredients(retrievePortionedIngredients(recipeId));
 					recipe.setSequenceSteps(sequenceSteps(rs.getString("sequence_steps")));
+					
+					MealPlan mealPlan = mpPersistence.retrieveById(rs.getInt("mealplan_id"));
+					
+					if(mealPlan == null) {
+						throw new InfraException("Unable to retrieve a recipe");
+					}
+					
+					recipe.setMealPlan(mealPlan);
 				}
 			}
 		}
@@ -223,8 +247,13 @@ public class RecipePersistence implements Persistence<Recipe>{
 			foodPersistence = factory.getPersistence();
 			
 			for(Food food : portionedIngredients.keySet()) {
+				int foodId = foodPersistence.retrieveId(food);
 				
-				if(foodPersistence.update(food)) {
+				if(foodId < 0) {
+					throw new InfraException("Unable to retrieve recipe information");
+				}
+				
+				if(foodPersistence.update(food, foodId)) {
 					ps = conn.prepareStatement("UPDATE FoodRecipe SET portion = ?, portion_unit = ? WHERE recipe_id = ?");
 					
 					for(float portion : portionedIngredients.get(food).keySet()) {
@@ -263,23 +292,24 @@ public class RecipePersistence implements Persistence<Recipe>{
 			Recipe recipe = retrieveById(id);
 			
 			if(recipe == null) {
-				insert(object);
+				updateConfirmation = insert(object);
 			}
-			
-			recipe.setName(object.getName());
-			recipe.setPortionedIngredients(object.getPortionedIngredients());
-			recipe.setSequenceSteps(object.getSequenceSteps());
-			
-			ps = conn.prepareStatement("UPDATE Recipe SET recipe_name = ?, sequence_steps = ? WHERE recipe_id = ?");
-			
-			ps.setString(1, object.getName());
-			ps.setString(2, sequenceSteps(object.getSequenceSteps()));
-			ps.setInt(3, id);
-			
-			rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				updateConfirmation = updatePortionedIngredients(object.getPortionedIngredients(), id);
+			else {
+				recipe.setName(object.getName());
+				recipe.setPortionedIngredients(object.getPortionedIngredients());
+				recipe.setSequenceSteps(object.getSequenceSteps());
+				
+				ps = conn.prepareStatement("UPDATE Recipe SET recipe_name = ?, sequence_steps = ? WHERE recipe_id = ?");
+				
+				ps.setString(1, object.getName());
+				ps.setString(2, sequenceSteps(object.getSequenceSteps()));
+				ps.setInt(3, id);
+				
+				rowsAffected = ps.executeUpdate();
+				
+				if(rowsAffected > 0) {
+					updateConfirmation = updatePortionedIngredients(object.getPortionedIngredients(), id);
+				}
 			}
 		}
 		catch(SQLException e) {
@@ -302,13 +332,24 @@ public class RecipePersistence implements Persistence<Recipe>{
 	@SuppressWarnings("resource")
 	@Override
 	public boolean delete(Recipe object) throws InfraException {
+		FactoryMealPlan factoryMp = new FactoryMealPlan();
+		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 		
 		try {
-			ps = conn.prepareStatement("DELETE FROM Recipe WHERE recipe_id = ?");
+			mpPersistence = factoryMp.getPersistence();
+			
+			int mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
+			
+			if(mealPlanId < 0) {
+				throw new InfraException("Unable to delete a recipe from database");
+			}
+			
+			ps = conn.prepareStatement("DELETE FROM Recipe WHERE recipe_id = ? AND mealplan_id = ?");
 			
 			ps.setInt(1, retrieveId(object));
+			ps.setInt(2, mealPlanId);
 			
 			rowsAffected = ps.executeUpdate();
 			
@@ -340,6 +381,8 @@ public class RecipePersistence implements Persistence<Recipe>{
 
 	@Override
 	public List<Recipe> listAll() throws InfraException {
+		FactoryMealPlan factoryMp = new FactoryMealPlan();
+		MealPlanPersistence mpPersistence = null;
 		Statement st = null;
 		ResultSet rs = null;
 		List<Recipe> allRecipes = null;
@@ -350,12 +393,21 @@ public class RecipePersistence implements Persistence<Recipe>{
 			rs = st.executeQuery("SELECT * FROM Recipe");
 			
 			allRecipes = new ArrayList<>();
+			mpPersistence = factoryMp.getPersistence();
 			while(rs.next()) {
 				Recipe recipe = new Recipe();		
 				
 				recipe.setName(rs.getString("recipe_name"));
 				recipe.setPortionedIngredients(retrievePortionedIngredients(retrieveId(recipe)));
 				recipe.setSequenceSteps(sequenceSteps(rs.getString("sequence_steps")));
+				
+				MealPlan mealPlan = mpPersistence.retrieveById(rs.getInt("mealplan_id"));
+				
+				if(mealPlan == null) {
+					throw new InfraException("Unable to list all recipes");
+				}
+				
+				recipe.setMealPlan(mealPlan);
 				
 				allRecipes.add(recipe);
 			}			
@@ -373,14 +425,25 @@ public class RecipePersistence implements Persistence<Recipe>{
 
 	@Override
 	public int retrieveId(Recipe object) throws InfraException {
+		FactoryMealPlan factoryMp = new FactoryMealPlan();
+		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int recipeId = -1;
 		
 		try {
-			ps = conn.prepareStatement("SELECT recipe_id FROM Recipe WHERE recipe_name = ?");
+			mpPersistence = factoryMp.getPersistence();
+			
+			int mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
+			
+			if(mealPlanId < 0) {
+				throw new InfraException("Unable to retrieve the recipe");
+			}
+			
+			ps = conn.prepareStatement("SELECT recipe_id FROM Recipe WHERE recipe_name = ? AND mealplan_id");
 			
 			ps.setString(1, object.getName());
+			ps.setInt(2, mealPlanId);
 			
 			rs = ps.executeQuery();
 			
@@ -404,6 +467,8 @@ public class RecipePersistence implements Persistence<Recipe>{
 
 	@Override
 	public Recipe retrieveById(int id) throws InfraException {
+		FactoryMealPlan factoryMp = new FactoryMealPlan();
+		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Recipe recipe = null;
@@ -415,12 +480,21 @@ public class RecipePersistence implements Persistence<Recipe>{
 			
 			rs = ps.executeQuery();
 			
+			mpPersistence = factoryMp.getPersistence();
 			while(rs.next()) {
 				recipe = new Recipe();
 				
 				recipe.setName(rs.getString("recipe_name"));
 				recipe.setPortionedIngredients(retrievePortionedIngredients(id));
 				recipe.setSequenceSteps(sequenceSteps(rs.getString("sequence_steps")));
+				
+				MealPlan mealPlan = mpPersistence.retrieveById(rs.getInt("mealplan_id"));
+				
+				if(mealPlan == null) {
+					throw new InfraException("Unable to retrieve the recipe");
+				}
+				
+				recipe.setMealPlan(mealPlan);
 			}
 		}
 		catch(SQLException e) {
