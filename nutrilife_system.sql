@@ -112,9 +112,11 @@ CREATE TABLE MealPlan(
     date_creation				TIMESTAMP NOT NULL,
     goals 						MEDIUMTEXT NOT NULL,
     patient_id 					INT NOT NULL,
+    nutritionist_id 			INT NOT NULL,
     
     PRIMARY KEY(mealplan_id),
-    FOREIGN KEY(patient_id) REFERENCES Patient(patient_id)
+    FOREIGN KEY(patient_id) REFERENCES Patient(patient_id),
+    FOREIGN KEY(nutritionist) REFERENCES Nutritionist(nutritionist_id)
 );
 
 CREATE TABLE RecipeMealPlan(
