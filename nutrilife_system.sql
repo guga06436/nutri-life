@@ -88,7 +88,6 @@ CREATE TABLE Recipe(
 	recipe_id 					INT AUTO_INCREMENT,
     recipe_name 				VARCHAR(30) NOT NULL,
     sequence_steps 				LONGTEXT NOT NULL,
-    mealplan_id					INT NOT NULL,
     
     PRIMARY KEY(recipe_id)
 );
@@ -130,7 +129,7 @@ CREATE TABLE Meal(
 	meal_id 					INT AUTO_INCREMENT,
     meal_name 					VARCHAR(15) NOT NULL,
     meal_time 					VARCHAR(10) NOT NULL,
-    mealplan_id					INT NOT NULL,
+    mealplan_id					INT AUTO_INCREMENT,
     
     PRIMARY KEY(meal_id, mealplan_id),
     FOREIGN KEY(mealplan_id) REFERENCES MealPlan(mealplan_id)
