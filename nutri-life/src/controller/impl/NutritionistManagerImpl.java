@@ -1,5 +1,6 @@
 package controller.impl;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,6 +8,7 @@ import controller.NutritionistManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import model.Nutritionist;
+import model.Patient;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryNutritionist;
@@ -36,7 +38,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			validateUsername(username);
 			validatePassword(password);
 	
-			Nutritionist n = new Nutritionist(name, age, crn, username, password);
+			Nutritionist n = new Nutritionist(name, age, crn, username, password, new ArrayList<Patient>());
 			return persistence.insert(n);
 		}
 		catch(RegisterException e) {
