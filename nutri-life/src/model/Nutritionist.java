@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 import lombok.Data;
 @Data
 public class Nutritionist {
@@ -8,18 +10,21 @@ public class Nutritionist {
 	private String crn;
 	private String username;
 	private String password;
+	private List<Patient> patients;
 
 	public Nutritionist() {
 
 	}
 	
-	public Nutritionist(String name, int age, String crn, String username, String password) {
+	public Nutritionist(String name, int age, String crn, String username, String password, List<Patient> patients) {
 		this.name = name;
 		this.age = age;
 		this.crn = crn;
 		this.username = username;
 		this.password = password;
+		this.patients = patients;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

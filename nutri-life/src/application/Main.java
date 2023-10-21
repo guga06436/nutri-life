@@ -1,3 +1,5 @@
+package application;
+
 import views.MainScreenDesktop;
 
 public class Main

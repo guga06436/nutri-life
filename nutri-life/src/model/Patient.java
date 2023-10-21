@@ -12,6 +12,9 @@ public class Patient {
 	private float height;
 	private float weight;
 	
+	private MealPlan mealPlan;
+	private Nutritionist nutritionist;
+	
 	public Patient() {
 		
 	}

@@ -1,20 +1,21 @@
 package views;
 
-import controller.exceptions.ExceptionLogin;
-import controller.exceptions.ExceptionRegister;
+import controller.PatientManager;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
+import controller.impl.PatientManagerImpl;
 import handlers.OptionHandler;
 import model.Patient;
 import persistence.db.exception.InfraException;
-import service.Facade;
 
 public class PatientFormView {
 
-    private static Facade manager;
+    private static PatientManager manager;
 
     /*lida com registro dos pacientes*/
     public PatientFormView(){
         try {
-            this.manager = Facade.getInstance();
+            manager = new PatientManagerImpl();
 		} catch (InfraException e) {
             System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later."); // Melhorar tratamento
             System.exit(1);
@@ -58,12 +59,12 @@ public class PatientFormView {
         String password = OptionHandler.readLineInput();
 
         try {
-            Patient loggedInPatient = manager.retrievePatient(login, password);
+            Patient loggedInPatient = manager.retrieve(login, password);
             System.out.println("Login successful for patient" + loggedInPatient.getName());
+        } catch (EntityNotFoundException e) {
+            System.out.println("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
-            System.out.println(e.getMessage()); // Melhorar Tratamento
-        } catch (ExceptionLogin e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error with our database, please come again after we fix it.");
         }
     }
 
@@ -94,18 +95,17 @@ public class PatientFormView {
 
         boolean registerSuccess = false;
 		try {
-			registerSuccess = manager.addPatient(username , password, name, cpf, age, height, weight);
+			registerSuccess = manager.add(username , password, name, cpf, age, height, weight);
 		} catch (InfraException e) {
 			System.out.println("Error with our database detected.");
-		} catch (ExceptionRegister e) {
+		} catch (RegisterException e) {
             System.out.println(e.getMessage());
         }
 
-        /*Condição de Sucesso*/
         if (registerSuccess) {
-            System.out.println("Success" + name);
+            System.out.println("Registration successful for patient " + name);
         } else {
-            System.out.println("Failed");
+            System.out.println("Registration failed for patient.");
         }
     }
 

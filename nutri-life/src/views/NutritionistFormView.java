@@ -1,22 +1,22 @@
 package views;
 
-import controller.exceptions.ExceptionLogin;
-import controller.exceptions.ExceptionRegister;
+import controller.NutritionistManager;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
+import controller.impl.NutritionistManagerImpl;
 import handlers.OptionHandler;
 import model.Nutritionist;
 import persistence.db.exception.InfraException;
-import service.Facade;
 
 public class NutritionistFormView {
 
-    private Facade manager;
+    private NutritionistManager manager;
 
     public NutritionistFormView() {
         try {
-			this.manager = Facade.getInstance();
+			manager = new NutritionistManagerImpl();
 		} catch (InfraException e) {
 			System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later."); // Melhorar tratamento
-            e.printStackTrace();
             System.exit(1);
 		}
     }
@@ -69,15 +69,15 @@ public class NutritionistFormView {
 
         boolean registerSuccess = false;
 		try {
-			registerSuccess = this.manager.addNutritionist(name, age, crn, username, password);
+			registerSuccess = this.manager.add(name, age, crn, username, password);
 		} catch (InfraException e) {
 			System.out.println(e.getMessage()); // Melhorar Tratamento
-		} catch (ExceptionRegister e) {
+		} catch (RegisterException e) {
             System.out.println(e.getMessage());
         }
 
         if (registerSuccess) {
-            System.out.println("Registration successful for nutritionist.");
+            System.out.println("Registration successful for nutritionist " + name);
         } else {
             System.out.println("Registration failed for nutritionist.");
         }
@@ -92,9 +92,9 @@ public class NutritionistFormView {
         String password = OptionHandler.readStringInput();
 
         try {
-            Nutritionist loggedInNutritionist = this.manager.retrieveNutritionist(username, password);
+            Nutritionist loggedInNutritionist = this.manager.retrieve(username, password);
             System.out.println("Login successful for nutritionist: " + loggedInNutritionist.getName());
-        } catch (ExceptionLogin e) {
+        } catch (EntityNotFoundException e) {
             System.out.println("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
             System.out.println("Error with our database, please come again after we fix it.");

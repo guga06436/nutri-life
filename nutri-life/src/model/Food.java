@@ -14,11 +14,15 @@ public class Food {
 	private float carbohydrates;
 	private float lipids;
 	private float fibers;
-	private Map<String, Float> vitamins;
+	private Map<String, Map<Float, String>> vitamins;
 	private float portion;
 	private String portionUnit;
 	
-	public Food(String name, FoodGroup foodGroup, float calories, float proteins, float carbohydrates, float lipids, float fibers, Map<String, Float> vitamins, float portion, String portionUnit) {
+	public Food() {
+		
+	}
+	
+	public Food(String name, FoodGroup foodGroup, float calories, float proteins, float carbohydrates, float lipids, float fibers, Map<String, Map<Float, String>> vitamins, float portion, String portionUnit) {
 		this.name = name;
 		this.foodGroup = foodGroup;
 		this.calories = calories;

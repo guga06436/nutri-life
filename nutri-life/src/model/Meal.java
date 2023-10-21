@@ -1,37 +1,26 @@
 package model;
 
-import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
 
 @Data
-public class Recipe {
+public class Meal {
 	private String name;
-	private Map<Food, Map<Float, String>> portionedIngredients;
-	private List<String> sequenceSteps;
+	private String time;
+	private Map<Food, Map<Float, String>> portionedFoods;
 	
 	private MealPlan mealPlan;
 	
-	public Recipe() {
+	public Meal() {
 		
 	}
 	
-	public Recipe(String name, Map<Food, Map<Float, String>> portionedIngredients, List<String> sequenceSteps, MealPlan mealPlan) {
+	public Meal(String name, String time, Map<Food, Map<Float, String>> portionedFoods, MealPlan mealPlan) {
 		this.name = name;
-		this.portionedIngredients = portionedIngredients;
-		this.sequenceSteps = sequenceSteps;
+		this.time = time;
+		this.portionedFoods = portionedFoods;
 		this.mealPlan = mealPlan;
-	}
-	
-	// Adds a new ingredient to the recipe
-	public void addNewIngredient(Food food, Map<Float, String> portionedFood) {
-		portionedIngredients.put(food,  portionedFood);
-	}
-	
-	// Adds a new step to the preparation sequence
-	public void addNewStep(String step) {
-		sequenceSteps.add(step);
 	}
 
 	@Override
@@ -42,7 +31,7 @@ public class Recipe {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Recipe other = (Recipe) obj;
+		Meal other = (Meal) obj;
 		if (mealPlan == null) {
 			if (other.mealPlan != null)
 				return false;
@@ -67,6 +56,19 @@ public class Recipe {
 	
 	@Override
 	public String toString() {
-		return name + " (Patient: " + mealPlan.getPatient() + ")";
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(name + ": \n\n");
+		
+		for(Food food : portionedFoods.keySet()) {
+			sb.append("(" + time + ") " + food + " - ");
+			
+			for(float portion : portionedFoods.get(food).keySet()) {
+				sb.append(portion);
+				sb.append(portionedFoods.get(food).get(portion));
+			}
+		}
+		
+		return sb.toString();
 	}
 }

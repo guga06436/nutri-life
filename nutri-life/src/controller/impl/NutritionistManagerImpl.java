@@ -1,59 +1,82 @@
 package controller.impl;
 
-import controller.NutritionistManager;
-import controller.exceptions.ExceptionNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
-import model.Nutritionist;
-import persistence.NutritionistPersistence;
-import persistence.db.exception.InfraException;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import controller.NutritionistManager;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
+import model.Nutritionist;
+import model.Patient;
+import persistence.Persistence;
+import persistence.db.exception.InfraException;
+import persistence.impl.FactoryNutritionist;
+import service.LogService;
+import service.impl.LogAdapter;
+
 public class NutritionistManagerImpl implements NutritionistManager{
-	private final NutritionistPersistence np;
+	private static final LogService log = new LogAdapter();
+	private static FactoryNutritionist fn;
+	private static Persistence<Nutritionist> persistence;
 	
 	public NutritionistManagerImpl() throws InfraException {
-		np = new NutritionistPersistence();
+		try {
+			fn = new FactoryNutritionist();
+			persistence = fn.getPersistence();
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 
 	@Override
-	public boolean add(String name, int age, String crn, String username, String password) throws InfraException, ExceptionRegister {
-
-		validateAge(age);
-		validateUsername(username);
-		validatePassword(password);
-
-		Nutritionist n = new Nutritionist(name, age, crn, username, password);
-		return np.add(n);
+	public boolean add(String name, int age, String crn, String username, String password) throws RegisterException, InfraException {
+		try {
+			validateAge(age);
+			validateUsername(username);
+			validatePassword(password);
+	
+			Nutritionist n = new Nutritionist(name, age, crn, username, password, new ArrayList<Patient>());
+			return persistence.insert(n);
+		}
+		catch(RegisterException e) {
+			log.logException(e);
+			throw e;
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 
-	private void validateAge(int age) throws ExceptionRegister {
+	private void validateAge(int age) throws RegisterException {
 		if (age < 18) {
-			throw new ExceptionRegister("Age must be equal to or above 18.");
+			throw new RegisterException("Age must be equal to or above 18.");
 		}
 	}
 
-	private void validateUsername(String username) throws ExceptionRegister {
+	private void validateUsername(String username) throws RegisterException {
 		if (username.isEmpty()) {
-			throw new ExceptionRegister("Login must not be empty.");
+			throw new RegisterException("Login must not be empty.");
 		} else if (username.length() > 12 || username.matches(".*\\d.*")) {
-			throw new ExceptionRegister("Login must not be longer than 12 characters or contain numbers.");
+			throw new RegisterException("Login must not be longer than 12 characters or contain numbers.");
 		}
 	}
 
-	private void validatePassword(String password) throws ExceptionRegister {
+	private void validatePassword(String password) throws RegisterException {
 		if (password.length() < 8 || password.length() > 20) {
-			throw new ExceptionRegister("Password length must be between 8 and 20.");
+			throw new RegisterException("Password length must be between 8 and 20.");
 		}
 
 		if (password.chars().filter(Character::isDigit).count() < 2) {
-			throw new ExceptionRegister("The password must have at least 2 numbers.");
+			throw new RegisterException("The password must have at least 2 numbers.");
 		}
 
 		if (password.chars().noneMatch(Character::isLetter)) {
-			throw new ExceptionRegister("The password must have at least 1 letter.");
+			throw new RegisterException("The password must have at least 1 letter.");
 		}
 
 		Pattern pattern = Pattern.compile("\\d");
@@ -65,7 +88,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 		}
 
 		if(count < 2) {
-			throw new ExceptionRegister("The password must have at least 2 numbers");
+			throw new RegisterException("The password must have at least 2 numbers");
 		}
 
 		boolean containsLetters = false;
@@ -78,23 +101,37 @@ public class NutritionistManagerImpl implements NutritionistManager{
 		}
 
 		if (!containsLetters) {
-			throw new ExceptionRegister("The password must have at least 1 letter");
+			throw new RegisterException("The password must have at least 1 letter");
 		}
 	}
 
 	@Override
-	public Nutritionist retrieve(String login, String password) throws InfraException, ExceptionNotFound, ExceptionPassword {
-
-		Nutritionist n = np.retrieve(login, password);
-
-		if (n == null) {
-			throw new ExceptionNotFound("Nutritionist not found");
+	public Nutritionist retrieve(String username, String password) throws InfraException, EntityNotFoundException {
+		try {
+			Nutritionist n = new Nutritionist();
+			n.setUsername(username);
+			n.setPassword(password);
+			
+			Nutritionist nutritionist = persistence.retrieve(n);
+	
+			if (nutritionist == null) {
+				String message = "Nutritionist not found";
+				
+				log.logDebug(message + "[username: " + username + "] [password: " + password + "]");
+				throw new EntityNotFoundException(message);
+			}
+	
+			return n;
 		}
-
-		if (!n.getPassword().equals(password)) {
-			throw new ExceptionPassword("Invalid password");
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
 		}
+	}
 
-		return n;
+	@Override
+	public List<Nutritionist> listAll() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
