@@ -70,12 +70,12 @@ public class AdminManagerImpl implements AdminManager {
 	}
 
     @Override
-	public boolean insert(String name, String email, String username, String password) throws RegisterException, InfraException {
+	public boolean insert(String name, String username, String password) throws RegisterException, InfraException {
 		try {
 			validateUsername(username);
 			validatePassword(password);
 			
-			Admin admin = new Admin(name, email, username, password);
+			Admin admin = new Admin(name, username, password);
 			
 			return persistence.insert(admin);
 		} catch (RegisterException e) {
