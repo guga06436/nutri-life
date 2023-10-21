@@ -1,6 +1,7 @@
 package controller.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,5 +127,11 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			log.logException(e);
 			throw e;
 		}
+	}
+
+	@Override
+	public List<Nutritionist> listAll() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
