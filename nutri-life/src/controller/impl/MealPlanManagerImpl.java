@@ -9,7 +9,9 @@ import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
 import lombok.Data;
+import model.Meal;
 import model.MealPlan;
+import model.Nutritionist;
 import model.Patient;
 import model.Recipe;
 import persistence.Persistence;
@@ -36,8 +38,8 @@ public class MealPlanManagerImpl implements MealPlanManager{
 	}
 	
 	@Override
-	public void createMealPlan(String planName, String goals, List<Recipe> recipeList) throws RegisterException {
-		MealPlan mp = new MealPlan(planName, new Date(), goals, recipeList);
+	public void createMealPlan(String planName, String goals,List<Meal> meals,  List<Recipe> recipeList, Patient patient, Nutritionist nutritionist) throws RegisterException {
+		MealPlan mp = new MealPlan(planName, new Date(), goals, meals, recipeList, patient, nutritionist);
 	}
 
 	@Override
