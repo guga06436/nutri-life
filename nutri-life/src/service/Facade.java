@@ -1,14 +1,18 @@
 package service;
 
-import model.*;
-import controller.*;
-import controller.impl.*;
-import controller.exceptions.*;
-import model.reports.IReportable;
-import model.reports.Report;
-import persistence.db.exception.InfraException;
-
 import java.util.List;
+
+import controller.AdminManager;
+import controller.MealPlanManager;
+import controller.NutritionistManager;
+import controller.PatientManager;
+import controller.impl.AdminManagerImpl;
+import controller.impl.MealPlanManagerImpl;
+import controller.impl.NutritionistManagerImpl;
+import controller.impl.PatientManagerImpl;
+import model.Report;
+import model.reports.IReportable;
+import persistence.db.exception.InfraException;
 
 public class Facade
 {
