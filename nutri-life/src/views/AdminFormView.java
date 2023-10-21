@@ -1,12 +1,11 @@
 package views;
 
 import controller.AdminManager;
-import controller.exceptions.ExceptionEntityNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
 import controller.impl.AdminManagerImpl;
-import model.Admin;
 import handlers.OptionHandler;
+import model.Admin;
 import persistence.db.exception.InfraException;
 
 public class AdminFormView {
@@ -69,7 +68,7 @@ public class AdminFormView {
             registerSuccess = adminManager.insert(name, email, username, password);
         } catch (InfraException e) {
             System.out.println("Error with our database detected.");
-        } catch (ExceptionRegister e) {
+        } catch (RegisterException e) {
             System.out.println(e.getMessage());
         }
 
@@ -91,7 +90,7 @@ public class AdminFormView {
             Admin loggedInAdmin = adminManager.retrieve(username, password);
             System.out.println("Login successful for administrator: " + loggedInAdmin.getName());
             //AdminActionsView adminActionsView = new AdminActionsView();
-        } catch (ExceptionPassword | ExceptionEntityNotFound e) {
+        } catch (EntityNotFoundException e) {
             System.out.println("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
             System.out.println("Error with our database, please come again after we fix it.");
