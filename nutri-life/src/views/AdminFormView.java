@@ -54,9 +54,6 @@ public class AdminFormView {
         System.out.print("Name: ");
         String name = OptionHandler.readLineInput();
 
-        System.out.print("Email: ");
-        String email = OptionHandler.readStringInput();
-
         System.out.print("Username: ");
         String username = OptionHandler.readStringInput();
 
@@ -65,7 +62,7 @@ public class AdminFormView {
 
         boolean registerSuccess = false;
         try {
-            registerSuccess = adminManager.insert(name, email, username, password);
+            registerSuccess = adminManager.insert(name, username, password);
         } catch (InfraException e) {
             System.out.println("Error with our database detected.");
         } catch (RegisterException e) {
