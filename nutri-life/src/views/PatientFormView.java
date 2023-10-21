@@ -1,9 +1,8 @@
 package views;
 
 import controller.PatientManager;
-import controller.exceptions.ExceptionEntityNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
 import controller.impl.PatientManagerImpl;
 import handlers.OptionHandler;
 import model.Patient;
@@ -62,7 +61,7 @@ public class PatientFormView {
         try {
             Patient loggedInPatient = manager.retrieve(login, password);
             System.out.println("Login successful for patient" + loggedInPatient.getName());
-        } catch (ExceptionEntityNotFound | ExceptionPassword e) {
+        } catch (EntityNotFoundException e) {
             System.out.println("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
             System.out.println("Error with our database, please come again after we fix it.");
@@ -99,7 +98,7 @@ public class PatientFormView {
 			registerSuccess = manager.add(username , password, name, cpf, age, height, weight);
 		} catch (InfraException e) {
 			System.out.println("Error with our database detected.");
-		} catch (ExceptionRegister e) {
+		} catch (RegisterException e) {
             System.out.println(e.getMessage());
         }
 
