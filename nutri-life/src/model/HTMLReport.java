@@ -3,6 +3,7 @@ package model;
 import java.util.List;
 
 import handlers.OptionHandler;
+import model.reports.IReportable;
 
 public class HTMLReport extends Report
 {

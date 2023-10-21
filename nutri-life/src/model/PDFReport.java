@@ -3,7 +3,7 @@ package model;
 import java.util.List;
 
 import handlers.OptionHandler;
-import model.IReportable;
+import model.reports.IReportable;
 
 public class PDFReport extends Report
 {
