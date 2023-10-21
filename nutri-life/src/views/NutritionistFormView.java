@@ -1,9 +1,8 @@
 package views;
 
 import controller.NutritionistManager;
-import controller.exceptions.ExceptionEntityNotFound;
-import controller.exceptions.ExceptionPassword;
-import controller.exceptions.ExceptionRegister;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
 import controller.impl.NutritionistManagerImpl;
 import handlers.OptionHandler;
 import model.Nutritionist;
@@ -73,7 +72,7 @@ public class NutritionistFormView {
 			registerSuccess = this.manager.add(name, age, crn, username, password);
 		} catch (InfraException e) {
 			System.out.println(e.getMessage()); // Melhorar Tratamento
-		} catch (ExceptionRegister e) {
+		} catch (RegisterException e) {
             System.out.println(e.getMessage());
         }
 
@@ -95,7 +94,7 @@ public class NutritionistFormView {
         try {
             Nutritionist loggedInNutritionist = this.manager.retrieve(username, password);
             System.out.println("Login successful for nutritionist: " + loggedInNutritionist.getName());
-        } catch (ExceptionEntityNotFound | ExceptionPassword e) {
+        } catch (EntityNotFoundException e) {
             System.out.println("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
             System.out.println("Error with our database, please come again after we fix it.");
