@@ -15,7 +15,7 @@ import java.util.Map;
 
 public interface MealManager {
 
-    boolean insert(String name, Map<Food, Map<Float, String>> portionedIngredients, int hour, int minutes, int seconds) throws InfraException, RegisterException;
+    boolean insert(String name, Map<Food, Map<Float, String>> portionedIngredients, int hour, int minutes, int seconds, MealPlan mealPlan) throws InfraException, RegisterException;
 
     void updateMeal(Meal meal, String name, Map<Food, Map<Float, String>> portionedIngredients, int hour, int minutes, int seconds) throws UpdateException;
 
