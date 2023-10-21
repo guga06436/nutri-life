@@ -1,11 +1,15 @@
 package controller.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import controller.MealManager;
 import controller.exceptions.DeleteException;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
 import model.Food;
+import model.Meal;
 import model.MealPlan;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
@@ -13,17 +17,13 @@ import persistence.impl.FactoryMeal;
 import service.LogService;
 import service.impl.LogAdapter;
 
-import java.sql.Time;
-import java.util.List;
-import java.util.Map;
-
 public class MealManagerImpl implements MealManager {
 
     private static final LogService log = new LogAdapter();
     private static FactoryMeal mf;
     private static Persistence<Meal> persistence;
 
-    public MealManagerImpl() {
+    public MealManagerImpl() throws InfraException {
         try {
             mf = new FactoryMeal();
             persistence = mf.getPersistence();
@@ -35,13 +35,13 @@ public class MealManagerImpl implements MealManager {
     }
 
     @Override
-    public boolean insert(String name, Map<Food, Map<Float, String>> portionedIngredients, int hour, int minutes, int seconds) throws InfraException, RegisterException {
+    public boolean insert(String name, Map<Food, Map<Float, String>> portionedIngredients, int hour, int minutes, int seconds, MealPlan mealPlan) throws InfraException, RegisterException {
         try {
             validateTime(hour, minutes, seconds);
 
 
             String time = hour + ":" + minutes + ":" + seconds;
-            Meal m = new Meal(name, portionedIngredients, time);
+            Meal m = new Meal(name, time, portionedIngredients, mealPlan);
             return persistence.insert(m);
         } catch(RegisterException e) {
             log.logException(e);
@@ -96,10 +96,8 @@ public class MealManagerImpl implements MealManager {
         } catch (IllegalArgumentException e) {
             log.logException(e);
             throw e;
-        } catch (InfraException e) {
-            log.logException(e);
-            throw e;
         }
+		return null;
     }
 
     private void validateMealPlan(MealPlan mealPlan) throws IllegalArgumentException {
