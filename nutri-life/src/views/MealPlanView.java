@@ -1,7 +1,8 @@
-/*package views;
+package views;
 
 import controller.exceptions.ExceptionMealPlan;
 import handlers.OptionHandler;
+import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.db.exception.InfraException;
@@ -10,15 +11,14 @@ import service.Facade;
 public class MealPlanView {
 
     private Facade manager;
-    Patient patient;
+    private Patient patient;
 
     public MealPlanView(Patient patient) {
-        // Initialize your MealPlanManager here, for example:
         try {
             manager = Facade.getInstance();
             this.patient = patient;
         } catch (InfraException e) {
-            System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later."); // Melhorar tratamento
+            System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later.");
             System.exit(1);
         }
     }
@@ -51,7 +51,6 @@ public class MealPlanView {
     }
 
     private void viewMealPlan() {
-
         try {
             manager.viewMealPlan(patient);
         } catch (ExceptionMealPlan e) {
@@ -65,7 +64,6 @@ public class MealPlanView {
         boolean editing = true;
 
         while (editing) {
-
             try {
                 MealPlan mealplan = manager.getMealPlan(patient);
                 System.out.println("Editing Meal Plan: " + manager.getMealPlanName(mealplan));
@@ -76,7 +74,6 @@ public class MealPlanView {
                 System.out.println(e.getMessage());
             }
 
-            // Prompt the user to select an action for the recipes
             System.out.println("[1] Edit Plan Name");
             System.out.println("[2] Edit Goals");
             System.out.println("[3] Add Recipe");
@@ -90,11 +87,13 @@ public class MealPlanView {
                 case 1:
                     System.out.println("Plan Name: ");
                     String name = OptionHandler.readStringInput();
-                    manager.setMealPlanName(name);
+                    manager.setMealPlanName(name, mealplan);
+                    break;
                 case 2:
                     System.out.println("Goal: ");
                     String goal = OptionHandler.readStringInput();
-                    manager.setMealPlanGoal(goal);
+                    manager.setMealPlanGoal(goal, mealplan);
+                    break;
                 case 3:
                     addRecipe();
                     break;
@@ -102,11 +101,57 @@ public class MealPlanView {
                     removeRecipe();
                     break;
                 case 5:
-                    editing = false; // Exit the loop and go back to the main menu
+                    editing = false;
                     break;
                 default:
                     System.out.println("Invalid option");
             }
         }
     }
-}*/
+
+    private void addRecipe() {
+
+
+        System.out.println("Adding Recipe");
+        System.out.print("Recipe Name: ");
+        String recipeName = OptionHandler.readStringInput();
+
+        Recipe newRecipe = new Recipe(recipeName, ingredients, instructions);
+
+
+        manager.addRecipeToMealPlan(newRecipe, patient);
+
+        System.out.println("Recipe added to the meal plan.");
+    }
+
+    private void removeRecipe() {
+
+
+        System.out.println("Removing Recipe");
+
+        MealPlan mealPlan = manager.getMealPlan(patient);
+        List<Recipe> recipes = mealPlan.getRecipes();
+
+        if (recipes.isEmpty()) {
+            System.out.println("No recipes in the meal plan to remove.");
+            return;
+        }
+
+        System.out.println("Recipes in the meal plan:");
+        for (int i = 0; i < recipes.size(); i++) {
+            System.out.println((i + 1) + ". " + recipes.get(i).getName());
+        }
+
+        System.out.print("Enter the number of the recipe to remove: ");
+        int recipeIndex = OptionHandler.readIntegerInput();
+
+        if (recipeIndex >= 1 && recipeIndex <= recipes.size()) {
+
+            Recipe removedRecipe = recipes.remove(recipeIndex - 1);
+            manager.setRecipes(mealPlan, recipes);
+            System.out.println(removedRecipe.getName() + " removed from the meal plan.");
+        } else {
+            System.out.println("Invalid recipe selection.");
+        }
+    }
+}
