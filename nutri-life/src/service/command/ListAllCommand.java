@@ -1,6 +1,4 @@
 package service.command;
-
-import controller.MealPlanManager;
 import controller.NutritionistManager;
 import controller.PatientManager;
 import persistence.db.exception.InfraException;

@@ -16,11 +16,13 @@ import persistence.db.exception.InfraException;
 import service.command.Command;
 import service.command.GenerateReportCommand;
 import service.command.ListAllCommand;
+import service.impl.LogAdapter;
 
 // Singleton Facade que usa Command
 public class Facade
 {
     private static Facade instance = null;
+    private static final LogService log = new LogAdapter();
 
     private final AdminManager adminManager;
     private final MealPlanManager mealPlanManager;
@@ -44,7 +46,7 @@ public class Facade
         return instance;
     }
 
-    public void listAll()
+    public void listAll() throws InfraException
     {
         try
         {
@@ -53,11 +55,12 @@ public class Facade
         }
         catch (InfraException e)
         {
-            e.printStackTrace();
+            log.logException(e);
+            throw e;
         }
     }
 
-    public void generateReport(Report reportGenerator, List<IReportable> reports)
+    public void generateReport(Report reportGenerator, List<IReportable> reports) throws InfraException
     {
         try
         {
@@ -66,7 +69,8 @@ public class Facade
         }
         catch (InfraException e)
         {
-            e.printStackTrace();
+            log.logException(e);
+            throw e;
         }
     }
 }
