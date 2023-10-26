@@ -13,25 +13,28 @@ import controller.impl.PatientManagerImpl;
 import model.Report;
 import model.reports.IReportable;
 import persistence.db.exception.InfraException;
+import service.command.Command;
+import service.command.GenerateReportCommand;
+import service.command.ListAllCommand;
+import service.impl.LogAdapter;
 
+// Singleton Facade que usa Command
 public class Facade
 {
     private static Facade instance = null;
+    private static final LogService log = new LogAdapter();
 
-    private final PatientManager patientManager;
-    private final MealPlanManager mealPlanManager;
-    //private final FoodManager foodManager;
-    private final NutritionistManager nutritionistManager;
     private final AdminManager adminManager;
-    //private final RecipeManager recipeManager;
+    private final MealPlanManager mealPlanManager;
+    private final NutritionistManager nutritionistManager;
+    private final PatientManager patientManager;
 
     private Facade() throws InfraException
     {
-        patientManager = new PatientManagerImpl();
-        mealPlanManager = new MealPlanManagerImpl();
-        //foodManager = new FoodManagerImpl();
-        nutritionistManager = new NutritionistManagerImpl();
         adminManager = new AdminManagerImpl();
+        mealPlanManager = new MealPlanManagerImpl();
+        nutritionistManager = new NutritionistManagerImpl();
+        patientManager = new PatientManagerImpl();
     }
 
     public static synchronized Facade getInstance() throws InfraException
@@ -43,24 +46,31 @@ public class Facade
         return instance;
     }
 
-    public void listAll()
+    public void listAll() throws InfraException
     {
         try
         {
-            patientManager.listAll();
-            nutritionistManager.listAll();
-            //mealPlanManager.listAll();
-            //foodManager.listAll();
-            //recipeManager.listAll();
+            Command listAllCommand = new ListAllCommand(patientManager, nutritionistManager);
+            listAllCommand.execute();
         }
         catch (InfraException e)
         {
-            e.printStackTrace();
+            log.logException(e);
+            throw e;
         }
     }
 
-    public void generateReport(Report reportGenerator, List<IReportable> reports)
+    public void generateReport(Report reportGenerator, List<IReportable> reports) throws InfraException
     {
-        reportGenerator.generateReport(reports);
+        try
+        {
+            Command generateReportCommand = new GenerateReportCommand(reportGenerator, reports);
+            generateReportCommand.execute();
+        }
+        catch (InfraException e)
+        {
+            log.logException(e);
+            throw e;
+        }
     }
 }

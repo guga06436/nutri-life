@@ -121,7 +121,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 				throw new EntityNotFoundException(message);
 			}
 	
-			return n;
+			return nutritionist;
 		}
 		catch(InfraException e) {
 			log.logException(e);
