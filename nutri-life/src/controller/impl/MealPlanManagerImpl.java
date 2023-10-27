@@ -38,25 +38,25 @@ public class MealPlanManagerImpl implements MealPlanManager{
 	}
 	
 	@Override
-	public void createMealPlan(String planName, String goals,List<Meal> meals,  List<Recipe> recipeList, Patient patient, Nutritionist nutritionist) throws RegisterException {
+	public void createMealPlan(String planName, String goals,List<Meal> meals,  List<Recipe> recipeList, Patient patient, Nutritionist nutritionist) throws RegisterException, InfraException {
 		MealPlan mp = new MealPlan(planName, new Date(), goals, meals, recipeList, patient, nutritionist);
+		persistence.insert(mp);
 	}
 
 	@Override
-	public void updateMealPlan(MealPlan mealPlan, String planName, String goals, List<Recipe> recipeList) throws UpdateException {
-		// TODO Auto-generated method stub
+	public void updateMealPlan(MealPlan mealPlan, String planName, String goals, List<Meal> meals, List<Recipe> recipeList) throws UpdateException, InfraException {
+		MealPlan mp = new MealPlan(planName, mealPlan.getCreationDate(), goals, meals, recipeList, mealPlan.getPatient(), mealPlan.getNutritionist());
+		persistence.update(mp, mealPlan.hashCode());
 		
 	}
 
 	@Override
-	public void deleteMealPlan(MealPlan mealPLan) throws DeleteException {
-		// TODO Auto-generated method stub
-		
+	public void deleteMealPlan(MealPlan mealPLan) throws DeleteException, InfraException {
+		persistence.delete(mealPLan);
 	}
 
 	@Override
-	public void retrieve(Patient patient) throws EntityNotFoundException{ 
-		// TODO Auto-generated method stub
-		
+	public MealPlan retrieve(Patient patient) throws EntityNotFoundException, InfraException {
+		return persistence.retrieveById(patient.hashCode());
 	}
 }

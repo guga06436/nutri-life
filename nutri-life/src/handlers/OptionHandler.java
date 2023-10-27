@@ -1,4 +1,5 @@
 package handlers;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class OptionHandler
@@ -15,14 +16,23 @@ public class OptionHandler
         return in.nextLine();
     }
 
-    public static int readIntegerInput()
-    {
-        return in.nextInt();
+    public static int readIntegerInput() {
+        try {
+            return in.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("You must type an integer! Please try again: ");
+            return readIntegerInput();
+        }
+
     }
 
-    public static float readFloatInput()
-    {
-        return in.nextFloat();
+    public static float readFloatInput() {
+        try {
+            return in.nextFloat();
+        } catch (InputMismatchException e) {
+            System.out.println("You must type a float! Please try again: ");
+            return readFloatInput();
+        }
     }
 
     public static void showMessage(String data)
