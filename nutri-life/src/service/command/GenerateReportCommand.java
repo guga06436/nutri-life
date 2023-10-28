@@ -1,9 +1,11 @@
 package service.command;
 
+import java.util.List;
+
 import model.Report;
 import model.reports.IReportable;
 import persistence.db.exception.InfraException;
-import java.util.List;
+import service.Command;
 
 public class GenerateReportCommand implements Command
 {
