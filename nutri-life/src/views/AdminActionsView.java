@@ -3,7 +3,7 @@ package views;
 import handlers.OptionHandler;
 import model.Admin;
 import persistence.db.exception.InfraException;
-import service.Facade;
+import service.impl.Facade;
 
 public class AdminActionsView {
 
