@@ -11,6 +11,7 @@ import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.db.exception.InfraException;
+import service.status.ErrorApplicationStatus;
 import service.viewobserver.ViewSubject;
 
 public class MealPlanView extends ViewSubject
@@ -27,7 +28,7 @@ public class MealPlanView extends ViewSubject
             this.nutritionist = nutritionist;
         } catch (InfraException e) {
             Application.showMessage("Jeez! We noticed an error with our infrastructure. Please try again later.");
-            Application.exitApplication(1);
+            Application.exitApplication(new ErrorApplicationStatus());
         }
     }
 

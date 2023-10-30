@@ -1,5 +1,6 @@
 package views;
 import service.Application;
+import service.status.SuccessApplicationStatus;
 import service.viewobserver.IViewObserver;
 
 public class MainScreenDesktop implements IViewObserver, AutoCloseable
@@ -34,7 +35,7 @@ public class MainScreenDesktop implements IViewObserver, AutoCloseable
                 case 3:
                     adminView.run();
                 case 4:
-                    Application.exitApplication(0);
+                    Application.exitApplication(new SuccessApplicationStatus());
                     break;
                 default:
                     Application.showMessage("Invalid Option");

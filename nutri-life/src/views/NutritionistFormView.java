@@ -7,6 +7,7 @@ import controller.impl.NutritionistManagerImpl;
 import service.Application;
 import model.Nutritionist;
 import persistence.db.exception.InfraException;
+import service.status.ErrorApplicationStatus;
 import service.viewobserver.ViewSubject;
 
 public class NutritionistFormView extends ViewSubject
@@ -18,7 +19,7 @@ public class NutritionistFormView extends ViewSubject
 			manager = new NutritionistManagerImpl();
 		} catch (InfraException e) {
             Application.showMessage("Jeez! We noticed an error with our infrastructure. Please try again later."); // Melhorar tratamento
-            Application.exitApplication(1);
+            Application.exitApplication(new ErrorApplicationStatus());
 		}
     }
 

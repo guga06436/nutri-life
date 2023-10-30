@@ -4,6 +4,7 @@ import service.Application;
 import model.Admin;
 import persistence.db.exception.InfraException;
 import service.impl.Facade;
+import service.status.ErrorApplicationStatus;
 import service.viewobserver.ViewSubject;
 
 public class AdminActionsView extends ViewSubject
@@ -16,7 +17,7 @@ public class AdminActionsView extends ViewSubject
             this.manager = Facade.getInstance();
         } catch (InfraException e) {
             Application.showMessage("Jeez! We noticed an error with our infrastructure. Please try again later.");
-            Application.exitApplication(1);
+            Application.exitApplication(new ErrorApplicationStatus());
         }
 
         this.loggedInAdmin = loggedInAdmin;

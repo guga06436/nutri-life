@@ -1,5 +1,9 @@
 package service;
+import persistence.db.exception.InfraException;
+import service.builder.ExitCommandBuilder;
+import service.command.ExitApplicationCommand;
 import service.impl.LogAdapter;
+import service.status.ApplicationStatus;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -52,18 +56,21 @@ public class Application
             System.out.print(data);
     }
 
-    public static void exitApplication(int status)
+    public static void exitApplication(ApplicationStatus status)
     {
-        onExitApplication();
-        System.exit(status);
+        in.close();
+        ExitCommandBuilder exitCommandBuilder = new ExitCommandBuilder();
+        exitCommandBuilder.withExitStatus(status);
+        Command exitApplicationCommand = exitCommandBuilder.build();
+
+        try {
+            exitApplicationCommand.execute();
+        } catch (InfraException e) {
+            throw new RuntimeException(e);
+        }
     }
     public static void logException(Exception e) {  log.logException(e); }
     public static void logDebug(String message) {
         log.logDebug(message);
-    }
-
-    private static void onExitApplication()
-    {
-        in.close();
     }
 }
