@@ -14,7 +14,7 @@ import service.LogService;
 import service.impl.LogAdapter;
 
 public class AdminManagerImpl implements AdminManager {
-	private static final LogService log = new LogAdapter();
+	private static final LogService log = LogAdapter.getInstance();
 	private static FactoryAdmin fa;
 	private static Persistence<Admin> persistence;
 

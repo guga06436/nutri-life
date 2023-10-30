@@ -15,7 +15,7 @@ import service.LogService;
 import service.impl.LogAdapter;
 
 public class PatientManagerImpl implements PatientManager{
-	private static final LogService log = new LogAdapter();
+	private static final LogService log = LogAdapter.getInstance();
 	private static FactoryPatient fp;
 	private static Persistence<Patient> persistence;
 	

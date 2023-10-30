@@ -19,7 +19,7 @@ import service.impl.LogAdapter;
 
 public class MealManagerImpl implements MealManager {
 
-    private static final LogService log = new LogAdapter();
+    private static final LogService log = LogAdapter.getInstance();
     private static FactoryMeal mf;
     private static Persistence<Meal> persistence;
 

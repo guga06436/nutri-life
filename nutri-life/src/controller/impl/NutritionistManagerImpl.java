@@ -17,7 +17,7 @@ import service.LogService;
 import service.impl.LogAdapter;
 
 public class NutritionistManagerImpl implements NutritionistManager{
-	private static final LogService log = new LogAdapter();
+	private static final LogService log = LogAdapter.getInstance();
 	private static FactoryNutritionist fn;
 	private static Persistence<Nutritionist> persistence;
 	

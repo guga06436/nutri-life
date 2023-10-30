@@ -22,7 +22,7 @@ import service.impl.LogAdapter;
 
 @Data
 public class MealPlanManagerImpl implements MealPlanManager{
-	private static final LogService log = new LogAdapter();
+	private static final LogService log = LogAdapter.getInstance();
 	private static FactoryMealPlan fmp;
 	private static Persistence<MealPlan> persistence;
 	
