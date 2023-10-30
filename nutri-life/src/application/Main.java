@@ -1,6 +1,5 @@
 package application;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 
 import views.MainScreenDesktop;
