@@ -4,7 +4,7 @@ import controller.AdminManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.impl.AdminManagerImpl;
-import handlers.OptionHandler;
+import service.Application;
 import model.Admin;
 import persistence.db.exception.InfraException;
 import service.viewobserver.ViewSubject;
@@ -18,20 +18,20 @@ public class AdminFormView extends ViewSubject
         try {
             adminManager = new AdminManagerImpl();
         } catch (InfraException e) {
-            System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later.");
-            System.exit(1);
+            Application.showMessage("Jeez! We noticed an error with our infrastructure. Please try again later.");
+            Application.exitApplication(1);
         }
     }
 
     public void run() {
         boolean running = true;
         while (running) {
-            System.out.println("[1] Sign In");
-            System.out.println("[2] Register");
-            System.out.println("[3] Exit");
-            System.out.print("Choose an option: ");
-            int option = OptionHandler.readIntegerInput();
-            OptionHandler.readLineInput();
+            Application.showMessage("[1] Sign In");
+            Application.showMessage("[2] Register");
+            Application.showMessage("[3] Exit");
+            Application.showMessage("Choose an option: ", false);
+            int option = Application.readIntegerInput();
+            Application.readLineInput();
 
             switch (option) {
                 case 1:
@@ -44,11 +44,11 @@ public class AdminFormView extends ViewSubject
                     break;
                 case 3:
                     notifyObservers("exiting view");
-                    System.out.println("Exiting...");
+                    Application.showMessage("Exiting...");
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid Option");
+                    Application.showMessage("Invalid Option");
                     break;
             }
         }
@@ -56,46 +56,46 @@ public class AdminFormView extends ViewSubject
 
     private void register() {
 
-        System.out.print("Name: ");
-        String name = OptionHandler.readLineInput();
+        Application.showMessage("Name: ", false);
+        String name = Application.readLineInput();
 
-        System.out.print("Username: ");
-        String username = OptionHandler.readStringInput();
+        Application.showMessage("Username: ", false);
+        String username = Application.readStringInput();
 
-        System.out.print("Password: ");
-        String password = OptionHandler.readStringInput();
+        Application.showMessage("Password: ", false);
+        String password = Application.readStringInput();
 
         boolean registerSuccess = false;
         try {
             registerSuccess = adminManager.insert(name, username, password);
         } catch (InfraException e) {
-            System.out.println("Error with our database detected.");
+            Application.showMessage("Error with our database detected.");
         } catch (RegisterException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
         }
 
         if (registerSuccess) {
-            System.out.println("Registration successful for administrator: " + name);
+            Application.showMessage("Registration successful for administrator: " + name);
         } else {
-            System.out.println("Registration failed for administrator.");
+            Application.showMessage("Registration failed for administrator.");
         }
     }
 
     private void signIn() {
-        System.out.print("Username: ");
-        String username = OptionHandler.readStringInput();
+        Application.showMessage("Username: ", false);
+        String username = Application.readStringInput();
 
-        System.out.print("Password: ");
-        String password = OptionHandler.readStringInput();
+        Application.showMessage("Password: ", false);
+        String password = Application.readStringInput();
 
         try {
             Admin loggedInAdmin = adminManager.retrieve(username, password);
-            System.out.println("Login successful for administrator: " + loggedInAdmin.getName());
+            Application.showMessage("Login successful for administrator: " + loggedInAdmin.getName());
             //AdminActionsView adminActionsView = new AdminActionsView();
         } catch (EntityNotFoundException e) {
-            System.out.println("Login Failed: " + e.getMessage());
+            Application.showMessage("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
-            System.out.println("Error with our database, please come again after we fix it.");
+            Application.showMessage("Error with our database, please come again after we fix it.");
         }
     }
 }

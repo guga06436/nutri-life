@@ -14,7 +14,7 @@ import model.Report;
 import model.reports.IReportable;
 import persistence.db.exception.InfraException;
 import service.Command;
-import service.LogService;
+import service.Application;
 import service.command.GenerateReportCommand;
 import service.command.ListAllCommand;
 
@@ -22,7 +22,6 @@ import service.command.ListAllCommand;
 public class Facade
 {
     private static Facade instance = null;
-    private static final LogService log = LogAdapter.getInstance();
 
     private final AdminManager adminManager;
     private final MealPlanManager mealPlanManager;
@@ -55,7 +54,7 @@ public class Facade
         }
         catch (InfraException e)
         {
-            log.logException(e);
+            Application.logException(e);
             throw e;
         }
     }
@@ -69,7 +68,7 @@ public class Facade
         }
         catch (InfraException e)
         {
-            log.logException(e);
+            Application.logException(e);
             throw e;
         }
     }

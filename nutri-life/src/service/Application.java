@@ -1,10 +1,14 @@
-package handlers;
+package service;
+import service.impl.LogAdapter;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class OptionHandler
+public class Application
 {
     static Scanner in = new Scanner(System.in);
+    static final LogService log = LogAdapter.getInstance();
+
 
     public static String readStringInput()
     {
@@ -40,7 +44,25 @@ public class OptionHandler
         System.out.println(data);
     }
 
-    public static void onExitProgram()
+    public static void showMessage(String data, boolean breakLine)
+    {
+        if(breakLine)
+            System.out.println(data);
+        else
+            System.out.print(data);
+    }
+
+    public static void exitApplication(int status)
+    {
+        onExitApplication();
+        System.exit(status);
+    }
+    public static void logException(Exception e) {  log.logException(e); }
+    public static void logDebug(String message) {
+        log.logDebug(message);
+    }
+
+    private static void onExitApplication()
     {
         in.close();
     }

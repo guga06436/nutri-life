@@ -1,5 +1,5 @@
 package views;
-import handlers.OptionHandler;
+import service.Application;
 import service.viewobserver.IViewObserver;
 
 public class MainScreenDesktop implements IViewObserver, AutoCloseable
@@ -23,7 +23,7 @@ public class MainScreenDesktop implements IViewObserver, AutoCloseable
         {
             showMenu();
 
-            switch(OptionHandler.readIntegerInput())
+            switch(Application.readIntegerInput())
             {
                 case 1:
                     nutritionistView.run();
@@ -34,11 +34,10 @@ public class MainScreenDesktop implements IViewObserver, AutoCloseable
                 case 3:
                     adminView.run();
                 case 4:
-                    OptionHandler.onExitProgram();
-                    System.exit(0);
+                    Application.exitApplication(0);
                     break;
                 default:
-                    OptionHandler.showMessage("Invalid Option");
+                    Application.showMessage("Invalid Option");
                     break;
             }
         }
@@ -46,7 +45,7 @@ public class MainScreenDesktop implements IViewObserver, AutoCloseable
 
     void showMenu()
     {
-        OptionHandler.showMessage(
+        Application.showMessage(
                         "Welcome to NutriLife!\n" +
                         "Choose the desired option:\n" +
                         "1- Nutritionist Page\n" +
@@ -61,7 +60,7 @@ public class MainScreenDesktop implements IViewObserver, AutoCloseable
     @Override
     public void onActionCalled(ViewAction action)
     {
-        OptionHandler.showMessage("[" +
+        Application.showMessage("[" +
                                         action.getActor().getClass().getName() +
                                         "]: " +
                                         action.getMessage());
