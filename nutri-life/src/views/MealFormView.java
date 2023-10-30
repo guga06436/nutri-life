@@ -6,11 +6,11 @@ import controller.exceptions.DeleteException;
 import controller.exceptions.UpdateException;
 import model.Meal;
 import model.MealPlan;
-import model.Food;
-import persistence.db.exception.InfraException;
-import handlers.OptionHandler;
+import service.Application;
+import service.viewobserver.ViewSubject;
 
-public class MealFormView {
+public class MealFormView extends ViewSubject
+{
     private MealManager mealManager;
     private MealPlan mealPlan;
 
@@ -22,67 +22,72 @@ public class MealFormView {
     public void run() {
         boolean running = true;
         while (running) {
-            System.out.println("[1] Create Meal");
-            System.out.println("[2] View Meals");
-            System.out.println("[3] Edit Meal");
-            System.out.println("[4] Remove Meal");
-            System.out.println("[5] Back to Meal Plan");
-            System.out.print("Choose an option: ");
-            int option = OptionHandler.readIntegerInput();
-            OptionHandler.readLineInput();
+            Application.showMessage("[1] Create Meal");
+            Application.showMessage("[2] View Meals");
+            Application.showMessage("[3] Edit Meal");
+            Application.showMessage("[4] Remove Meal");
+            Application.showMessage("[5] Back to Meal Plan");
+            Application.showMessage("Choose an option: ", false);
+            int option = Application.readIntegerInput();
+            Application.readLineInput();
 
             switch (option) {
                 case 1:
+                    notifyObservers("exiting createMeal()");
                     createMeal();
                     break;
                 case 2:
+                    notifyObservers("called viewMeals()");
                     viewMeals();
                     break;
                 case 3:
+                    notifyObservers("called editMeal()");
                     editMeal();
                     break;
                 case 4:
+                    notifyObservers("called removeMeal()");
                     removeMeal();
                     break;
                 case 5:
-                    System.out.println("Returning to Meal Plan...");
+                    notifyObservers("exiting view");
+                    Application.showMessage("Returning to Meal Plan...");
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid option");
+                    Application.showMessage("Invalid option", false);
             }
         }
     }
 
     private void createMeal() {
-        System.out.println("Create a New Meal:");
+        Application.showMessage("Create a New Meal:");
 
-        System.out.print("Name: ");
-        String name = OptionHandler.readStringInput();
-        System.out.print("Time: ");
-        String time = OptionHandler.readStringInput();
+        Application.showMessage("Name: ", false);
+        String name = Application.readStringInput();
+        Application.showMessage("Time: ", false);
+        String time = Application.readStringInput();
 
 
         Meal newMeal = new Meal(name, time, portionedFoods, mealPlan);
 
         try {
             mealManager.createMeal(newMeal);
-            System.out.println("Meal created successfully.");
+            Application.showMessage("Meal created successfully.");
         } catch (CreateException e) {
-            System.out.println("Error: " + e.getMessage());
+            Application.showMessage("Error: " + e.getMessage());
         }
     }
 
     private void viewMeals() {
-        System.out.println("Meals in the Meal Plan:");
+        Application.showMessage("Meals in the Meal Plan:");
         for (Meal meal : mealPlan.getMeals()) {
-            System.out.println(meal.getName() + " (" + meal.getTime() + ")");
+            Application.showMessage(meal.getName() + " (" + meal.getTime() + ")");
         }
     }
 
     private void editMeal() {
         System.out.print("Enter the name of the meal to edit: ");
-        String mealName = OptionHandler.readStringInput();
+        String mealName = Application.readStringInput();
 
         Meal mealToEdit = null;
         for (Meal meal : mealPlan.getMeals()) {
@@ -93,14 +98,14 @@ public class MealFormView {
         }
 
         if (mealToEdit == null) {
-            System.out.println("Meal not found.");
+            Application.showMessage("Meal not found.");
             return;
         }
 
-        System.out.print("New name (leave empty to keep the same): ");
-        String newName = OptionHandler.readStringInput();
-        System.out.print("New time (leave empty to keep the same): ");
-        String newTime = OptionHandler.readStringInput();
+        Application.showMessage("New name (leave empty to keep the same): ", false);
+        String newName = Application.readStringInput();
+        Application.showMessage("New time (leave empty to keep the same): ", false);
+        String newTime = Application.readStringInput();
 
         if (!newName.isEmpty()) {
             mealToEdit.setName(newName);
@@ -111,15 +116,15 @@ public class MealFormView {
 
         try {
             mealManager.updateMeal(mealToEdit);
-            System.out.println("Meal updated successfully.");
+            Application.showMessage("Meal updated successfully.");
         } catch (UpdateException e) {
-            System.out.println("Error: " + e.getMessage());
+            Application.showMessage("Error: " + e.getMessage());
         }
     }
 
     private void removeMeal() {
-        System.out.print("Enter the name of the meal to remove: ");
-        String mealName = OptionHandler.readStringInput();
+        Application.showMessage("Enter the name of the meal to remove: ", false);
+        String mealName = Application.readStringInput();
 
         Meal mealToRemove = null;
         for (Meal meal : mealPlan.getMeals()) {
@@ -130,15 +135,15 @@ public class MealFormView {
         }
 
         if (mealToRemove == null) {
-            System.out.println("Meal not found.");
+            Application.showMessage("Meal not found.");
             return;
         }
 
         try {
             mealManager.deleteMeal(mealToRemove);
-            System.out.println("Meal removed successfully.");
+            Application.showMessage("Meal removed successfully.");
         } catch (DeleteException e) {
-            System.out.println("Error: " + e.getMessage());
+            Application.showMessage("Error: " + e.getMessage());
         }
     }
 

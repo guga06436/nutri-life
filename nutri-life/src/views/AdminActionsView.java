@@ -1,12 +1,14 @@
 package views;
 
-import handlers.OptionHandler;
+import service.Application;
 import model.Admin;
 import persistence.db.exception.InfraException;
 import service.impl.Facade;
+import service.status.ErrorApplicationStatus;
+import service.viewobserver.ViewSubject;
 
-public class AdminActionsView {
-
+public class AdminActionsView extends ViewSubject
+{
     private Facade manager;
     private Admin loggedInAdmin;
 
@@ -14,37 +16,43 @@ public class AdminActionsView {
         try {
             this.manager = Facade.getInstance();
         } catch (InfraException e) {
-            System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later.");
-            System.exit(1);
+            Application.showMessage("Jeez! We noticed an error with our infrastructure. Please try again later.");
+            Application.exitApplication(new ErrorApplicationStatus());
         }
 
         this.loggedInAdmin = loggedInAdmin;
     }
 
-    public void run() {
+    public void run()
+    {
+        notifyObservers("called run()");
+
         boolean running = true;
         while (running) {
-            System.out.println("Welcome, " + loggedInAdmin.getName() + "!");
-            System.out.println("[1] List all");
-            System.out.println("[2] Generate report");
-            System.out.println("[3] Log out");
-            System.out.print("Escolha uma opção: ");
-            int option = OptionHandler.readIntegerInput();
-            OptionHandler.readLineInput();
+            Application.showMessage("Welcome, " + loggedInAdmin.getName() + "!");
+            Application.showMessage("[1] List all");
+            Application.showMessage("[2] Generate report");
+            Application.showMessage("[3] Log out");
+            Application.showMessage("Escolha uma opção: ");
+            int option = Application.readIntegerInput();
+            Application.readLineInput();
 
             switch (option) {
                 case 1:
+                    notifyObservers("called listAll()");
                     listAll();
                     break;
                 case 2:
+                    notifyObservers("called generateReport()");
                     generateReport();
                     break;
                 case 3:
-                    System.out.println("Exiting...");
+                    notifyObservers("exiting view");
+                    Application.showMessage("Exiting...");
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid Option");
+                    Application.showMessage("Invalid Option");
                     break;
             }
         }
@@ -52,13 +60,13 @@ public class AdminActionsView {
 
     private void listAll() {
         // Implemente a lógica para listar todos os itens desejados.
-        System.out.println("Listar todos - Ação a ser implementada");
+        Application.showMessage("Listar todos - Ação a ser implementada");
         //manager.listAll();
     }
 
     private void generateReport() {
         // Implemente a lógica para gerar um relatório.
-        System.out.println("Gerar relatório - Ação a ser implementada");
+        Application.showMessage("Gerar relatório - Ação a ser implementada");
         //manager.generateReport();
     }
 }

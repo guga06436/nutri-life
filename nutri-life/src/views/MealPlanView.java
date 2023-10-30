@@ -6,13 +6,16 @@ import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
 import controller.impl.MealPlanManagerImpl;
-import handlers.OptionHandler;
+import service.Application;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.db.exception.InfraException;
+import service.status.ErrorApplicationStatus;
+import service.viewobserver.ViewSubject;
 
-public class MealPlanView {
+public class MealPlanView extends ViewSubject
+{
 
     private MealPlanManager manager;
     private Patient patient;
@@ -24,41 +27,45 @@ public class MealPlanView {
             this.patient = patient;
             this.nutritionist = nutritionist;
         } catch (InfraException e) {
-            System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later.");
-            System.exit(1);
+            Application.showMessage("Jeez! We noticed an error with our infrastructure. Please try again later.");
+            Application.exitApplication(new ErrorApplicationStatus());
         }
     }
 
     public void run() {
         boolean running = true;
         while (running) {
-            System.out.println("[1] Create Meal Plan");
-            System.out.println("[2] View Meal Plan");
-            System.out.println("[3] Edit Meal Plan");
-            System.out.println("[4] Remove Meal Plan");
-            System.out.println("[5] Exit");
-            System.out.print("Choose an option: ");
-            int option = OptionHandler.readIntegerInput();
-            OptionHandler.readLineInput();
+            Application.showMessage("[1] Create Meal Plan");
+            Application.showMessage("[2] View Meal Plan");
+            Application.showMessage("[3] Edit Meal Plan");
+            Application.showMessage("[4] Remove Meal Plan");
+            Application.showMessage("[5] Exit");
+            Application.showMessage("Choose an option: ", false);
+            int option = Application.readIntegerInput();
+            Application.readLineInput();
 
             switch (option) {
                 case 1:
                     createMealPlan();
                     break;
                 case 2:
+                    notifyObservers("called editMealPlan()");
                     viewMealPlan();
                     break;
                 case 3:
+                    notifyObservers("called editMealPlan()");
                     editMealPlan();
                     break;
                 case 4:
+                    notifyObservers("called removeMealPlan()");
                     removeMealPlan();
                 case 5:
-                    System.out.println("Exiting...");
+                    notifyObservers("exiting view");
+                    Application.showMessage("Exiting...");
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid option");
+                    Application.showMessage("Invalid option");
             }
         }
     }
@@ -69,24 +76,24 @@ public class MealPlanView {
         try {
             mealPlan = manager.retrieve(patient);
         } catch (EntityNotFoundException e) {
-            System.out.println("There is no Meal Plan for this patient, please create one");
+            Application.showMessage("There is no Meal Plan for this patient, please create one");
             return;
         } catch (InfraException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
             return;
         }
 
         System.out.print("Are you sure to delete? [Y/N]: ");
         String option;
         do {
-            option = OptionHandler.readStringInput().toUpperCase();
+            option = Application.readStringInput().toUpperCase();
         } while (!option.equals("Y") && !option.equals("N"));
 
         if (option.equals("Y")) {
             try {
                 manager.deleteMealPlan(mealPlan);
             } catch (DeleteException e) {
-                System.out.println(e.getMessage());
+                Application.showMessage(e.getMessage());
             } catch (InfraException e) {
                 throw new RuntimeException(e);
             }
@@ -94,63 +101,63 @@ public class MealPlanView {
     }
 
     private void createMealPlan() {
-        System.out.println("Create a New Meal Plan:");
+        Application.showMessage("Create a New Meal Plan:");
 
-        System.out.print("Plan Name: ");
-        String planName = OptionHandler.readStringInput();
+        Application.showMessage("Plan Name: ", false);
+        String planName = Application.readStringInput();
 
-        System.out.print("Goals: ");
-        String goals = OptionHandler.readStringInput();
+        Application.showMessage("Goals: ", false);
+        String goals = Application.readStringInput();
 
         // You will need to handle the creation of meals and recipeList here as per your application's requirements.
 
         // Create a new MealPlan instance
         try {
             manager.createMealPlan(planName, goals, null, null, patient, nutritionist);
-            System.out.println("Creation successful");
+            Application.showMessage("Creation successful");
         } catch (RegisterException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
         } catch (InfraException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
         }
     }
 
     private void viewMealPlan() {
         try {
             MealPlan mealPlan = manager.retrieve(patient);
-            System.out.println(mealPlan.getPlanName());
-            System.out.println(mealPlan.getGoals());
-            System.out.println(mealPlan.getCreationDate().toString());
-            System.out.println(mealPlan.getMeals());
-            System.out.println(mealPlan.getRecipeList());
+            Application.showMessage(mealPlan.getPlanName());
+            Application.showMessage(mealPlan.getGoals());
+            Application.showMessage(mealPlan.getCreationDate().toString());
+            Application.showMessage(mealPlan.getMeals());
+            Application.showMessage(mealPlan.getRecipeList());
         } catch (InfraException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
         } catch (EntityNotFoundException e) {
-            System.out.println("There is no Meal Plan for this patient, please create one");
+            Application.showMessage("There is no Meal Plan for this patient, please create one");
         }
     }
 
     private void updatePlanName(MealPlan mealplan) {
-        System.out.println("Plan Name: ");
-        String name = OptionHandler.readStringInput();
+        Application.showMessage("Plan Name: ");
+        String name = Application.readStringInput();
         try {
             manager.updateMealPlan(mealplan, name, mealplan.getGoals(), mealplan.getMeals(), mealplan.getRecipeList());
-            System.out.println("Plan Name updated successfully.");
+            Application.showMessage("Plan Name updated successfully.");
         } catch (UpdateException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
         } catch (InfraException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void updateGoal(MealPlan mealplan) {
-        System.out.println("Goal: ");
-        String goal = OptionHandler.readStringInput();
+        Application.showMessage("Goal: ");
+        String goal = Application.readStringInput();
         try {
             manager.updateMealPlan(mealplan, mealplan.getPlanName(), goal, mealplan.getMeals(), mealplan.getRecipeList());
-            System.out.println("Goal updated successfully.");
+            Application.showMessage("Goal updated successfully.");
         } catch (UpdateException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
         } catch (InfraException e) {
             throw new RuntimeException(e);
         }
@@ -163,24 +170,24 @@ public class MealPlanView {
         while (editing) {
             try {
                 mealplan = manager.retrieve(patient);
-                System.out.println("Editing Meal Plan: ");
+                Application.showMessage("Editing Meal Plan: ");
                 viewMealPlan();
             } catch (InfraException e) {
-                System.out.println(e.getMessage());
+                Application.showMessage(e.getMessage());
                 break;
             } catch (EntityNotFoundException e) {
-                System.out.println("There is no Meal Plan for this patient, please create one");
+                Application.showMessage("There is no Meal Plan for this patient, please create one");
                 break;
             }
 
-            System.out.println("[1] Edit Plan Name");
-            System.out.println("[2] Edit Goals");
-            System.out.println("[3] Add Recipe");
-            System.out.println("[4] Remove Recipe");
-            System.out.println("[5] Back to Main Menu");
-            System.out.print("Choose an option: ");
-            int option = OptionHandler.readIntegerInput();
-            OptionHandler.readLineInput();
+            Application.showMessage("[1] Edit Plan Name");
+            Application.showMessage("[2] Edit Goals");
+            Application.showMessage("[3] Add Recipe");
+            Application.showMessage("[4] Remove Recipe");
+            Application.showMessage("[5] Back to Main Menu");
+            Application.showMessage("Choose an option: ", false);
+            int option = Application.readIntegerInput();
+            Application.readLineInput();
 
             switch (option) {
                 case 1:
@@ -199,7 +206,7 @@ public class MealPlanView {
                     editing = false;
                     break;
                 default:
-                    System.out.println("Invalid option");
+                    Application.showMessage("Invalid option");
             }
         }
     }
