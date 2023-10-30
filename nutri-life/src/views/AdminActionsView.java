@@ -4,9 +4,10 @@ import handlers.OptionHandler;
 import model.Admin;
 import persistence.db.exception.InfraException;
 import service.impl.Facade;
+import service.viewobserver.ViewSubject;
 
-public class AdminActionsView {
-
+public class AdminActionsView extends ViewSubject
+{
     private Facade manager;
     private Admin loggedInAdmin;
 
@@ -21,7 +22,10 @@ public class AdminActionsView {
         this.loggedInAdmin = loggedInAdmin;
     }
 
-    public void run() {
+    public void run()
+    {
+        notifyObservers("called run()");
+
         boolean running = true;
         while (running) {
             System.out.println("Welcome, " + loggedInAdmin.getName() + "!");
@@ -34,12 +38,15 @@ public class AdminActionsView {
 
             switch (option) {
                 case 1:
+                    notifyObservers("called listAll()");
                     listAll();
                     break;
                 case 2:
+                    notifyObservers("called generateReport()");
                     generateReport();
                     break;
                 case 3:
+                    notifyObservers("exiting view");
                     System.out.println("Exiting...");
                     running = false;
                     break;

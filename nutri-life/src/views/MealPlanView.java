@@ -11,8 +11,10 @@ import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.db.exception.InfraException;
+import service.viewobserver.ViewSubject;
 
-public class MealPlanView {
+public class MealPlanView extends ViewSubject
+{
 
     private MealPlanManager manager;
     private Patient patient;
@@ -46,14 +48,18 @@ public class MealPlanView {
                     createMealPlan();
                     break;
                 case 2:
+                    notifyObservers("called editMealPlan()");
                     viewMealPlan();
                     break;
                 case 3:
+                    notifyObservers("called editMealPlan()");
                     editMealPlan();
                     break;
                 case 4:
+                    notifyObservers("called removeMealPlan()");
                     removeMealPlan();
                 case 5:
+                    notifyObservers("exiting view");
                     System.out.println("Exiting...");
                     running = false;
                     break;

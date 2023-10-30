@@ -7,8 +7,10 @@ import controller.impl.AdminManagerImpl;
 import handlers.OptionHandler;
 import model.Admin;
 import persistence.db.exception.InfraException;
+import service.viewobserver.ViewSubject;
 
-public class AdminFormView {
+public class AdminFormView extends ViewSubject
+{
 
     private AdminManager adminManager;
 
@@ -33,12 +35,15 @@ public class AdminFormView {
 
             switch (option) {
                 case 1:
+                    notifyObservers("called signIn()");
                     signIn();
                     break;
                 case 2:
+                    notifyObservers("called register()");
                     register();
                     break;
                 case 3:
+                    notifyObservers("exiting view");
                     System.out.println("Exiting...");
                     running = false;
                     break;

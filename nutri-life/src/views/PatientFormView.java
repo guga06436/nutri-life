@@ -7,8 +7,10 @@ import controller.impl.PatientManagerImpl;
 import handlers.OptionHandler;
 import model.Patient;
 import persistence.db.exception.InfraException;
+import service.viewobserver.ViewSubject;
 
-public class PatientFormView {
+public class PatientFormView extends ViewSubject
+{
 
     private static PatientManager manager;
 
@@ -35,12 +37,15 @@ public class PatientFormView {
 
             switch (option) {
                 case 1:
+                    notifyObservers("called signIn()");
                     signIn();
                     break;
                 case 2:
+                    notifyObservers("called register()");
                     register();
                     break;
                 case 3:
+                    notifyObservers("exiting view");
                     System.out.println("Exiting...");
                     running = false;
                     break;

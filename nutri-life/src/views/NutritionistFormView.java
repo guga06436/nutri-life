@@ -7,9 +7,10 @@ import controller.impl.NutritionistManagerImpl;
 import handlers.OptionHandler;
 import model.Nutritionist;
 import persistence.db.exception.InfraException;
+import service.viewobserver.ViewSubject;
 
-public class NutritionistFormView {
-
+public class NutritionistFormView extends ViewSubject
+{
     private NutritionistManager manager;
 
     public NutritionistFormView() {
@@ -34,12 +35,15 @@ public class NutritionistFormView {
 
             switch (option) {
                 case 1:
+                    notifyObservers("called signIn()");
                     signIn();
                     break;
                 case 2:
+                    notifyObservers("called register()");
                     register();
                     break;
                 case 3:
+                    notifyObservers("exiting view");
                     System.out.println("Exiting...");
                     running = false;
                     break;

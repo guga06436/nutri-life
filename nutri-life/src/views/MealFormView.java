@@ -9,8 +9,10 @@ import model.MealPlan;
 import model.Food;
 import persistence.db.exception.InfraException;
 import handlers.OptionHandler;
+import service.viewobserver.ViewSubject;
 
-public class MealFormView {
+public class MealFormView extends ViewSubject
+{
     private MealManager mealManager;
     private MealPlan mealPlan;
 
@@ -33,18 +35,23 @@ public class MealFormView {
 
             switch (option) {
                 case 1:
+                    notifyObservers("exiting createMeal()");
                     createMeal();
                     break;
                 case 2:
+                    notifyObservers("called viewMeals()");
                     viewMeals();
                     break;
                 case 3:
+                    notifyObservers("called editMeal()");
                     editMeal();
                     break;
                 case 4:
+                    notifyObservers("called removeMeal()");
                     removeMeal();
                     break;
                 case 5:
+                    notifyObservers("exiting view");
                     System.out.println("Returning to Meal Plan...");
                     running = false;
                     break;
