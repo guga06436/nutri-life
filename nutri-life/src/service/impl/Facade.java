@@ -22,7 +22,7 @@ import service.command.ListAllCommand;
 public class Facade
 {
     private static Facade instance = null;
-    private static final LogService log = new LogAdapter();
+    private static final LogService log = LogAdapter.getInstance();
 
     private final AdminManager adminManager;
     private final MealPlanManager mealPlanManager;
