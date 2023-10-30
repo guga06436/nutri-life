@@ -1,4 +1,4 @@
-package service.command;
+package service;
 import persistence.db.exception.InfraException;
 
 public interface Command

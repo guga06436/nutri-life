@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="beb54980-69cb-4a29-98b6-6df65664a576" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../.idea/nutri-life.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/MealPlanManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/MealPlanManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/impl/MealPlanManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/impl/MealPlanManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/handlers/OptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/handlers/OptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/MealPlanView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/MealPlanView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

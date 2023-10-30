@@ -2,6 +2,7 @@ package service.command;
 import controller.NutritionistManager;
 import controller.PatientManager;
 import persistence.db.exception.InfraException;
+import service.Command;
 
 public class ListAllCommand implements Command
 {

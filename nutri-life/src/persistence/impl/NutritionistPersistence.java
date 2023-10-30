@@ -110,6 +110,7 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 		try {
 			ps = conn.prepareStatement("SELECT * FROM Nutritionist WHERE username = ? AND "
 															+	"nutritionist_password = ?");
+			conn.setAutoCommit(false);
 			
 			ps.setString(1, nutritionist.getUsername());
 			ps.setString(2, nutritionist.getPassword());
@@ -118,13 +119,26 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			
 			while(rs.next()) {
 				nutri = instantiateNutritionist(rs);
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to retrieve a nutritionist"); 
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to retrieve a nutritionist");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to retrieve a nutritionist and roll back changed data");
+			}
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to find a nutritionist: null argument in method call");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to find a nutritionist: null argument in method call");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to find a nutritionist and roll back changed data: null argument in method call");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -237,6 +251,7 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 				for(String cpf : cpfs) {
 					ps = conn.prepareStatement("UPDATE PatientNutritionist SET nutritionist_id = ? WHERE patient_id IN "
 												+ "(SELECT patient_id FROM Patient WHERE cpf = ?)");
+					conn.setAutoCommit(false);
 					
 					ps.setInt(1, Types.NULL);
 					ps.setString(2, cpf);
@@ -277,9 +292,17 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 					rowsAffected = ps.executeUpdate();
 				}
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update nutritionist");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update nutritionist");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update nutritionist and roll back");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -304,6 +327,7 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			
 			ps = conn.prepareStatement("UPDATE Nutritionist SET nutritionist_name = ?, age = ?, crn = ?, username = ?, nutritionist_password = ?"
 										+ " WHERE nutritionist_id = ?");
+			conn.setAutoCommit(false);
 
 			ps.setString(1, object.getName());
 			ps.setInt(2, object.getAge());
@@ -316,10 +340,17 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			
 			if(rowsAffected > 0) {
 				rowsAffected = updatePatientsNutritionist(object.getPatients(), id);
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update a nutritionist");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update a nutritionist");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update a nutritionist and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -347,6 +378,7 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			}
 			
 			ps = conn.prepareStatement("DELETE FROM Nutritionist WHERE nutritionist_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, nutritionistId);
 			
 			rowsAffected = ps.executeUpdate();
@@ -367,11 +399,19 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 					ps.setInt(1, nutritionistId);
 					
 					rowsAffected = ps.executeUpdate();
+					
+					conn.commit();
 				}
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to exclude nutritionist");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to exclude nutritionist");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to exclude nutritionist and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);

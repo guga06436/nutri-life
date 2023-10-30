@@ -2,7 +2,7 @@ package model;
 
 import java.util.List;
 
-import handlers.OptionHandler;
+import service.Application;
 import model.reports.IReportable;
 
 public class PDFReport extends Report
@@ -10,6 +10,6 @@ public class PDFReport extends Report
     @Override
     public void generateReport(List<IReportable> reports)
     {
-        OptionHandler.showMessage("Generating PDF report");
+        Application.showMessage("Generating PDF report");
     }
 }

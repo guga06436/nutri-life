@@ -89,6 +89,7 @@ public class MealPersistence implements Persistence<Meal>{
 			
 			ps = conn.prepareStatement("INSERT INTO FoodMeal(food_id, portion, portion_unit, meal_id) VALUES " + 
 					"(?, ?, ?, ?)");
+			conn.setAutoCommit(false);
 
 			for(Food food : portionedFoods.keySet()) {
 				rowsAffected = -1;
@@ -109,10 +110,17 @@ public class MealPersistence implements Persistence<Meal>{
 				ps.setInt(4, mealId);
 
 				rowsAffected = ps.executeUpdate();
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to insert meal informations");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to insert meal informations");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to insert meal informations and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -137,6 +145,7 @@ public class MealPersistence implements Persistence<Meal>{
 			mpPersistence = factoryMp.getPersistence();
 			
 			ps = conn.prepareStatement("INSERT INTO Meal(meal_name, meal_time, mealplan_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			conn.setAutoCommit(false);
 			ps.setString(1, object.getName());
 			ps.setString(2, object.getTime());
 			
@@ -165,9 +174,17 @@ public class MealPersistence implements Persistence<Meal>{
 				}
 
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to insert a meal into the database");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to insert a meal into the database");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to insert a meal into the database and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -225,6 +242,7 @@ public class MealPersistence implements Persistence<Meal>{
 		try {
 			ps = conn.prepareStatement("SELECT food_id, food_name FROM Food WHERE food_id IN "
 									+ "(SELECT food_id FROM FoodMeal WHERE mealId = ?)");
+			conn.setAutoCommit(false);
 			ps.setInt(1, mealId);
 			
 			rs = ps.executeQuery();
@@ -262,10 +280,18 @@ public class MealPersistence implements Persistence<Meal>{
 						}
 					}
 				}
+				
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to remove a meal");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to remove a meal");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to remove a meal and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -286,6 +312,7 @@ public class MealPersistence implements Persistence<Meal>{
 			removeUnusedFood(portionedFoods, mealId);
 			
 			ps = conn.prepareStatement("SELECT food_id FROM FoodMeal WHERE mealId = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, mealId);
 			
 			rs = ps.executeQuery();
@@ -323,9 +350,17 @@ public class MealPersistence implements Persistence<Meal>{
 			if(!portionedFoods.isEmpty()) {
 				updateConfirmation = insertFoodMeal(portionedFoods, mealId);
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update food information");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update food information");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update food information and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -344,6 +379,7 @@ public class MealPersistence implements Persistence<Meal>{
 		
 		try {
 			ps = conn.prepareStatement("UPDATE Meal SET meal_name = ?, meal_time = ?");
+			conn.setAutoCommit(false);
 			ps.setString(1, object.getName());
 			ps.setString(2, object.getTime());
 			
@@ -352,9 +388,17 @@ public class MealPersistence implements Persistence<Meal>{
 			if(rowsAffected > 0) {
 				updateConfirmation = updateFoodMeal(new HashMap<>(object.getPortionedFoods()), id);
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to udapte a meal");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to udapte a meal");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to udapte a meal and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -384,6 +428,7 @@ public class MealPersistence implements Persistence<Meal>{
 			int mealId = retrieveId(object);
 			
 			ps = conn.prepareStatement("DELETE FROM Meal WHERE meal_id = ? AND mealplan_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, mealId);
 			ps.setInt(2, mealPlanId);
 			
@@ -396,10 +441,17 @@ public class MealPersistence implements Persistence<Meal>{
 				ps.setInt(1, mealId);
 				
 				rowsAffected = ps.executeUpdate();
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to delete a meal");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to delete a meal");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to delete a meal and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);

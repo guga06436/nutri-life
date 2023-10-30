@@ -10,11 +10,9 @@ import model.Admin;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryAdmin;
-import service.LogService;
-import service.impl.LogAdapter;
+import service.Application;
 
 public class AdminManagerImpl implements AdminManager {
-	private static final LogService log = new LogAdapter();
 	private static FactoryAdmin fa;
 	private static Persistence<Admin> persistence;
 
@@ -24,7 +22,7 @@ public class AdminManagerImpl implements AdminManager {
 			persistence = fa.getPersistence();
     	}
     	catch(InfraException e) {
-    		log.logException(e);
+    		Application.logException(e);
     		throw e;
     	}
     }
@@ -79,11 +77,11 @@ public class AdminManagerImpl implements AdminManager {
 			
 			return persistence.insert(admin);
 		} catch (RegisterException e) {
-			log.logException(e);
+			Application.logException(e);
 			throw e;
 		}
 		catch (InfraException e) {
-			log.logException(e);
+			Application.logException(e);
 			throw e;
 		}
     }
@@ -101,12 +99,12 @@ public class AdminManagerImpl implements AdminManager {
 			
 	        if(aux == null) {
 	        	String message = "Admin not found";
-	        	
-	        	log.logDebug(message + ": [username: " + username + "] [password: " + password + "]");
+
+				Application.logDebug(message + ": [username: " + username + "] [password: " + password + "]");
 	        	throw new EntityNotFoundException(message);
 	        }
 		} catch (InfraException e) {
-			log.logException(e);
+			Application.logException(e);
 			throw e;
 		}
 
@@ -114,7 +112,8 @@ public class AdminManagerImpl implements AdminManager {
     }
 
     @Override
-    public void generateReport() throws InfraException {
-        System.out.println("Implementar Relatorio");
+    public void generateReport() throws InfraException
+	{
+		Application.showMessage("Implementar Relatorio");
     }
 }

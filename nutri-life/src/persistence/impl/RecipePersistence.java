@@ -107,6 +107,8 @@ public class RecipePersistence implements Persistence<Recipe>{
 			ps = conn.prepareStatement("INSERT INTO Recipe(recipe_name, sequence_steps, mealplan_id) VALUES " + 
 										"(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
+			conn.setAutoCommit(false);
+			
 			ps.setString(1, object.getName());
 			ps.setString(2, sequenceSteps(object.getSequenceSteps()));
 			ps.setInt(3, mealPlanId);
@@ -121,13 +123,27 @@ public class RecipePersistence implements Persistence<Recipe>{
 					
 					confirmationStoring = insertPortionedIngredients(object.getPortionedIngredients(), recipeId);
 				}
+				
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to create a recipe");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to create a recipe");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to create a recipe and roll back changed data");
+			}
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to insert a recipe: null argument in method call");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to insert a recipe: null argument in method call");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to insert a recipe and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -300,6 +316,7 @@ public class RecipePersistence implements Persistence<Recipe>{
 				recipe.setSequenceSteps(object.getSequenceSteps());
 				
 				ps = conn.prepareStatement("UPDATE Recipe SET recipe_name = ?, sequence_steps = ? WHERE recipe_id = ?");
+				conn.setAutoCommit(false);
 				
 				ps.setString(1, object.getName());
 				ps.setString(2, sequenceSteps(object.getSequenceSteps()));
@@ -309,14 +326,27 @@ public class RecipePersistence implements Persistence<Recipe>{
 				
 				if(rowsAffected > 0) {
 					updateConfirmation = updatePortionedIngredients(object.getPortionedIngredients(), id);
+					conn.commit();
 				}
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update a recipe");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update a recipe");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update a recipe and roll back changed data");
+			}
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to update a recipe: null argument in method call");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update a recipe: null argument in method call");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update a recipe: null argument in method call and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -347,6 +377,7 @@ public class RecipePersistence implements Persistence<Recipe>{
 			}
 			
 			ps = conn.prepareStatement("DELETE FROM Recipe WHERE recipe_id = ? AND mealplan_id = ?");
+			conn.setAutoCommit(false);
 			
 			ps.setInt(1, retrieveId(object));
 			ps.setInt(2, mealPlanId);
@@ -360,13 +391,26 @@ public class RecipePersistence implements Persistence<Recipe>{
 				ps.setInt(1, retrieveId(object));
 				
 				rowsAffected = ps.executeUpdate();
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Cannot delete a recipe");
+			try {
+				conn.rollback();
+				throw new InfraException("Cannot delete a recipe");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Cannot delete a recipe and roll back changed data");
+			}
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Cannot delete a recipe: null argument in method call");
+			try {
+				conn.rollback();
+				throw new InfraException("Cannot delete a recipe: null argument in method call");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Cannot delete a recipe and roll back changed data: null argument in method call");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);

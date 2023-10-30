@@ -43,6 +43,7 @@ public class PatientPersistence implements Persistence<Patient>{
 			p.setPassword(rs.getString("patient_password"));
 			
 			ps = conn.prepareStatement("SELECT nutritionist_id FROM PatientNutritionist WHERE patient_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, rs.getInt("patient_id"));
 			
 			rsAux = ps.executeQuery();
@@ -72,6 +73,7 @@ public class PatientPersistence implements Persistence<Patient>{
 								
 								if(mealPlan != null) {
 									p.setMealPlan(mealPlan);
+									conn.commit();
 								}
 							}
 						}
@@ -80,7 +82,13 @@ public class PatientPersistence implements Persistence<Patient>{
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to instantiate a patient object");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to instantiate a patient object");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to instantiate a patient object and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rsAux);
@@ -132,6 +140,7 @@ public class PatientPersistence implements Persistence<Patient>{
 		try {
 			ps = conn.prepareStatement("INSERT INTO Patient(patient_name, age, cpf, height, weight, "+ 
 															"username, patient_password) VALUES(?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			conn.setAutoCommit(false);
 
 			ps.setString(1, patient.getName());
 			ps.setInt(2, patient.getAge());
@@ -162,13 +171,21 @@ public class PatientPersistence implements Persistence<Patient>{
 								mpPersistence.insert(patient.getMealPlan());
 							}
 						}
+						
+						conn.commit();
 					}
 				}
 				
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to create a patient.");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to create a patient.");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to create a patient and roll back changed data");
+			}
 		}
 		catch(NullPointerException e) {
 			throw new InfraException("Unable to insert a patient: null argument in method call");
@@ -193,12 +210,15 @@ public class PatientPersistence implements Persistence<Patient>{
 		
 		try {
 			st = conn.createStatement();
+			conn.setAutoCommit(false);
 			
 			rs = st.executeQuery("SELECT * FROM Patient");
 			
 			while(rs.next()) {
 				patients.add(instantiatePatient(rs));
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to retrive all patients.");
@@ -219,6 +239,7 @@ public class PatientPersistence implements Persistence<Patient>{
 		
 		try {
 			ps = conn.prepareStatement("SELECT * FROM Patient WHERE username = ? AND patient_password = ?");
+			conn.setAutoCommit(false);
 			
 			ps.setString(1, patient.getUsername());
 			ps.setString(2, patient.getPassword());
@@ -228,6 +249,8 @@ public class PatientPersistence implements Persistence<Patient>{
 			while(rs.next()) {
 				pat = instantiatePatient(rs);
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to retrieve a patient");
@@ -284,6 +307,7 @@ public class PatientPersistence implements Persistence<Patient>{
 		
 		try {
 			ps = conn.prepareStatement("SELECT nutritionist_id FROM PatientNutritionist WHERE patient_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, patientId);
 			
 			rs = ps.executeQuery();
@@ -325,10 +349,18 @@ public class PatientPersistence implements Persistence<Patient>{
 						}
 					}
 				}
+				
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update patient information");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update patient information");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update patient information and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -357,6 +389,7 @@ public class PatientPersistence implements Persistence<Patient>{
 				
 				if(object.getMealPlan() == null) {	
 					ps = conn.prepareStatement("SELECT mealplan_id FROM MealPlan WHERE patient_id = ? AND nutritionist_id = ?");
+					conn.setAutoCommit(false);
 					ps.setInt(1, patientId);
 					
 					Integer nutritionistId = nutritionistPersistence.retrieveId(object.getNutritionist());
@@ -390,10 +423,18 @@ public class PatientPersistence implements Persistence<Patient>{
 						updateConfirmation = mpPersistence.update(object.getMealPlan(), mealPlanId);
 					}
 				}
+				
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update patient information");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update patient information");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update patient information and changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -416,6 +457,8 @@ public class PatientPersistence implements Persistence<Patient>{
 				ps = conn.prepareStatement("UPDATE Patient SET patient_name = ?, age = ?, cpf = ?, height = ?, "
 											+ "weight = ?, username = ?, patient_password = ? WHERE patient_id = ?");
 				
+				conn.setAutoCommit(false);
+				
 				ps.setString(1, object.getName());
 				ps.setInt(2, object.getAge());
 				ps.setString(3, object.getCpf());
@@ -432,12 +475,19 @@ public class PatientPersistence implements Persistence<Patient>{
 					
 					if(rowsAffected > 0) {
 						updateConfirmation = updateMealPlaPatient(object, id);
+						conn.commit();
 					}
 				}
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update a patient");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update a patient");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update a patient and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -460,6 +510,7 @@ public class PatientPersistence implements Persistence<Patient>{
 			}
 			
 			ps = conn.prepareStatement("DELETE FROM Patient WHERE patient_id = ?");
+			conn.setAutoCommit(false);
 			
 			ps.setInt(1, patientId);
 			
@@ -476,15 +527,29 @@ public class PatientPersistence implements Persistence<Patient>{
 					ps = conn.prepareStatement("DELETE FROM PatientNutritionist WHERE patient_id = ?");
 					ps.setInt(1, patientId);
 					
-					rowsAffected = ps.executeUpdate();					
+					rowsAffected = ps.executeUpdate();	
+					
+					conn.commit();
 				}
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to delete a patient from the database");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to delete a patient from the database");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to delete a patient from the database and roll back chagend data");
+			}
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to delete a patient from the database: null argument in method call");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to delete a patient from the database: null argument in method call");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to delete a patient from the database and roll back changed data: null argument in method call");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);

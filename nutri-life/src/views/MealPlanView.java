@@ -1,114 +1,216 @@
 package views;
 
-import controller.exceptions.ExceptionMealPlan;
-import handlers.OptionHandler;
+import controller.MealPlanManager;
+import controller.exceptions.DeleteException;
+import controller.exceptions.EntityNotFoundException;
+import controller.exceptions.RegisterException;
+import controller.exceptions.UpdateException;
+import controller.impl.MealPlanManagerImpl;
+import service.Application;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.db.exception.InfraException;
-import service.Facade;
+import service.status.ErrorApplicationStatus;
+import service.viewobserver.ViewSubject;
 
-public class MealPlanView {
+public class MealPlanView extends ViewSubject
+{
 
-    private Facade manager;
+    private MealPlanManager manager;
     private Patient patient;
+    private Nutritionist nutritionist;
 
-    public MealPlanView(Patient patient) {
+    public MealPlanView(Patient patient, Nutritionist nutritionist) {
         try {
-            manager = Facade.getInstance();
+            manager = new MealPlanManagerImpl();
             this.patient = patient;
+            this.nutritionist = nutritionist;
         } catch (InfraException e) {
-            System.out.println("Jeez! We noticed an error with our infrastructure. Please try again later.");
-            System.exit(1);
+            Application.showMessage("Jeez! We noticed an error with our infrastructure. Please try again later.");
+            Application.exitApplication(new ErrorApplicationStatus());
         }
     }
 
     public void run() {
         boolean running = true;
         while (running) {
-            System.out.println("[1] View Meal Plan");
-            System.out.println("[2] Edit Meal Plan");
-            System.out.println("[3] Exit");
-            System.out.print("Choose an option: ");
-            int option = OptionHandler.readIntegerInput();
-            OptionHandler.readLineInput();
+            Application.showMessage("[1] Create Meal Plan");
+            Application.showMessage("[2] View Meal Plan");
+            Application.showMessage("[3] Edit Meal Plan");
+            Application.showMessage("[4] Remove Meal Plan");
+            Application.showMessage("[5] Exit");
+            Application.showMessage("Choose an option: ", false);
+            int option = Application.readIntegerInput();
+            Application.readLineInput();
 
             switch (option) {
                 case 1:
-                    viewMealPlan();
+                    createMealPlan();
                     break;
                 case 2:
-                    editMealPlan();
+                    notifyObservers("called editMealPlan()");
+                    viewMealPlan();
                     break;
                 case 3:
-                    System.out.println("Exiting...");
+                    notifyObservers("called editMealPlan()");
+                    editMealPlan();
+                    break;
+                case 4:
+                    notifyObservers("called removeMealPlan()");
+                    removeMealPlan();
+                case 5:
+                    notifyObservers("exiting view");
+                    Application.showMessage("Exiting...");
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid option");
+                    Application.showMessage("Invalid option");
             }
+        }
+    }
+
+    private void removeMealPlan() {
+
+        MealPlan mealPlan;
+        try {
+            mealPlan = manager.retrieve(patient);
+        } catch (EntityNotFoundException e) {
+            Application.showMessage("There is no Meal Plan for this patient, please create one");
+            return;
+        } catch (InfraException e) {
+            Application.showMessage(e.getMessage());
+            return;
+        }
+
+        System.out.print("Are you sure to delete? [Y/N]: ");
+        String option;
+        do {
+            option = Application.readStringInput().toUpperCase();
+        } while (!option.equals("Y") && !option.equals("N"));
+
+        if (option.equals("Y")) {
+            try {
+                manager.deleteMealPlan(mealPlan);
+            } catch (DeleteException e) {
+                Application.showMessage(e.getMessage());
+            } catch (InfraException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void createMealPlan() {
+        Application.showMessage("Create a New Meal Plan:");
+
+        Application.showMessage("Plan Name: ", false);
+        String planName = Application.readStringInput();
+
+        Application.showMessage("Goals: ", false);
+        String goals = Application.readStringInput();
+
+        // You will need to handle the creation of meals and recipeList here as per your application's requirements.
+
+        // Create a new MealPlan instance
+        try {
+            manager.createMealPlan(planName, goals, null, null, patient, nutritionist);
+            Application.showMessage("Creation successful");
+        } catch (RegisterException e) {
+            Application.showMessage(e.getMessage());
+        } catch (InfraException e) {
+            Application.showMessage(e.getMessage());
         }
     }
 
     private void viewMealPlan() {
         try {
-            manager.viewMealPlan(patient);
-        } catch (ExceptionMealPlan e) {
-            System.out.println(e.getMessage());
+            MealPlan mealPlan = manager.retrieve(patient);
+            Application.showMessage(mealPlan.getPlanName());
+            Application.showMessage(mealPlan.getGoals());
+            Application.showMessage(mealPlan.getCreationDate().toString());
+            Application.showMessage(mealPlan.getMeals());
+            Application.showMessage(mealPlan.getRecipeList());
         } catch (InfraException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            Application.showMessage("There is no Meal Plan for this patient, please create one");
+        }
+    }
+
+    private void updatePlanName(MealPlan mealplan) {
+        Application.showMessage("Plan Name: ");
+        String name = Application.readStringInput();
+        try {
+            manager.updateMealPlan(mealplan, name, mealplan.getGoals(), mealplan.getMeals(), mealplan.getRecipeList());
+            Application.showMessage("Plan Name updated successfully.");
+        } catch (UpdateException e) {
+            Application.showMessage(e.getMessage());
+        } catch (InfraException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateGoal(MealPlan mealplan) {
+        Application.showMessage("Goal: ");
+        String goal = Application.readStringInput();
+        try {
+            manager.updateMealPlan(mealplan, mealplan.getPlanName(), goal, mealplan.getMeals(), mealplan.getRecipeList());
+            Application.showMessage("Goal updated successfully.");
+        } catch (UpdateException e) {
+            Application.showMessage(e.getMessage());
+        } catch (InfraException e) {
+            throw new RuntimeException(e);
         }
     }
 
     private void editMealPlan() {
         boolean editing = true;
+        MealPlan mealplan;
 
         while (editing) {
             try {
-                MealPlan mealplan = manager.getMealPlan(patient);
-                System.out.println("Editing Meal Plan: " + manager.getMealPlanName(mealplan));
-                manager.getRecipes(mealplan);
+                mealplan = manager.retrieve(patient);
+                Application.showMessage("Editing Meal Plan: ");
+                viewMealPlan();
             } catch (InfraException e) {
-                System.out.println(e.getMessage());
-            } catch (ExceptionMealPlan e) {
-                System.out.println(e.getMessage());
+                Application.showMessage(e.getMessage());
+                break;
+            } catch (EntityNotFoundException e) {
+                Application.showMessage("There is no Meal Plan for this patient, please create one");
+                break;
             }
 
-            System.out.println("[1] Edit Plan Name");
-            System.out.println("[2] Edit Goals");
-            System.out.println("[3] Add Recipe");
-            System.out.println("[4] Remove Recipe");
-            System.out.println("[5] Back to Main Menu");
-            System.out.print("Choose an option: ");
-            int option = OptionHandler.readIntegerInput();
-            OptionHandler.readLineInput();
+            Application.showMessage("[1] Edit Plan Name");
+            Application.showMessage("[2] Edit Goals");
+            Application.showMessage("[3] Add Recipe");
+            Application.showMessage("[4] Remove Recipe");
+            Application.showMessage("[5] Back to Main Menu");
+            Application.showMessage("Choose an option: ", false);
+            int option = Application.readIntegerInput();
+            Application.readLineInput();
 
             switch (option) {
                 case 1:
-                    System.out.println("Plan Name: ");
-                    String name = OptionHandler.readStringInput();
-                    manager.setMealPlanName(name, mealplan);
+                    updatePlanName(mealplan);
                     break;
                 case 2:
-                    System.out.println("Goal: ");
-                    String goal = OptionHandler.readStringInput();
-                    manager.setMealPlanGoal(goal, mealplan);
+                    updateGoal(mealplan);
                     break;
                 case 3:
-                    addRecipe();
+                    //addRecipe();
                     break;
                 case 4:
-                    removeRecipe();
+                    //removeRecipe();
                     break;
                 case 5:
                     editing = false;
                     break;
                 default:
-                    System.out.println("Invalid option");
+                    Application.showMessage("Invalid option");
             }
         }
     }
-
+/*
     private void addRecipe() {
 
 
@@ -154,4 +256,5 @@ public class MealPlanView {
             System.out.println("Invalid recipe selection.");
         }
     }
+*/
 }

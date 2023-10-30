@@ -1,4 +1,4 @@
-package service;
+package service.impl;
 
 import java.util.List;
 
@@ -13,16 +13,15 @@ import controller.impl.PatientManagerImpl;
 import model.Report;
 import model.reports.IReportable;
 import persistence.db.exception.InfraException;
-import service.command.Command;
+import service.Command;
+import service.Application;
 import service.command.GenerateReportCommand;
 import service.command.ListAllCommand;
-import service.impl.LogAdapter;
 
 // Singleton Facade que usa Command
 public class Facade
 {
     private static Facade instance = null;
-    private static final LogService log = new LogAdapter();
 
     private final AdminManager adminManager;
     private final MealPlanManager mealPlanManager;
@@ -55,7 +54,7 @@ public class Facade
         }
         catch (InfraException e)
         {
-            log.logException(e);
+            Application.logException(e);
             throw e;
         }
     }
@@ -69,7 +68,7 @@ public class Facade
         }
         catch (InfraException e)
         {
-            log.logException(e);
+            Application.logException(e);
             throw e;
         }
     }
