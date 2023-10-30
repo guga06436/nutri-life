@@ -141,6 +141,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 		try {
 			ps = conn.prepareStatement("INSERT INTO MealPlan(mealplan_name, date_creation, goals, patient_id, nutritionist_id) "
 									+ "VALUES (?, ?, ?, ?, ?)");
+			conn.setAutoCommit(false);
 			
 			ps.setString(1, object.getPlanName());
 			ps.setTimestamp(2, new Timestamp(object.getCreationDate().getTime()));
@@ -182,10 +183,17 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 				mealPersistence.insert(meal);
 			}
 			
-			rowsAffected = ps.executeUpdate();		
+			rowsAffected = ps.executeUpdate();	
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to insert a meal plan");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to insert a meal plan");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to insert a meal plan and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -291,7 +299,8 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			throw new InfraException("Unable to retrieve a meal plan");
 		}
 		finally {
-			
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
 		}
 		
 		return mealPlanId;
@@ -315,6 +324,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			}
 			
 			ps = conn.prepareStatement("UPDATE MealPlan SET mealplan_name = ?, goals = ?");
+			conn.setAutoCommit(false);
 			ps.setString(1, object.getPlanName());
 			ps.setString(2, object.getGoals());
 			
@@ -343,9 +353,16 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			}
 			
 			rowsAffected = ps.executeUpdate();
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update a meal plan");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update a meal plan");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update a meal plan and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -373,6 +390,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			int mealPlanId = retrieveId(object);
 			
 			ps = conn.prepareStatement("DELETE FROM RecipeMealPlan WHERE mealplan_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, mealPlanId);
 			
 			rowsAffected = ps.executeUpdate();
@@ -412,10 +430,17 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 				ps.setInt(1, mealPlanId);
 				
 				rowsAffected = ps.executeUpdate();
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to delete meal plan");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to delete meal plan");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to delete meal plan and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
