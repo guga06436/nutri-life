@@ -4,5 +4,5 @@ import views.ViewAction;
 
 public interface IViewObserver
 {
-    public void onActionCalled(ViewAction action);
+    void onActionCalled(ViewAction action);
 }

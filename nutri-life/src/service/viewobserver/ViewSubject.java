@@ -10,7 +10,7 @@ public abstract class ViewSubject
 
     public ViewSubject()
     {
-        observers = new ArrayList<IViewObserver>();
+        observers = new ArrayList<>();
     }
 
     public void addObserver(IViewObserver observer)
