@@ -164,6 +164,7 @@ public class FoodPersistence implements Persistence<Food>{
 			ps = conn.prepareStatement("INSERT INTO Food(food_name, food_group, calories, proteins, carbohydrates" + 
 										", lipids, fibers, portion, portion_unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 										, Statement.RETURN_GENERATED_KEYS);
+			conn.setAutoCommit(false);
 			
 			ps.setString(1, food.getName());
 			ps.setInt(2, food.getFoodGroup().ordinal());
@@ -186,12 +187,26 @@ public class FoodPersistence implements Persistence<Food>{
 					confirmationFoodInsertion = insertVitamins(food.getVitamins(), foodId);
 				}
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to insert a food into database");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to insert a food into database");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to insert a food into database and roll back changed data");
+			}
 		}
 		catch(NullPointerException e) {
-			throw new InfraException("Unable to insert a food: null argument in method call");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to insert a food: null argument in method call");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to insert a food and roll back changed data: null argument in method call");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -297,6 +312,7 @@ public class FoodPersistence implements Persistence<Food>{
 		
 		try {
 			ps = conn.prepareStatement("SELECT vitamin_name FROM Vitamin WHERE food_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, foodId);
 			
 			rs = ps.executeQuery();
@@ -322,9 +338,17 @@ public class FoodPersistence implements Persistence<Food>{
 					}
 				}
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update food information");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update food information");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update food information and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -343,6 +367,7 @@ public class FoodPersistence implements Persistence<Food>{
 			removeUnusedVitamin(vitamins, foodId);
 			
 			ps = conn.prepareStatement("SELECT vitamin_id, vitamin_name FROM Vitamin WHERE food_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, foodId);
 			
 			rs = ps.executeQuery();
@@ -374,9 +399,17 @@ public class FoodPersistence implements Persistence<Food>{
 			if(!vitamins.isEmpty()) {
 				updateConfirmation = insertVitamins(vitamins, foodId);
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update food information");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update food information");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update food information and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeResultSet(rs);
@@ -402,6 +435,7 @@ public class FoodPersistence implements Persistence<Food>{
 				ps = conn.prepareStatement("UPDATE Food SET food_name = ?, food_group = ?, calories = ?, proteins = ?, "
 										+ "carbohydrates = ?, lipids = ?, fibers = ?, portion = ?, portion_unit = ? WHERE " + 
 										"food_id = ?");
+				conn.setAutoCommit(false);
 				
 				ps.setString(1, object.getName());
 				ps.setInt(2, object.getFoodGroup().ordinal());
@@ -422,10 +456,18 @@ public class FoodPersistence implements Persistence<Food>{
 				if(rowsAffected > 0) {
 					updateConfirmation = updateVitamins(new HashMap<>(object.getVitamins()), foodId);
 				}
+				
+				conn.commit();
 			}
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to update food registration");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to update food registration");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to update food registration and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);
@@ -448,6 +490,7 @@ public class FoodPersistence implements Persistence<Food>{
 			}
 			
 			ps = conn.prepareStatement("DELETE FROM Vitamin WHERE food_id = ?");
+			conn.setAutoCommit(false);
 			ps.setInt(1, foodId);
 			
 			rowsAffected = ps.executeUpdate();
@@ -459,9 +502,17 @@ public class FoodPersistence implements Persistence<Food>{
 				
 				rowsAffected = ps.executeUpdate();
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to delete the food");
+			try {
+				conn.rollback();
+				throw new InfraException("Unable to delete the food");
+			}
+			catch(SQLException r) {
+				throw new InfraException("Unable to delete the food and roll back changed data");
+			}
 		}
 		finally {
 			Database.closeStatement(ps);
