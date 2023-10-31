@@ -10,7 +10,7 @@ import controller.impl.AdminManagerImpl;
 import controller.impl.MealPlanManagerImpl;
 import controller.impl.NutritionistManagerImpl;
 import controller.impl.PatientManagerImpl;
-import model.Report;
+import model.reports.Report;
 import model.reports.IReportable;
 import persistence.db.exception.InfraException;
 import service.Command;
