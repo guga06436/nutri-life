@@ -4,7 +4,6 @@ import controller.NutritionistManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.impl.NutritionistManagerImpl;
-import service.Application;
 import model.Nutritionist;
 import persistence.db.exception.InfraException;
 import service.status.ErrorApplicationStatus;

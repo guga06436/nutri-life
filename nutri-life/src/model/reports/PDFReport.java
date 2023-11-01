@@ -1,6 +1,6 @@
 package model.reports;
 import java.util.List;
-import service.Application;
+import views.Application;
 
 public class PDFReport extends Report
 {

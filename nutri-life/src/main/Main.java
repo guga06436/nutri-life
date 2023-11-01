@@ -1,4 +1,4 @@
-package application;
+package main;
 
 import org.apache.log4j.PropertyConfigurator;
 

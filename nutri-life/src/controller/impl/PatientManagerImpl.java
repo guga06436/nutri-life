@@ -11,11 +11,13 @@ import model.Patient;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryPatient;
-import service.Application;
+import service.LogService;
+import service.impl.LogAdapter;
 
 public class PatientManagerImpl implements PatientManager{
 	private static FactoryPatient fp;
 	private static Persistence<Patient> persistence;
+	private static final LogService log = LogAdapter.getInstance();
 	
 	public PatientManagerImpl() throws InfraException {
 		try {
@@ -23,7 +25,7 @@ public class PatientManagerImpl implements PatientManager{
 			persistence = fp.getPersistence();
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}
@@ -39,11 +41,11 @@ public class PatientManagerImpl implements PatientManager{
 			return persistence.insert(p);
 		}
 		catch(RegisterException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}
@@ -104,7 +106,7 @@ public class PatientManagerImpl implements PatientManager{
 			}
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}
@@ -122,14 +124,14 @@ public class PatientManagerImpl implements PatientManager{
 			if (patient == null) {
 				String message = "Nutritionist not found";
 				
-				Application.logDebug(message + " [username: " + username + "] [password: " + password + "]");
+				log.logDebug(message + " [username: " + username + "] [password: " + password + "]");
 				throw new EntityNotFoundException(message);
 			}
 	
 			return p;
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}
