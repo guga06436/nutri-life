@@ -13,11 +13,13 @@ import model.Patient;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryNutritionist;
-import service.Application;
+import service.LogService;
+import service.impl.LogAdapter;
 
 public class NutritionistManagerImpl implements NutritionistManager{
 	private static FactoryNutritionist fn;
 	private static Persistence<Nutritionist> persistence;
+	static final LogService log = LogAdapter.getInstance();
 	
 	public NutritionistManagerImpl() throws InfraException {
 		try {
@@ -25,7 +27,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			persistence = fn.getPersistence();
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}
@@ -41,11 +43,11 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			return persistence.insert(n);
 		}
 		catch(RegisterException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}
@@ -115,14 +117,14 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			if (nutritionist == null) {
 				String message = "Nutritionist not found";
 				
-				Application.logDebug(message + "[username: " + username + "] [password: " + password + "]");
+				log.logDebug(message + "[username: " + username + "] [password: " + password + "]");
 				throw new EntityNotFoundException(message);
 			}
 	
 			return nutritionist;
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}

@@ -6,7 +6,6 @@ import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
 import controller.impl.MealPlanManagerImpl;
-import service.Application;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;

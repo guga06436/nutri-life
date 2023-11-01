@@ -4,7 +4,6 @@ import controller.AdminManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.impl.AdminManagerImpl;
-import service.Application;
 import model.Admin;
 import persistence.db.exception.InfraException;
 import service.status.ErrorApplicationStatus;

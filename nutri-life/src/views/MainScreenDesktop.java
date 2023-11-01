@@ -1,5 +1,4 @@
 package views;
-import service.Application;
 import service.status.SuccessApplicationStatus;
 import service.viewobserver.IViewObserver;
 

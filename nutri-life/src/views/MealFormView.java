@@ -6,7 +6,6 @@ import controller.exceptions.DeleteException;
 import controller.exceptions.UpdateException;
 import model.Meal;
 import model.MealPlan;
-import service.Application;
 import service.viewobserver.ViewSubject;
 
 public class MealFormView extends ViewSubject

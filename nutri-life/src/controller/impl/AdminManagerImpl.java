@@ -10,11 +10,14 @@ import model.Admin;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryAdmin;
-import service.Application;
+import views.Application;
+import service.LogService;
+import service.impl.LogAdapter;
 
 public class AdminManagerImpl implements AdminManager {
 	private static FactoryAdmin fa;
 	private static Persistence<Admin> persistence;
+	private static final LogService log = LogAdapter.getInstance();
 
     public AdminManagerImpl() throws InfraException {
     	try {
@@ -22,7 +25,7 @@ public class AdminManagerImpl implements AdminManager {
 			persistence = fa.getPersistence();
     	}
     	catch(InfraException e) {
-    		Application.logException(e);
+    		log.logException(e);
     		throw e;
     	}
     }
@@ -77,11 +80,11 @@ public class AdminManagerImpl implements AdminManager {
 			
 			return persistence.insert(admin);
 		} catch (RegisterException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 		catch (InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
     }
@@ -100,11 +103,11 @@ public class AdminManagerImpl implements AdminManager {
 	        if(aux == null) {
 	        	String message = "Admin not found";
 
-				Application.logDebug(message + ": [username: " + username + "] [password: " + password + "]");
+				log.logDebug(message + ": [username: " + username + "] [password: " + password + "]");
 	        	throw new EntityNotFoundException(message);
 	        }
 		} catch (InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 
