@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="47151d42-9927-4fca-98c9-7345c63bf2b6" name="Changes" comment="Exceptions, PatientFormView">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+    <list default="true" id="47151d42-9927-4fca-98c9-7345c63bf2b6" name="Changes" comment="Fixing reports template method">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/nutri-life.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/nutri-life.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nutri-life/src/views/MealPlanView.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/views/MealPlanView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/application/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/main/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/controller/impl/AdminManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/controller/impl/AdminManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/controller/impl/MealManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/controller/impl/MealManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/controller/impl/MealPlanManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/controller/impl/MealPlanManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/controller/impl/NutritionistManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/controller/impl/NutritionistManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/controller/impl/PatientManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/controller/impl/PatientManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/service/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/service/Application.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutri-life/src/service/impl/Facade.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutri-life/src/service/impl/Facade.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,9 +34,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2UfJM3pXwNskrbLXYWE8DZzDWoK" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -42,12 +48,18 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "backend",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/abraao/nutri-life",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0"
+    "project.structure.side.proportion": "0.0",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -63,6 +75,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1693324651469</updated>
+      <workItem from="1698795853232" duration="975000" />
     </task>
     <task id="LOCAL-00001" summary="Added archiver impl">
       <option name="closed" value="true" />
@@ -80,12 +93,24 @@
       <option name="project" value="LOCAL" />
       <updated>1693345856169</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Fixing reports template method">
+      <option name="closed" value="true" />
+      <created>1698796390383</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1698796390383</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added archiver impl" />
     <MESSAGE value="Exceptions, PatientFormView" />
-    <option name="LAST_COMMIT_MESSAGE" value="Exceptions, PatientFormView" />
+    <MESSAGE value="Fixing reports template method" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing reports template method" />
   </component>
 </project>

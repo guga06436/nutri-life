@@ -4,7 +4,6 @@ import controller.PatientManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.impl.PatientManagerImpl;
-import service.Application;
 import model.Patient;
 import persistence.db.exception.InfraException;
 import service.status.ErrorApplicationStatus;

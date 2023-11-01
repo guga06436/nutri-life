@@ -17,12 +17,14 @@ import model.Recipe;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryMealPlan;
-import service.Application;
+import service.LogService;
+import service.impl.LogAdapter;
 
 @Data
 public class MealPlanManagerImpl implements MealPlanManager{
 	private static FactoryMealPlan fmp;
 	private static Persistence<MealPlan> persistence;
+	private static final LogService log = LogAdapter.getInstance();
 	
 	public MealPlanManagerImpl() throws InfraException {
 		try {
@@ -30,7 +32,7 @@ public class MealPlanManagerImpl implements MealPlanManager{
 			persistence = fmp.getPersistence();
 		}
 		catch(InfraException e) {
-			Application.logException(e);
+			log.logException(e);
 			throw e;
 		}
 	}

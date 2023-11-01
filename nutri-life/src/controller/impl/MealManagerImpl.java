@@ -14,11 +14,13 @@ import model.MealPlan;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryMeal;
-import service.Application;
+import service.LogService;
+import service.impl.LogAdapter;
 
 public class MealManagerImpl implements MealManager {
     private static FactoryMeal mf;
     private static Persistence<Meal> persistence;
+    private static final LogService log = LogAdapter.getInstance();
 
     public MealManagerImpl() throws InfraException {
         try {
@@ -26,7 +28,7 @@ public class MealManagerImpl implements MealManager {
             persistence = mf.getPersistence();
         }
         catch(InfraException e) {
-            Application.logException(e);
+            log.logException(e);
             throw e;
         }
     }
@@ -41,10 +43,10 @@ public class MealManagerImpl implements MealManager {
             Meal m = new Meal(name, time, portionedIngredients, mealPlan);
             return persistence.insert(m);
         } catch(RegisterException e) {
-            Application.logException(e);
+            log.logException(e);
             throw e;
         } catch(InfraException e) {
-            Application.logException(e);
+            log.logException(e);
             throw e;
         }
     }
@@ -91,7 +93,7 @@ public class MealManagerImpl implements MealManager {
             return mealList;
             */
         } catch (IllegalArgumentException e) {
-            Application.logException(e);
+            log.logException(e);
             throw e;
         }
 		return null;

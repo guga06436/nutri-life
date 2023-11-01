@@ -1,6 +1,5 @@
 package views;
 
-import service.Application;
 import model.Admin;
 import persistence.db.exception.InfraException;
 import service.impl.Facade;

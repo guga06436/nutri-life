@@ -1,5 +1,7 @@
-package service;
+package views;
 import persistence.db.exception.InfraException;
+import service.Command;
+import service.LogService;
 import service.builder.ExitCommandBuilder;
 import service.command.ExitApplicationCommand;
 import service.impl.LogAdapter;
@@ -70,7 +72,4 @@ public class Application
         }
     }
     public static void logException(Exception e) {  log.logException(e); }
-    public static void logDebug(String message) {
-        log.logDebug(message);
-    }
 }
