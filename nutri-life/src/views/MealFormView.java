@@ -1,11 +1,13 @@
 package views;
 
 import controller.MealManager;
-import controller.exceptions.CreateException;
 import controller.exceptions.DeleteException;
+import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
+import controller.impl.MealManagerImpl;
 import model.Meal;
 import model.MealPlan;
+import persistence.db.exception.InfraException;
 import service.viewobserver.ViewSubject;
 
 public class MealFormView extends ViewSubject
@@ -13,9 +15,14 @@ public class MealFormView extends ViewSubject
     private MealManager mealManager;
     private MealPlan mealPlan;
 
-    public MealFormView(MealPlan mealPlan) {
-        this.mealManager = new MealManager();
-        this.mealPlan = mealPlan;
+    public MealFormView(MealPlan mealPlan) throws InfraException {
+    	try {
+	        this.mealManager = new MealManagerImpl();
+	        this.mealPlan = mealPlan;
+    	}
+    	catch(InfraException e) {
+    		throw e;
+    	}
     }
 
     public void run() {
@@ -32,8 +39,8 @@ public class MealFormView extends ViewSubject
 
             switch (option) {
                 case 1:
-                    notifyObservers("exiting createMeal()");
-                    createMeal();
+                    notifyObservers("exiting insert()");
+                    insert();
                     break;
                 case 2:
                     notifyObservers("called viewMeals()");
@@ -58,7 +65,7 @@ public class MealFormView extends ViewSubject
         }
     }
 
-    private void createMeal() {
+    private void insert() {
         Application.showMessage("Create a New Meal:");
 
         Application.showMessage("Name: ", false);
@@ -70,9 +77,9 @@ public class MealFormView extends ViewSubject
         Meal newMeal = new Meal(name, time, portionedFoods, mealPlan);
 
         try {
-            mealManager.createMeal(newMeal);
+            mealManager.insert(newMeal);
             Application.showMessage("Meal created successfully.");
-        } catch (CreateException e) {
+        } catch (RegisterException e) {
             Application.showMessage("Error: " + e.getMessage());
         }
     }
