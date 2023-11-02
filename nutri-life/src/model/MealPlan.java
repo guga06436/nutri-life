@@ -10,7 +10,6 @@ public class MealPlan {
     private Date creationDate; 
     private String goals; 
     private List<Meal> meals;
-    private List<Recipe> recipeList;
     
     private Patient patient;
     private Nutritionist nutritionist;
@@ -19,18 +18,13 @@ public class MealPlan {
     	
     }
 
-    public MealPlan(String planName, Date creationDate, String goals, List<Meal> meals, List<Recipe> recipeList, Patient patient, Nutritionist nutritionist) {
+    public MealPlan(String planName, Date creationDate, String goals, List<Meal> meals, Patient patient, Nutritionist nutritionist) {
         this.planName = planName;
         this.creationDate = creationDate;
         this.goals = goals;
         this.meals = meals;
-        this.recipeList = recipeList;
         this.patient = patient;
         this.nutritionist = nutritionist;
-    }
-  
-    public void addNewRecipe(Recipe recipe) {
-    	recipeList.add(recipe);
     }
 
 	@Override
