@@ -13,7 +13,6 @@ import model.Meal;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
-import model.Recipe;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryMealPlan;
@@ -38,14 +37,14 @@ public class MealPlanManagerImpl implements MealPlanManager{
 	}
 	
 	@Override
-	public void createMealPlan(String planName, String goals,List<Meal> meals,  List<Recipe> recipeList, Patient patient, Nutritionist nutritionist) throws RegisterException, InfraException {
-		MealPlan mp = new MealPlan(planName, new Date(), goals, meals, recipeList, patient, nutritionist);
+	public void createMealPlan(String planName, String goals,List<Meal> meals, Patient patient, Nutritionist nutritionist) throws RegisterException, InfraException {
+		MealPlan mp = new MealPlan(planName, new Date(), goals, meals, patient, nutritionist);
 		persistence.insert(mp);
 	}
 
 	@Override
-	public void updateMealPlan(MealPlan mealPlan, String planName, String goals, List<Meal> meals, List<Recipe> recipeList) throws UpdateException, InfraException {
-		MealPlan mp = new MealPlan(planName, mealPlan.getCreationDate(), goals, meals, recipeList, mealPlan.getPatient(), mealPlan.getNutritionist());
+	public void updateMealPlan(MealPlan mealPlan, String planName, String goals, List<Meal> meals) throws UpdateException, InfraException {
+		MealPlan mp = new MealPlan(planName, mealPlan.getCreationDate(), goals, meals, mealPlan.getPatient(), mealPlan.getNutritionist());
 		persistence.update(mp, mealPlan.hashCode());
 		
 	}
