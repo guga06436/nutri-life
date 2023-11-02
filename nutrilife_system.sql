@@ -84,28 +84,6 @@ CREATE TABLE Vitamin(
     FOREIGN KEY(food_id) REFERENCES Food(food_id)
 );
 
-CREATE TABLE Recipe(
-	recipe_id 					INT AUTO_INCREMENT,
-    recipe_name 				VARCHAR(30) NOT NULL,
-    sequence_steps 				LONGTEXT NOT NULL,
-    mealplan_id					INT NOT NULL,
-    
-    PRIMARY KEY(recipe_id)
-);
-
-CREATE TABLE FoodRecipe(
-    food_id 					INT NOT NULL,
-    portion						DECIMAL NOT NULL,
-    portion_unit				VARCHAR(20) NOT NULL,
-    recipe_id					INT NOT NULL,
-    
-	CONSTRAINT food_recipe_non_negative_portion CHECK (portion > 0.0),
-    
-    PRIMARY KEY(food_id, recipe_id),
-    FOREIGN KEY(food_id) REFERENCES Food(food_id),
-    FOREIGN KEY(recipe_id) REFERENCES Recipe(recipe_id)
-);
-
 CREATE TABLE MealPlan(
 	mealplan_id					INT AUTO_INCREMENT,
     mealplan_name				VARCHAR(60) NOT NULL,
@@ -116,16 +94,7 @@ CREATE TABLE MealPlan(
     
     PRIMARY KEY(mealplan_id),
     FOREIGN KEY(patient_id) REFERENCES Patient(patient_id),
-    FOREIGN KEY(nutritionist) REFERENCES Nutritionist(nutritionist_id)
-);
-
-CREATE TABLE RecipeMealPlan(
-	recipe_id					INT NOT NULL,
-	mealplan_id					INT NOT NULL,
-    
-    PRIMARY KEY(recipe_id, mealplan_id),
-    FOREIGN KEY(recipe_id) REFERENCES Recipe(recipe_id),
-    FOREIGN KEY(mealplan_id) REFERENCES MealPlan(mealplan_id)
+    FOREIGN KEY(nutritionist_id) REFERENCES Nutritionist(nutritionist_id)
 );
 
 CREATE TABLE Meal(
