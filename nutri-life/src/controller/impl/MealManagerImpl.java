@@ -107,10 +107,6 @@ public class MealManagerImpl implements MealManager {
         if (isEmptyString(mealPlan.getPlanName())) {
             throw new IllegalArgumentException("Meal plan name cannot be empty");
         }
-
-        if (mealPlan.getRecipeList() == null || mealPlan.getRecipeList().size() > 0) {
-            throw new IllegalArgumentException("Meal plan recipe list cannot be empty");
-        }
         // You can add more attribute checks here as needed.
     }
 
