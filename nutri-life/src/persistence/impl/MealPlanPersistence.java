@@ -14,7 +14,6 @@ import model.Meal;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
-import model.Recipe;
 import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
@@ -63,43 +62,6 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 		return allMealsMealPlan;
 	}
 	
-	private List<Recipe> listAllRecipesMealPlan(int mealPlanId) throws InfraException{
-		RecipePersistence recipePersistence;
-		FactoryRecipe factoryRecipe = new FactoryRecipe();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<Recipe> allRecipesMealPlan = null;
-		
-		try {
-			ps = conn.prepareStatement("SELECT recipe_id FROM RecipeMealPlan WHERE mealplan_id = ?");
-			
-			ps.setInt(1, mealPlanId);
-			
-			rs = ps.executeQuery();
-			
-			allRecipesMealPlan = new ArrayList<>();
-			recipePersistence = factoryRecipe.getPersistence();
-			while(rs.next()) {
-				Recipe recipe = recipePersistence.retrieveById(rs.getInt(1));
-				
-				if(recipe == null) {
-					throw new InfraException("Unable to retrieve a meal plan");
-				}
-				
-				allRecipesMealPlan.add(recipe);
-			}
-		}
-		catch(SQLException e) {
-			throw new InfraException("Unable to retrieve a meal plan");
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-		
-		return allRecipesMealPlan;
-	}
-	
 	private MealPlan instantiateMealPlan(ResultSet rs, int mealPlanId) throws SQLException, InfraException{
 		FactoryPatient factoryPatient = new FactoryPatient();
 		PatientPersistence patientPersistence = null;
@@ -113,7 +75,6 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 		mealPlan.setPlanName(rs.getString("mealplan_name"));
 		mealPlan.setCreationDate(new Date(rs.getTimestamp("date_creation").getTime()));
 		mealPlan.setGoals(rs.getString("goals"));
-		mealPlan.setRecipeList(listAllRecipesMealPlan(mealPlanId));
 		mealPlan.setMeals(listAllMealsMealPlan(mealPlanId));
 		
 		Patient patient = patientPersistence.retrieveById(rs.getInt("patient_id"));
@@ -129,11 +90,9 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 	public boolean insert(MealPlan object) throws InfraException {
 		FactoryPatient factoryPatient = new FactoryPatient();
 		FactoryNutritionist factoryNutritionist = new FactoryNutritionist();
-		FactoryRecipe factoryRecipe = new FactoryRecipe();
 		FactoryMeal factoryMeal = new FactoryMeal();
 		PatientPersistence patientPersistence = null;
 		NutritionistPersistence nutritionistPersistence = null;
-		RecipePersistence recipePersistence = null;
 		MealPersistence mealPersistence = null;
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
@@ -160,18 +119,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			ps.setInt(4, patientId);
 			ps.setInt(5, nutritionistId);
 			
-			recipePersistence = factoryRecipe.getPersistence();
 			mealPersistence = factoryMeal.getPersistence();
-			
-			for(Recipe recipe : object.getRecipeList()) {
-				int recipeId = recipePersistence.retrieveId(recipe);
-				
-				if(recipeId < 0) {
-					throw new InfraException("Unable to insert a meal plan: inconsistent data");
-				}
-				
-				recipePersistence.insert(recipe);
-			}
 			
 			for(Meal meal : object.getMeals()) {
 				int mealId = mealPersistence.retrieveId(meal);
@@ -308,9 +256,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 
 	@Override
 	public boolean update(MealPlan object, int id) throws InfraException {
-		FactoryRecipe factoryRecipe = new FactoryRecipe();
 		FactoryMeal factoryMeal = new FactoryMeal();
-		RecipePersistence recipePersistence = null;
 		MealPersistence mealPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -327,18 +273,6 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			conn.setAutoCommit(false);
 			ps.setString(1, object.getPlanName());
 			ps.setString(2, object.getGoals());
-			
-			recipePersistence = factoryRecipe.getPersistence();
-			
-			for(Recipe recipe : object.getRecipeList()) {
-				int recipeId = recipePersistence.retrieveId(recipe);
-				
-				if(recipeId < 0) {
-					throw new InfraException("Unable to update meal plan information: inconsistent data");
-				}
-				
-				recipePersistence.update(recipe, recipeId);
-			}
 			
 			mealPersistence = factoryMeal.getPersistence();
 			
@@ -380,8 +314,6 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 	public boolean delete(MealPlan object) throws InfraException {
 		MealPersistence mealPersistence = null;
 		FactoryMeal factoryMeal = new FactoryMeal();
-		RecipePersistence recipePersistence = null;
-		FactoryRecipe factoryRecipe = new FactoryRecipe();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int rowsAffected = -1;
@@ -402,15 +334,6 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 				ps.setInt(1, mealPlanId);
 				
 				rs = ps.executeQuery();
-				
-				recipePersistence = factoryRecipe.getPersistence();
-				while(rs.next()) {
-					Recipe recipe = recipePersistence.retrieveById(rs.getInt("recipe_id"));
-					
-					if(!recipePersistence.delete(recipe)) {
-						throw new InfraException("Unable to delete meal plan information");
-					}
-				}
 				
 				ps = conn.prepareStatement("SELECT meal_id FROM Meal WHERE mealplan_id = ?");
 				ps.setInt(1, mealPlanId);
