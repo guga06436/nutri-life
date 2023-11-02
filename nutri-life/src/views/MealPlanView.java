@@ -112,7 +112,7 @@ public class MealPlanView extends ViewSubject
 
         // Create a new MealPlan instance
         try {
-            manager.createMealPlan(planName, goals, null, null, patient, nutritionist);
+            manager.createMealPlan(planName, goals, null, patient, nutritionist);
             Application.showMessage("Creation successful");
         } catch (RegisterException e) {
             Application.showMessage(e.getMessage());
@@ -128,7 +128,6 @@ public class MealPlanView extends ViewSubject
             Application.showMessage(mealPlan.getGoals());
             Application.showMessage(mealPlan.getCreationDate().toString());
             Application.showMessage(mealPlan.getMeals());
-            Application.showMessage(mealPlan.getRecipeList());
         } catch (InfraException e) {
             Application.showMessage(e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -140,7 +139,7 @@ public class MealPlanView extends ViewSubject
         Application.showMessage("Plan Name: ");
         String name = Application.readStringInput();
         try {
-            manager.updateMealPlan(mealplan, name, mealplan.getGoals(), mealplan.getMeals(), mealplan.getRecipeList());
+            manager.updateMealPlan(mealplan, name, mealplan.getGoals(), mealplan.getMeals());
             Application.showMessage("Plan Name updated successfully.");
         } catch (UpdateException e) {
             Application.showMessage(e.getMessage());
@@ -153,7 +152,7 @@ public class MealPlanView extends ViewSubject
         Application.showMessage("Goal: ");
         String goal = Application.readStringInput();
         try {
-            manager.updateMealPlan(mealplan, mealplan.getPlanName(), goal, mealplan.getMeals(), mealplan.getRecipeList());
+            manager.updateMealPlan(mealplan, mealplan.getPlanName(), goal, mealplan.getMeals());
             Application.showMessage("Goal updated successfully.");
         } catch (UpdateException e) {
             Application.showMessage(e.getMessage());
@@ -209,51 +208,4 @@ public class MealPlanView extends ViewSubject
             }
         }
     }
-/*
-    private void addRecipe() {
-
-
-        System.out.println("Adding Recipe");
-        System.out.print("Recipe Name: ");
-        String recipeName = OptionHandler.readStringInput();
-
-        Recipe newRecipe = new Recipe(recipeName, ingredients, instructions);
-
-
-        manager.addRecipeToMealPlan(newRecipe, patient);
-
-        System.out.println("Recipe added to the meal plan.");
-    }
-
-    private void removeRecipe() {
-
-
-        System.out.println("Removing Recipe");
-
-        MealPlan mealPlan = manager.getMealPlan(patient);
-        List<Recipe> recipes = mealPlan.getRecipes();
-
-        if (recipes.isEmpty()) {
-            System.out.println("No recipes in the meal plan to remove.");
-            return;
-        }
-
-        System.out.println("Recipes in the meal plan:");
-        for (int i = 0; i < recipes.size(); i++) {
-            System.out.println((i + 1) + ". " + recipes.get(i).getName());
-        }
-
-        System.out.print("Enter the number of the recipe to remove: ");
-        int recipeIndex = OptionHandler.readIntegerInput();
-
-        if (recipeIndex >= 1 && recipeIndex <= recipes.size()) {
-
-            Recipe removedRecipe = recipes.remove(recipeIndex - 1);
-            manager.setRecipes(mealPlan, recipes);
-            System.out.println(removedRecipe.getName() + " removed from the meal plan.");
-        } else {
-            System.out.println("Invalid recipe selection.");
-        }
-    }
-*/
 }
