@@ -10,12 +10,11 @@ import model.Meal;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
-import model.Recipe;
 import persistence.db.exception.InfraException;
 
 public interface MealPlanManager {
-    void createMealPlan(String planName, String goals, List<Meal> meals, List<Recipe> recipeList, Patient patient, Nutritionist nutritionist) throws RegisterException, InfraException;
-    void updateMealPlan(MealPlan mealPlan, String planName, String goals, List<Meal> meals, List<Recipe> recipeList) throws UpdateException, InfraException;
+    void createMealPlan(String planName, String goals, List<Meal> meals, Patient patient, Nutritionist nutritionist) throws RegisterException, InfraException;
+    void updateMealPlan(MealPlan mealPlan, String planName, String goals, List<Meal> meals) throws UpdateException, InfraException;
     void deleteMealPlan(MealPlan mealPLan) throws DeleteException, InfraException;
     MealPlan retrieve(Patient patient) throws EntityNotFoundException, InfraException;
 }
