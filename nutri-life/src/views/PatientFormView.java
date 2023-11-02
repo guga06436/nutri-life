@@ -65,7 +65,7 @@ public class PatientFormView extends ViewSubject
 
         try {
             Patient loggedInPatient = manager.retrieve(login, password);
-            Application.showMessage("Login successful for patient" + loggedInPatient.getName());
+            Application.showMessage("Login successful for patient " + loggedInPatient.getName());
         } catch (EntityNotFoundException e) {
             Application.showMessage("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
