@@ -36,7 +36,7 @@ public class PatientManagerImpl implements PatientManager{
 			validateUsername(username);
 			validatePassword(password);
 			validateAge(age);
-	
+			
 			Patient p = new Patient(username, password, name, cpf, age, height, weight);
 			return persistence.insert(p);
 		}
@@ -120,15 +120,13 @@ public class PatientManagerImpl implements PatientManager{
 			p.setPassword(password);
 			
 			Patient patient = persistence.retrieve(p);
-	
 			if (patient == null) {
-				String message = "Nutritionist not found";
+				String message = "Patient not found";
 				
 				log.logDebug(message + " [username: " + username + "] [password: " + password + "]");
 				throw new EntityNotFoundException(message);
 			}
-	
-			return p;
+			return patient;
 		}
 		catch(InfraException e) {
 			log.logException(e);
