@@ -1,14 +1,14 @@
 package views;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
+
 import persistence.db.exception.InfraException;
 import service.Command;
 import service.LogService;
 import service.builder.ExitCommandBuilder;
-import service.command.ExitApplicationCommand;
 import service.impl.LogAdapter;
 import service.status.ApplicationStatus;
-
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
 public class Application
 {
@@ -43,6 +43,12 @@ public class Application
             System.out.println("You must type a float! Please try again: ");
             return readFloatInput();
         }
+    }
+    
+    public static void showMessage(List<?> data){
+    	for(Object object: data) {
+    		System.out.println(object);
+    	}
     }
 
     public static void showMessage(String data)
