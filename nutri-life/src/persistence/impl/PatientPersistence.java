@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,13 +74,13 @@ public class PatientPersistence implements Persistence<Patient>{
 								
 								if(mealPlan != null) {
 									p.setMealPlan(mealPlan);
-									conn.commit();
 								}
 							}
 						}
 					}
 				}
 			}
+			conn.commit();
 		}
 		catch(SQLException e) {
 			try {
@@ -106,16 +107,18 @@ public class PatientPersistence implements Persistence<Patient>{
 		
 		try {
 			nutritionistPersistence = factoryNutritionist.getPersistence();
-			
 			Integer nutritionistId = null;
-			
-			if(patient.getNutritionist() != null) {
-				nutritionistId = nutritionistPersistence.retrieveId(patient.getNutritionist());
-			}
 			
 			ps = conn.prepareStatement("INSERT INTO PatientNutritionist(patient_id, nutritionist_id) VALUES (?, ?)");
 			ps.setInt(1, patientId);
-			ps.setInt(2, nutritionistId);
+			
+			if(patient.getNutritionist() != null) {
+				nutritionistId = nutritionistPersistence.retrieveId(patient.getNutritionist());
+				ps.setInt(2, nutritionistId);
+			}
+			else {
+				ps.setNull(2, Types.NULL);
+			}
 			
 			rowsAffected = ps.executeUpdate();
 		}
@@ -141,7 +144,7 @@ public class PatientPersistence implements Persistence<Patient>{
 			ps = conn.prepareStatement("INSERT INTO Patient(patient_name, age, cpf, height, weight, "+ 
 															"username, patient_password) VALUES(?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			conn.setAutoCommit(false);
-
+			
 			ps.setString(1, patient.getName());
 			ps.setInt(2, patient.getAge());
 			ps.setString(3, patient.getCpf());
@@ -262,7 +265,6 @@ public class PatientPersistence implements Persistence<Patient>{
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
-		
 		return pat;
 	}
 
