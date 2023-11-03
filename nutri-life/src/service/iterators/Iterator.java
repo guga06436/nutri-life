@@ -1,2 +1,6 @@
-package service.iterators;public interface Iterator {
+package service.iterators;
+
+public interface Iterator<T> {
+    boolean hasNext();
+    T next();
 }
