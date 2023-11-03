@@ -13,6 +13,7 @@ import persistence.db.exception.InfraException;
 import persistence.impl.FactoryPatient;
 import service.LogService;
 import service.impl.LogAdapter;
+import service.iterators.ListIterator;
 
 public class PatientManagerImpl implements PatientManager{
 	private static FactoryPatient fp;
@@ -100,9 +101,10 @@ public class PatientManagerImpl implements PatientManager{
 	public void listAll() throws InfraException {
 		try {
 			List<Patient> patients = persistence.listAll();
-			
-			for(Patient p : patients) {
-				System.out.println(p);
+
+			ListIterator<Patient> iterator = new ListIterator<>(patients);
+			while (iterator.hasNext()) {
+				iterator.next();
 			}
 		}
 		catch(InfraException e) {

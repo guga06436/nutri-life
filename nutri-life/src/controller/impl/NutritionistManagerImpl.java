@@ -15,6 +15,7 @@ import persistence.db.exception.InfraException;
 import persistence.impl.FactoryNutritionist;
 import service.LogService;
 import service.impl.LogAdapter;
+import service.iterators.ListIterator;
 
 public class NutritionistManagerImpl implements NutritionistManager{
 	private static FactoryNutritionist fn;
@@ -130,8 +131,18 @@ public class NutritionistManagerImpl implements NutritionistManager{
 	}
 
 	@Override
-	public List<Nutritionist> listAll() {
-		// TODO Auto-generated method stub
-		return null;
+	public void listAll() throws InfraException {
+		try {
+			List<Nutritionist> nutritionists = persistence.listAll();
+
+			ListIterator<Nutritionist> iterator = new ListIterator<>(nutritionists);
+			while (iterator.hasNext()) {
+				iterator.next();
+			}
+		}
+		catch(InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 }

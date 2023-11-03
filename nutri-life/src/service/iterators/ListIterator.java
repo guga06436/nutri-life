@@ -1,25 +1,26 @@
 package service.iterators;
-import java.util.ArrayList;
+
+import java.util.List;
 import java.util.NoSuchElementException;
 
-public class ArrayListIterator<T> implements Iterator<T> {
-    private ArrayList<T> arrayList;
+public class ListIterator<T> implements Iterator<T> {
+    private List<T> list;
     private int index;
 
-    public ArrayListIterator(ArrayList<T> arrayList) {
-        this.arrayList = arrayList;
+    public ListIterator(List<T> list) {
+        this.list = list;
         this.index = 0;
     }
 
     @Override
     public boolean hasNext() {
-        return index < arrayList.size();
+        return index < list.size();
     }
 
     @Override
     public T next() {
         if (hasNext()) {
-            T element = arrayList.get(index);
+            T element = list.get(index);
             index++;
             return element;
         }
