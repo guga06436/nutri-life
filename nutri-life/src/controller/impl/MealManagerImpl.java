@@ -26,8 +26,7 @@ public class MealManagerImpl implements MealManager {
         try {
             mf = new FactoryMeal();
             persistence = mf.getPersistence();
-        }
-        catch(InfraException e) {
+        } catch (InfraException e) {
             log.logException(e);
             throw e;
         }
@@ -38,14 +37,13 @@ public class MealManagerImpl implements MealManager {
         try {
             validateTime(hour, minutes, seconds);
 
-
             String time = hour + ":" + minutes + ":" + seconds;
             Meal m = new Meal(name, time, portionedIngredients, mealPlan);
             return persistence.insert(m);
-        } catch(RegisterException e) {
+        } catch (RegisterException e) {
             log.logException(e);
             throw e;
-        } catch(InfraException e) {
+        } catch (InfraException e) {
             log.logException(e);
             throw e;
         }
@@ -96,7 +94,7 @@ public class MealManagerImpl implements MealManager {
             log.logException(e);
             throw e;
         }
-		return null;
+        return null;
     }
 
     private void validateMealPlan(MealPlan mealPlan) throws IllegalArgumentException {
@@ -110,7 +108,7 @@ public class MealManagerImpl implements MealManager {
         // You can add more attribute checks here as needed.
     }
 
-    private static boolean isEmptyString(String str) {
+    private boolean isEmptyString(String str) {
         return str == null || str.trim().isEmpty();
     }
 }

@@ -13,6 +13,11 @@ public class ListIterator<T> implements Iterator<T> {
     }
 
     @Override
+    public int getIndex() {
+        return index;
+    }
+
+    @Override
     public boolean hasNext() {
         return index < list.size();
     }

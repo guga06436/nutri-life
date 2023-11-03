@@ -86,13 +86,13 @@ public class MealPlanManagerImpl implements MealPlanManager{
 	@Override
 	public MealPlan retrieve(Patient patient) throws EntityNotFoundException, InfraException {
 		try {
-			if (patient == null) {
-				String message = "Patient not found";
-
-				log.logDebug(message + "[null patient accessing mealPlan]");
+			MealPlan mealPlan = persistence.retrieve(patient.getMealPlan());
+			if (mealPlan == null) {
+				String message = "MealPlan not found";
+				log.logDebug(message);
 				throw new EntityNotFoundException(message);
 			}
-			return persistence.retrieve(patient.getMealPlan());
+			return mealPlan;
 		} catch (InfraException e) {
 			log.logException(e);
 			throw e;
