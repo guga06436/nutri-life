@@ -3,6 +3,7 @@ package controller.impl;
 import controller.FoodManager;
 import controller.exceptions.EntityNotFoundException;
 import model.Food;
+import model.Nutritionist;
 import model.enums.FoodGroup;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
@@ -32,7 +33,10 @@ public class FoodManagerImpl implements FoodManager {
     @Override
     public List<Food> retrieve(String name, FoodGroup foodGroup) throws EntityNotFoundException, InfraException {
         try {
-            List<Food> matchingFoods = persistence.retrieve(name, foodGroup);
+            Food f = new Food();
+            f.setName(name);
+            f.setFoodGroup(foodGroup);
+            List<Food> matchingFoods = persistence.retrieve(f);
             if (matchingFoods.isEmpty()) {
                 String message = "No matching foods found";
                 log.logDebug(message);
