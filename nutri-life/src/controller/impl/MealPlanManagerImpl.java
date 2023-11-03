@@ -38,24 +38,64 @@ public class MealPlanManagerImpl implements MealPlanManager{
 	
 	@Override
 	public void createMealPlan(String planName, String goals,List<Meal> meals, Patient patient, Nutritionist nutritionist) throws RegisterException, InfraException {
-		MealPlan mp = new MealPlan(planName, new Date(), goals, meals, patient, nutritionist);
-		persistence.insert(mp);
+		try {
+			MealPlan mp = new MealPlan(planName, new Date(), goals, meals, patient, nutritionist);
+			persistence.insert(mp);
+		} catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
+
 	}
 
 	@Override
 	public void updateMealPlan(MealPlan mealPlan, String planName, String goals, List<Meal> meals) throws UpdateException, InfraException {
-		MealPlan mp = new MealPlan(planName, mealPlan.getCreationDate(), goals, meals, mealPlan.getPatient(), mealPlan.getNutritionist());
-		persistence.update(mp, mealPlan.hashCode());
+		try {
+			if (planName == null) {
+				String message = "Plan Name must not be null";
+
+				log.logDebug(message);
+				throw new UpdateException(message);
+			}
+			MealPlan mp = new MealPlan(planName, mealPlan.getCreationDate(), goals, meals, mealPlan.getPatient(), mealPlan.getNutritionist());
+			persistence.update(mp, mealPlan.hashCode());
+		} catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
+
 		
 	}
 
 	@Override
 	public void deleteMealPlan(MealPlan mealPLan) throws DeleteException, InfraException {
-		persistence.delete(mealPLan);
+		try {
+			if (mealPLan == null) {
+				String message = "mealPlan not found";
+
+				log.logDebug(message + "[Trying to delete null Meal Plan]");
+				throw new DeleteException(message);
+			}
+			persistence.delete(mealPLan);
+		} catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 
 	@Override
 	public MealPlan retrieve(Patient patient) throws EntityNotFoundException, InfraException {
-		return persistence.retrieveById(patient.hashCode());
+		try {
+			if (patient == null) {
+				String message = "Patient not found";
+
+				log.logDebug(message + "[null patient accessing mealPlan]");
+				throw new EntityNotFoundException(message);
+			}
+			return persistence.retrieve(patient.getMealPlan());
+		} catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
 	}
 }

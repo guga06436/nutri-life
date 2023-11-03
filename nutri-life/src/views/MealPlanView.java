@@ -108,7 +108,7 @@ public class MealPlanView extends ViewSubject
         Application.showMessage("Goals: ", false);
         String goals = Application.readStringInput();
 
-        // You will need to handle the creation of meals and recipeList here as per your application's requirements.
+        // You will need to handle the creation of meals here as per your application's requirements.
 
         // Create a new MealPlan instance
         try {
@@ -180,8 +180,8 @@ public class MealPlanView extends ViewSubject
 
             Application.showMessage("[1] Edit Plan Name");
             Application.showMessage("[2] Edit Goals");
-            Application.showMessage("[3] Add Recipe");
-            Application.showMessage("[4] Remove Recipe");
+            Application.showMessage("[3] Add Meal");
+            Application.showMessage("[4] Remove Meal");
             Application.showMessage("[5] Back to Main Menu");
             Application.showMessage("Choose an option: ", false);
             int option = Application.readIntegerInput();
@@ -195,10 +195,10 @@ public class MealPlanView extends ViewSubject
                     updateGoal(mealplan);
                     break;
                 case 3:
-                    //addRecipe();
+                    //addMeal();
                     break;
                 case 4:
-                    //removeRecipe();
+                    //removeMeal();
                     break;
                 case 5:
                     editing = false;
