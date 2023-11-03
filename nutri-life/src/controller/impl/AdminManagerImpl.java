@@ -10,7 +10,6 @@ import model.Admin;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryAdmin;
-import views.Application;
 import service.LogService;
 import service.impl.LogAdapter;
 
@@ -112,11 +111,5 @@ public class AdminManagerImpl implements AdminManager {
 		}
 
         return aux;
-    }
-
-    @Override
-    public void generateReport() throws InfraException
-	{
-		Application.showMessage("Implementar Relatorio");
     }
 }

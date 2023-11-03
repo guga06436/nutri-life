@@ -1,23 +1,23 @@
 package model.reports;
-import java.util.List;
+
 import views.Application;
 
 public class PDFReport extends Report
 {
     @Override
-    public void generateHead(List<IReportable> reports)
+    public void generateHead()
     {
         Application.showMessage("------- PDF -------");
     }
 
     @Override
-    public void generateBody(List<IReportable> reports)
+    public void generateBody()
     {
         Application.showMessage("Generating PDF report");
     }
 
     @Override
-    public void generateFoot(List<IReportable> reports)
+    public void generateFoot()
     {
         Application.showMessage("-------------------");
     }

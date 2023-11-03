@@ -1,6 +1,8 @@
 package views;
 
 import model.Admin;
+import model.reports.HTMLReport;
+import model.reports.PDFReport;
 import persistence.db.exception.InfraException;
 import service.impl.Facade;
 import service.status.ErrorApplicationStatus;
@@ -9,7 +11,7 @@ import service.viewobserver.ViewSubject;
 public class AdminActionsView extends ViewSubject
 {
     private Facade manager;
-    private Admin loggedInAdmin;
+    private final Admin loggedInAdmin;
 
     public AdminActionsView(Admin loggedInAdmin) {
         try {
@@ -32,7 +34,7 @@ public class AdminActionsView extends ViewSubject
             Application.showMessage("[1] List all");
             Application.showMessage("[2] Generate report");
             Application.showMessage("[3] Log out");
-            Application.showMessage("Escolha uma opção: ");
+            Application.showMessage("Choose an option: ");
             int option = Application.readIntegerInput();
             Application.readLineInput();
 
@@ -58,14 +60,46 @@ public class AdminActionsView extends ViewSubject
     }
 
     private void listAll() {
-        // Implemente a lógica para listar todos os itens desejados.
-        Application.showMessage("Listar todos - Ação a ser implementada");
-        //manager.listAll();
+        try {
+            manager.listAll();
+        } catch (InfraException e) {
+            Application.showMessage(e.getMessage());
+        }
     }
 
     private void generateReport() {
-        // Implemente a lógica para gerar um relatório.
-        Application.showMessage("Gerar relatório - Ação a ser implementada");
-        //manager.generateReport();
+        boolean running = true;
+        while (running) {
+            Application.showMessage("Choose report format:");
+            Application.showMessage("[1] PDF");
+            Application.showMessage("[2] HTML");
+            Application.showMessage("[3] Exit");
+
+            int option = Application.readIntegerInput();
+
+            switch (option) {
+                case (1):
+                    try {
+                        manager.generateReport(new PDFReport());
+                    } catch (InfraException e) {
+                        Application.showMessage(e.getMessage());
+                    }
+                    break;
+                case (2):
+                    try {
+                        manager.generateReport(new HTMLReport());
+                    } catch (InfraException e) {
+                        Application.showMessage(e.getMessage());
+                    }
+                    break;
+                case (3):
+                    Application.showMessage("Exiting...");
+                    running = false;
+                    break;
+                default:
+                    Application.showMessage("Invalid Option");
+            }
+        }
+
     }
 }

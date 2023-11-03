@@ -91,7 +91,8 @@ public class AdminFormView extends ViewSubject
         try {
             Admin loggedInAdmin = adminManager.retrieve(username, password);
             Application.showMessage("Login successful for administrator: " + loggedInAdmin.getName());
-            //AdminActionsView adminActionsView = new AdminActionsView();
+            AdminActionsView adminActionsView = new AdminActionsView(loggedInAdmin);
+            adminActionsView.run();
         } catch (EntityNotFoundException e) {
             Application.showMessage("Login Failed: " + e.getMessage());
         } catch (InfraException e) {
