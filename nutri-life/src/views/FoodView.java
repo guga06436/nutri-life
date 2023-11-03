@@ -27,18 +27,21 @@ public class FoodView extends ViewSubject {
     }
 
     public Food chooseFood() {
+
         Application.showMessage("Enter the name of the food to search: ", false);
         String foodName = Application.readStringInput();
         FoodGroup foodGroup = chooseFoodGroup();
         try {
             List<Food> foods = manager.retrieve(foodName, foodGroup);
-            Food food = selectionOfFood(foods);
-            return food;
+            return selectionOfFood(foods);
         } catch (EntityNotFoundException e) {
             Application.showMessage("Food not found");
         } catch (InfraException e) {
             Application.showMessage(e.getMessage());
         }
+
+        Application.showMessage("Try to search another Food");
+        return chooseFood();
     }
 
     private FoodGroup chooseFoodGroup() {
@@ -60,7 +63,7 @@ public class FoodView extends ViewSubject {
     }
 
     private Food selectionOfFood(List<Food> foods) {
-        Iterator<Food> iterator = new ListIterator<Food>(foods);
+        Iterator<Food> iterator = new ListIterator<>(foods);
         while (iterator.hasNext()) {
             Application.showMessage((iterator.getIndex() + 1) + " " + iterator.next());
         }
