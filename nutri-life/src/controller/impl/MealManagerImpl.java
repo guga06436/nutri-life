@@ -1,14 +1,14 @@
 package controller.impl;
 
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import controller.MealManager;
 import controller.exceptions.DeleteException;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
-import model.Food;
 import model.Meal;
 import model.MealPlan;
 import persistence.Persistence;
@@ -33,13 +33,11 @@ public class MealManagerImpl implements MealManager {
     }
 
     @Override
-    public boolean insert(String name, Map<Food, Map<Float, String>> portionedIngredients, int hour, int minutes, int seconds, MealPlan mealPlan) throws InfraException, RegisterException {
+    public boolean insert(Meal meal) throws InfraException, RegisterException {
         try {
-            validateTime(hour, minutes, seconds);
-
-            String time = hour + ":" + minutes + ":" + seconds;
-            Meal m = new Meal(name, time, portionedIngredients, mealPlan);
-            return persistence.insert(m);
+            validateTime(meal.getTime());
+            return persistence.insert(meal);
+            
         } catch (RegisterException e) {
             log.logException(e);
             throw e;
@@ -49,52 +47,20 @@ public class MealManagerImpl implements MealManager {
         }
     }
 
-    private void validateTime(int hour, int minute, int second) throws RegisterException {
-        if (hour < 0 && hour > 23) {
-            throw new RegisterException("Hour must be between 0 and 23.");
+    private boolean validateTime(String time) throws RegisterException {
+    	Pattern pattern = Pattern.compile("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$");
+    	Matcher matcher = pattern.matcher(time);
+    	
+        if (matcher.matches()) {
+            return true;
         }
-
-        if (minute < 0 && minute > 60) {
-            throw new RegisterException("Minute must be between 0 and 60.");
-        }
-
-        if (second < 0 && second > 60) {
-            throw new RegisterException("Second must be between 0 and 60.");
-        }
-    }
-
-    @Override
-    public void updateMeal(Meal meal, String name, Map<Food, Map<Float, String>> portionedIngredients, int hour, int minutes, int seconds) throws UpdateException {
-        // TODO Auto-generated method stub
+        
+        return false;
     }
 
     @Override
     public void deleteMeal(Meal meal) throws DeleteException {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public List<Meal> retrieve(MealPlan mealPlan) throws EntityNotFoundException, IllegalArgumentException, InfraException {
-
-        try {
-            validateMealPlan(mealPlan);
-
-            /*
-            Meal m = new Meal();
-            List<Meal> mealList = persistence.retrieve(m, mealPlan);
-            if (mealList == null || mealList.size() == 0) {
-                String message = "No meal found";
-
-                log.logDebug(message + " [meals: " + mealList + "] ");
-                throw new EntityNotFoundException(message);
-            }
-            return mealList;
-            */
-        } catch (IllegalArgumentException e) {
-            log.logException(e);
-            throw e;
-        }
-        return null;
     }
 
     private void validateMealPlan(MealPlan mealPlan) throws IllegalArgumentException {
@@ -111,4 +77,34 @@ public class MealManagerImpl implements MealManager {
     private boolean isEmptyString(String str) {
         return str == null || str.trim().isEmpty();
     }
+
+	@Override
+	public boolean updateMeal(Meal meal) throws UpdateException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<Meal> retrieve(Meal meal) throws EntityNotFoundException, InfraException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Meal> listAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Meal retrieveById(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int retrieveId(Meal meal) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
