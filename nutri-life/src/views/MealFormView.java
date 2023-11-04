@@ -1,5 +1,7 @@
 package views;
 
+import java.util.HashMap;
+
 import controller.MealManager;
 import controller.exceptions.DeleteException;
 import controller.exceptions.RegisterException;
@@ -8,12 +10,21 @@ import controller.impl.MealManagerImpl;
 import model.Meal;
 import model.MealPlan;
 import persistence.db.exception.InfraException;
+import service.MealCommand;
+import service.command.DeleteMealCommand;
+import service.command.InsertMealCommand;
+import service.command.ListAllMealCommand;
+import service.command.RetrieveByIdMealCommand;
+import service.command.RetrieveIdMealCommand;
+import service.command.RetrieveMealCommand;
+import service.command.UpdateMealCommand;
 import service.viewobserver.ViewSubject;
 
 public class MealFormView extends ViewSubject
 {
     private MealManager mealManager;
     private MealPlan mealPlan;
+    private HashMap<String, MealCommand> cmds = new HashMap();
 
     public MealFormView(MealPlan mealPlan) throws InfraException {
     	try {
@@ -23,6 +34,16 @@ public class MealFormView extends ViewSubject
     	catch(InfraException e) {
     		throw e;
     	}
+    }
+    
+    private void initCommands() {
+    	cmds.put("retrieve", new RetrieveMealCommand(mealManager));
+    	cmds.put("insert", new InsertMealCommand(mealManager));
+    	cmds.put("update", new UpdateMealCommand(mealManager));
+    	cmds.put("delete", new DeleteMealCommand(mealManager));
+    	cmds.put("listAll", new ListAllMealCommand(mealManager));
+    	cmds.put("retrieveId", new RetrieveIdMealCommand(mealManager));
+    	cmds.put("retrieveById", new RetrieveByIdMealCommand(mealManager));
     }
 
     public void run() {
@@ -77,7 +98,9 @@ public class MealFormView extends ViewSubject
         Meal newMeal = new Meal(name, time, portionedFoods, mealPlan);
 
         try {
-            mealManager.insert(newMeal);
+			@SuppressWarnings("unchecked")
+			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("insert");
+            cmd.execute(newMeal);
             Application.showMessage("Meal created successfully.");
         } catch (RegisterException e) {
             Application.showMessage("Error: " + e.getMessage());
@@ -121,10 +144,13 @@ public class MealFormView extends ViewSubject
         }
 
         try {
-            mealManager.updateMeal(mealToEdit);
+			@SuppressWarnings("unchecked")
+			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("update");
+            cmd.execute(mealToEdit);
             Application.showMessage("Meal updated successfully.");
-        } catch (UpdateException e) {
-            Application.showMessage("Error: " + e.getMessage());
+        } 
+        catch(Exception e) {
+        	Application.showMessage("Error: " + e.getMessage());
         }
     }
 
@@ -146,10 +172,13 @@ public class MealFormView extends ViewSubject
         }
 
         try {
-            mealManager.deleteMeal(mealToRemove);
+			@SuppressWarnings("unchecked")
+			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("delete");
+            cmd.execute(mealToRemove);
             Application.showMessage("Meal removed successfully.");
-        } catch (DeleteException e) {
-            Application.showMessage("Error: " + e.getMessage());
+        }
+        catch(Exception e) {
+        	Application.showMessage("Error: " + e.getMessage());
         }
     }
 
