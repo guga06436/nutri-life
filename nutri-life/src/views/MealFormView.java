@@ -1,13 +1,13 @@
 package views;
 
 import java.util.HashMap;
+import java.util.Map;
+
 
 import controller.MealManager;
-import controller.exceptions.DeleteException;
-import controller.exceptions.RegisterException;
-import controller.exceptions.UpdateException;
 import controller.impl.MealManagerImpl;
 import model.Meal;
+import model.Food;
 import model.MealPlan;
 import persistence.db.exception.InfraException;
 import service.MealCommand;
@@ -87,6 +87,8 @@ public class MealFormView extends ViewSubject
     }
 
     private void insert() {
+
+
         Application.showMessage("Create a New Meal:");
 
         Application.showMessage("Name: ", false);
@@ -94,15 +96,16 @@ public class MealFormView extends ViewSubject
         Application.showMessage("Time: ", false);
         String time = Application.readStringInput();
 
+        Map<Food, Map<Float, String>> foodMap = new HashMap<>();
 
-        Meal newMeal = new Meal(name, time, portionedFoods, mealPlan);
+        Meal newMeal = new Meal(name, time, foodMap, mealPlan);
 
         try {
 			@SuppressWarnings("unchecked")
 			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("insert");
             cmd.execute(newMeal);
             Application.showMessage("Meal created successfully.");
-        } catch (RegisterException e) {
+        } catch (Exception e) {
             Application.showMessage("Error: " + e.getMessage());
         }
     }
