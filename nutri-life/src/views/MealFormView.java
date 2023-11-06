@@ -2,7 +2,7 @@ package views;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import service.iterators.ListIterator;
 
 import controller.MealManager;
 import controller.impl.MealManagerImpl;
@@ -112,7 +112,15 @@ public class MealFormView extends ViewSubject
 
     private void viewMeals() {
         Application.showMessage("Meals in the Meal Plan:");
-        for (Meal meal : mealPlan.getMeals()) {
+        /*for (Meal 'meal : mealPlan.getMeals()) {
+            Application.showMessage(meal.getName() + " (" + meal.getTime() + ")");
+        }*/
+
+        /*aplicação do iterator*/
+        ListIterator<Meal> mealIterator = new ListIterator<>(mealPlan.getMeals());
+
+        while (mealIterator.hasNext()) {
+            Meal meal = mealIterator.next();
             Application.showMessage(meal.getName() + " (" + meal.getTime() + ")");
         }
     }
