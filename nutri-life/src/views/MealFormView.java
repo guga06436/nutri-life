@@ -98,6 +98,34 @@ public class MealFormView extends ViewSubject
 
         Map<Food, Map<Float, String>> foodMap = new HashMap<>();
 
+        boolean addMoreFoods = true;
+        while (addMoreFoods) {
+            Application.showMessage("Enter food name: ", false);
+            String foodName = Application.readStringInput();
+            Application.showMessage("Enter portion: ", false);
+            float portion = Application.readFloatInput();
+            Application.showMessage("Enter description: ", false);
+            String description = Application.readStringInput();
+
+
+            Food food = new Food();
+            food.setName(foodName);
+
+
+            Map<Float, String> portionInfo = new HashMap<>();
+            portionInfo.put(portion, description);
+
+
+            foodMap.put(food, portionInfo);
+
+            Application.showMessage("Do you want to add another food? (yes/no): ", false);
+            String choice = Application.readStringInput();
+            if (!choice.equalsIgnoreCase("yes")) {
+                addMoreFoods = false;
+            }
+        }
+
+
         Meal newMeal = new Meal(name, time, foodMap, mealPlan);
 
         try {
