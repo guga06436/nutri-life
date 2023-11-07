@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -23,6 +24,15 @@ public class Nutritionist {
 		this.username = username;
 		this.password = password;
 		this.patients = patients;
+	}
+	
+	public Nutritionist(Nutritionist nutritionist) {
+		this.name = nutritionist.getName();
+		this.age = nutritionist.getAge();
+		this.crn = nutritionist.getCrn();
+		this.username = nutritionist.getUsername();
+		this.password = nutritionist.getPassword();
+		this.patients = new ArrayList<>(nutritionist.getPatients());
 	}
 	
 	@Override
