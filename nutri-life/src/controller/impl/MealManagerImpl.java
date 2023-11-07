@@ -11,6 +11,7 @@ import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
 import model.Meal;
 import model.MealPlan;
+import model.history.Caretaker;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryMeal;
@@ -21,11 +22,13 @@ public class MealManagerImpl implements MealManager {
     private static FactoryMeal mf;
     private static Persistence<Meal> persistence;
     private static final LogService log = LogAdapter.getInstance();
+    private static Caretaker caretaker = null;
 
     public MealManagerImpl() throws InfraException {
         try {
             mf = new FactoryMeal();
             persistence = mf.getPersistence();
+            caretaker = new Caretaker();
         } catch (InfraException e) {
             log.logException(e);
             throw e;
@@ -36,8 +39,8 @@ public class MealManagerImpl implements MealManager {
     public boolean insert(Meal meal) throws InfraException, RegisterException {
         try {
             validateTime(meal.getTime());
+            caretaker.setOriginator(meal);
             return persistence.insert(meal);
-            
         } catch (RegisterException e) {
             log.logException(e);
             throw e;
@@ -60,6 +63,7 @@ public class MealManagerImpl implements MealManager {
 
     @Override
     public void deleteMeal(Meal meal) throws DeleteException {
+    	caretaker.removeOriginator(meal);
         // TODO Auto-generated method stub
     }
 
@@ -79,8 +83,10 @@ public class MealManagerImpl implements MealManager {
     }
 
 	@Override
-	public boolean updateMeal(Meal meal) throws UpdateException {
-		// TODO Auto-generated method stub
+	public boolean updateMeal(Meal originalMeal, Meal updatedMeal) throws UpdateException {
+		caretaker.saveState(originalMeal);
+		
+		// FALTA FAZER A LÓGICA DO UPDATE
 		return false;
 	}
 
@@ -106,5 +112,10 @@ public class MealManagerImpl implements MealManager {
 	public int retrieveId(Meal meal) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void restoreMeal(Meal meal) {
+		caretaker.undo(meal);
 	}
 }
