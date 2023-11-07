@@ -1,5 +1,6 @@
 package model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Data;
@@ -21,6 +22,29 @@ public class Meal {
 		this.time = time;
 		this.portionedFoods = portionedFoods;
 		this.mealPlan = mealPlan;
+	}
+	
+	public Meal(Meal meal) {
+		this.name = meal.getName();
+		this.time = meal.getTime();
+		this.portionedFoods = new HashMap<>(meal.getPortionedFoods());
+		this.mealPlan = new MealPlan(meal.getMealPlan());
+	}
+	
+	public Memento saveMemento() {
+		Memento memento = new Memento();
+		memento.setState(this);
+		
+		return memento;
+	}
+	
+	public void restore(Memento memento) {
+		Meal lastState = (Meal)memento.getState();
+		
+		name = lastState.getName();
+		time = lastState.getTime();
+		portionedFoods = lastState.getPortionedFoods();
+		mealPlan = lastState.getMealPlan();
 	}
 
 	@Override
