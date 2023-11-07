@@ -1,4 +1,5 @@
 package model;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,15 @@ public class MealPlan {
         this.meals = meals;
         this.patient = patient;
         this.nutritionist = nutritionist;
+    }
+    
+    public MealPlan(MealPlan mealPlan) {
+    	this.planName = mealPlan.getPlanName();
+    	this.creationDate = new Date(mealPlan.getCreationDate().getTime());
+    	this.goals = mealPlan.goals;
+    	this.meals = new ArrayList<>(mealPlan.getMeals());
+    	this.patient = new Patient(mealPlan.getPatient());
+    	this.nutritionist = new Nutritionist(mealPlan.getNutritionist());
     }
 
 	@Override
