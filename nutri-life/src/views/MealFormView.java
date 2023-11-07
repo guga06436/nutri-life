@@ -1,19 +1,20 @@
 package views;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import service.iterators.ListIterator;
 
-import controller.MealManager;
-import controller.impl.MealManagerImpl;
-import model.Meal;
+import controller.exceptions.RegisterException;
 import model.Food;
+import model.Meal;
 import model.MealPlan;
 import persistence.db.exception.InfraException;
 import service.MealCommand;
 import service.command.DeleteMealCommand;
 import service.command.InsertMealCommand;
 import service.command.ListAllMealCommand;
+import service.command.RestoreMealCommand;
 import service.command.RetrieveByIdMealCommand;
 import service.command.RetrieveIdMealCommand;
 import service.command.RetrieveMealCommand;
@@ -22,38 +23,35 @@ import service.viewobserver.ViewSubject;
 
 public class MealFormView extends ViewSubject
 {
-    private MealManager mealManager;
     private MealPlan mealPlan;
-    private HashMap<String, MealCommand> cmds = new HashMap();
+    private List<Meal> meals;
+    private HashMap<String, MealCommand> cmds = new HashMap<>();
 
     public MealFormView(MealPlan mealPlan) throws InfraException {
-    	try {
-	        this.mealManager = new MealManagerImpl();
-	        this.mealPlan = mealPlan;
-    	}
-    	catch(InfraException e) {
-    		throw e;
-    	}
+    	this.mealPlan = mealPlan;
+    	initCommands();
     }
     
-    private void initCommands() {
-    	cmds.put("retrieve", new RetrieveMealCommand(mealManager));
-    	cmds.put("insert", new InsertMealCommand(mealManager));
-    	cmds.put("update", new UpdateMealCommand(mealManager));
-    	cmds.put("delete", new DeleteMealCommand(mealManager));
-    	cmds.put("listAll", new ListAllMealCommand(mealManager));
-    	cmds.put("retrieveId", new RetrieveIdMealCommand(mealManager));
-    	cmds.put("retrieveById", new RetrieveByIdMealCommand(mealManager));
+    private void initCommands() throws InfraException {
+    	cmds.put("retrieve", new RetrieveMealCommand());
+    	cmds.put("insert", new InsertMealCommand());
+    	cmds.put("update", new UpdateMealCommand());
+    	cmds.put("delete", new DeleteMealCommand());
+    	cmds.put("listAll", new ListAllMealCommand());
+    	cmds.put("retrieveId", new RetrieveIdMealCommand());
+    	cmds.put("retrieveById", new RetrieveByIdMealCommand());
+    	cmds.put("restore", new RestoreMealCommand());
     }
 
-    public void run() {
+    public void run() throws Exception {
         boolean running = true;
         while (running) {
             Application.showMessage("[1] Create Meal");
             Application.showMessage("[2] View Meals");
             Application.showMessage("[3] Edit Meal");
             Application.showMessage("[4] Remove Meal");
-            Application.showMessage("[5] Back to Meal Plan");
+            Application.showMessage("[5] Restaurar Meal");
+            Application.showMessage("[6] Back to Meal Plan");
             Application.showMessage("Choose an option: ", false);
             int option = Application.readIntegerInput();
             Application.readLineInput();
@@ -76,6 +74,10 @@ public class MealFormView extends ViewSubject
                     removeMeal();
                     break;
                 case 5:
+                	notifyObservers("called restoreMeal()");
+                	restoreMeal();
+                	break;
+                case 6:
                     notifyObservers("exiting view");
                     Application.showMessage("Returning to Meal Plan...");
                     running = false;
@@ -86,69 +88,33 @@ public class MealFormView extends ViewSubject
         }
     }
 
-    private void insert() {
-
-
+    private void insert() throws Exception {
         Application.showMessage("Create a New Meal:");
 
         Application.showMessage("Name: ", false);
         String name = Application.readStringInput();
         Application.showMessage("Time: ", false);
         String time = Application.readStringInput();
+        
+        //FALTA PEGAR OS VALORES DE PORTIONEDFOODS DO BANCO DE DADOS
+        Map<Food, Map<Float, String>> portionedFoods = null;
 
-        Map<Food, Map<Float, String>> foodMap = new HashMap<>();
-
-        boolean addMoreFoods = true;
-        while (addMoreFoods) {
-            Application.showMessage("Enter food name: ", false);
-            String foodName = Application.readStringInput();
-            Application.showMessage("Enter portion: ", false);
-            float portion = Application.readFloatInput();
-            Application.showMessage("Enter description: ", false);
-            String description = Application.readStringInput();
-
-
-            Food food = new Food();
-            food.setName(foodName);
-
-
-            Map<Float, String> portionInfo = new HashMap<>();
-            portionInfo.put(portion, description);
-
-
-            foodMap.put(food, portionInfo);
-
-            Application.showMessage("Do you want to add another food? (yes/no): ", false);
-            String choice = Application.readStringInput();
-            if (!choice.equalsIgnoreCase("yes")) {
-                addMoreFoods = false;
-            }
-        }
-
-
-        Meal newMeal = new Meal(name, time, foodMap, mealPlan);
+        Meal newMeal = new Meal(name, time, portionedFoods, mealPlan);
 
         try {
 			@SuppressWarnings("unchecked")
 			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("insert");
-            cmd.execute(newMeal);
+            cmd.execute(Arrays.asList(newMeal));
+            meals.add(newMeal);
             Application.showMessage("Meal created successfully.");
-        } catch (Exception e) {
+        } catch (RegisterException e) {
             Application.showMessage("Error: " + e.getMessage());
         }
     }
 
     private void viewMeals() {
         Application.showMessage("Meals in the Meal Plan:");
-        /*for (Meal 'meal : mealPlan.getMeals()) {
-            Application.showMessage(meal.getName() + " (" + meal.getTime() + ")");
-        }*/
-
-        /*aplicação do iterator*/
-        ListIterator<Meal> mealIterator = new ListIterator<>(mealPlan.getMeals());
-
-        while (mealIterator.hasNext()) {
-            Meal meal = mealIterator.next();
+        for (Meal meal : mealPlan.getMeals()) {
             Application.showMessage(meal.getName() + " (" + meal.getTime() + ")");
         }
     }
@@ -174,18 +140,20 @@ public class MealFormView extends ViewSubject
         String newName = Application.readStringInput();
         Application.showMessage("New time (leave empty to keep the same): ", false);
         String newTime = Application.readStringInput();
+        
+        Meal newMeal = new Meal(mealToEdit);
 
         if (!newName.isEmpty()) {
-            mealToEdit.setName(newName);
+        	mealToEdit.setName(newName);
         }
         if (!newTime.isEmpty()) {
-            mealToEdit.setTime(newTime);
+        	mealToEdit.setTime(newTime);
         }
 
         try {
 			@SuppressWarnings("unchecked")
 			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("update");
-            cmd.execute(mealToEdit);
+            cmd.execute(Arrays.asList(mealToEdit, newMeal));
             Application.showMessage("Meal updated successfully.");
         } 
         catch(Exception e) {
@@ -213,9 +181,42 @@ public class MealFormView extends ViewSubject
         try {
 			@SuppressWarnings("unchecked")
 			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("delete");
-            cmd.execute(mealToRemove);
+            cmd.execute(Arrays.asList(mealToRemove));
+            mealPlan.getMeals().remove(mealToRemove);
+            
+            if(meals.contains(mealToRemove)) {
+            	meals.remove(mealToRemove);
+            }
             Application.showMessage("Meal removed successfully.");
         }
+        catch(Exception e) {
+        	Application.showMessage("Error: " + e.getMessage());
+        }
+    }
+    
+    private void restoreMeal() {
+        System.out.print("Enter the name of the meal to edit: ");
+        String mealName = Application.readStringInput();
+
+        Meal mealToRestore = null;
+        for (Meal meal : mealPlan.getMeals()) {
+            if (meal.getName().equals(mealName)) {
+                mealToRestore = meal;
+                break;
+            }
+        }
+
+        if (mealToRestore == null) {
+            Application.showMessage("Meal not found.");
+            return;
+        }
+
+        try {
+			@SuppressWarnings("unchecked")
+			MealCommand<Boolean> cmd = (MealCommand<Boolean>)cmds.get("restore");
+            cmd.execute(Arrays.asList(mealToRestore));
+            Application.showMessage("Meal restored successfully.");
+        } 
         catch(Exception e) {
         	Application.showMessage("Error: " + e.getMessage());
         }
