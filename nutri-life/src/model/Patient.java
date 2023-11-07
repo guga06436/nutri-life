@@ -28,6 +28,16 @@ public class Patient {
 		this.height = height;
 		this.weight = weight;
 	}
+	
+	public Patient(Patient patient){
+		this.username = patient.getUsername();
+		this.password = patient.getPassword();
+		this.name = patient.getName();
+		this.age = patient.getAge();
+		this.cpf = patient.getCpf();
+		this.height = patient.getHeight();
+		this.weight = patient.getWeight();
+	}
 
 	@Override
 	public int hashCode() {
