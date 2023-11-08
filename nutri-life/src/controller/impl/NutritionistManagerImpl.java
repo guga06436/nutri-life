@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import controller.NutritionistManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
+import controller.exceptions.UpdateException;
+import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.Persistence;
@@ -107,19 +109,41 @@ public class NutritionistManagerImpl implements NutritionistManager{
 	}
 
 	@Override
+	public void updatePatients(Nutritionist nutritionist, Patient patient) throws UpdateException, InfraException {
+		try {
+			if (patient == null) {
+				String message = "Patient must not be null";
+
+				log.logDebug(message);
+				throw new UpdateException(message);
+			}
+			nutritionist.getPatients().add(patient);
+			persistence.update(nutritionist, persistence.retrieveId(nutritionist));
+		} catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
+	}
+
+	@Override
 	public Nutritionist retrieve(String username, String password) throws InfraException, EntityNotFoundException {
 		try {
 			Nutritionist n = new Nutritionist();
 			n.setUsername(username);
 			n.setPassword(password);
-			
+
 			Nutritionist nutritionist = persistence.retrieve(n);
+			System.out.println(nutritionist.getPatients());
 	
 			if (nutritionist == null) {
 				String message = "Nutritionist not found";
 				
 				log.logDebug(message + "[username: " + username + "] [password: " + password + "]");
 				throw new EntityNotFoundException(message);
+			}
+
+			if (nutritionist.getPatients() == null) {
+				nutritionist.setPatients(new ArrayList<Patient>());
 			}
 	
 			return nutritionist;

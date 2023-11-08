@@ -51,7 +51,7 @@ public class MainScreenDesktop implements IViewObserver, AutoCloseable
                         "1- Nutritionist Page\n" +
                         "2- Patient Page\n" +
                         "3- Admin Page\n" +
-                        "3- End Program\n" +
+                        "4- End Program\n" +
                         "Your option: "
                     );
     }

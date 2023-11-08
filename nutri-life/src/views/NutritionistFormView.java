@@ -98,6 +98,8 @@ public class NutritionistFormView extends ViewSubject
         try {
             Nutritionist loggedInNutritionist = this.manager.retrieve(username, password);
             Application.showMessage("Login successful for nutritionist: " + loggedInNutritionist.getName());
+            NutritionistActionsView actionsView = new NutritionistActionsView(loggedInNutritionist);
+            actionsView.run();
         } catch (EntityNotFoundException e) {
             Application.showMessage("Login Failed: " + e.getMessage());
         } catch (InfraException e) {

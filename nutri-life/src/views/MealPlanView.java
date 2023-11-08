@@ -94,7 +94,7 @@ public class MealPlanView extends ViewSubject
             } catch (DeleteException e) {
                 Application.showMessage(e.getMessage());
             } catch (InfraException e) {
-                throw new RuntimeException(e);
+                Application.showMessage(e.getMessage());
             }
         }
     }
@@ -144,7 +144,7 @@ public class MealPlanView extends ViewSubject
         } catch (UpdateException e) {
             Application.showMessage(e.getMessage());
         } catch (InfraException e) {
-            throw new RuntimeException(e);
+            Application.showMessage(e.getMessage());
         }
     }
 
@@ -157,7 +157,7 @@ public class MealPlanView extends ViewSubject
         } catch (UpdateException e) {
             Application.showMessage(e.getMessage());
         } catch (InfraException e) {
-            throw new RuntimeException(e);
+            Application.showMessage(e.getMessage());
         }
     }
 

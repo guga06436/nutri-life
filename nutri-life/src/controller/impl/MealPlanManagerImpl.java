@@ -58,13 +58,11 @@ public class MealPlanManagerImpl implements MealPlanManager{
 				throw new UpdateException(message);
 			}
 			MealPlan mp = new MealPlan(planName, mealPlan.getCreationDate(), goals, meals, mealPlan.getPatient(), mealPlan.getNutritionist());
-			persistence.update(mp, mealPlan.hashCode());
+			persistence.update(mp, persistence.retrieveId(mp));
 		} catch (InfraException e) {
 			log.logException(e);
 			throw e;
 		}
-
-		
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import controller.PatientManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
+import model.Nutritionist;
 import model.Patient;
 import persistence.Persistence;
 import persistence.db.exception.InfraException;
@@ -32,13 +33,14 @@ public class PatientManagerImpl implements PatientManager{
 	}
 
 	@Override
-	public boolean add(String username , String password, String name, String cpf, int age, float height, float weight) throws InfraException, RegisterException {
+	public boolean add(String username, String password, String name, String cpf, int age, float height, float weight, Nutritionist nutritionist) throws InfraException, RegisterException {
 		try {
 			validateUsername(username);
 			validatePassword(password);
 			validateAge(age);
 			
 			Patient p = new Patient(username, password, name, cpf, age, height, weight);
+			p.setNutritionist(nutritionist);
 			return persistence.insert(p);
 		}
 		catch(RegisterException e) {
@@ -50,6 +52,8 @@ public class PatientManagerImpl implements PatientManager{
 			throw e;
 		}
 	}
+
+
 
 	private void validateUsername(String username) throws RegisterException {
 		if (username.length() > 12) {
@@ -122,6 +126,7 @@ public class PatientManagerImpl implements PatientManager{
 			p.setPassword(password);
 			
 			Patient patient = persistence.retrieve(p);
+			System.out.println(patient.getNutritionist());
 			if (patient == null) {
 				String message = "Patient not found";
 				

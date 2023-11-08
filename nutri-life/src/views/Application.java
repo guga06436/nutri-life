@@ -31,6 +31,7 @@ public class Application
             return in.nextInt();
         } catch (InputMismatchException e) {
             System.out.println("You must type an integer! Please try again: ");
+            in.next();
             return readIntegerInput();
         }
 
@@ -41,6 +42,7 @@ public class Application
             return in.nextFloat();
         } catch (InputMismatchException e) {
             System.out.println("You must type a float! Please try again: ");
+            in.next();
             return readFloatInput();
         }
     }
@@ -74,7 +76,7 @@ public class Application
         try {
             exitApplicationCommand.execute();
         } catch (InfraException e) {
-            throw new RuntimeException(e);
+            Application.showMessage(e.getMessage());
         }
     }
     public static void logException(Exception e) {  log.logException(e); }
