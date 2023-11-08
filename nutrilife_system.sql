@@ -71,6 +71,18 @@ CREATE TABLE Food(
     PRIMARY KEY(food_id)
 );
 
+INSERT INTO Food
+VALUES (1, "Arroz", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
+
+INSERT INTO Food
+VALUES (2, "Macarrão", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
+
+INSERT INTO Food
+VALUES (3, "Feijão", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
+
+INSERT INTO Food
+VALUES (4, "Pão", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
+
 CREATE TABLE Vitamin(
 	vitamin_id	 				INT AUTO_INCREMENT,
     vitamin_name				VARCHAR(30) NOT NULL,
@@ -83,6 +95,18 @@ CREATE TABLE Vitamin(
     PRIMARY KEY(vitamin_id, food_id),
     FOREIGN KEY(food_id) REFERENCES Food(food_id)
 );
+
+INSERT INTO Vitamin
+VALUES (1, "B", 100, "GRAM", 1);
+
+INSERT INTO Vitamin
+VALUES (2, "E", 100, "GRAM", 2);
+
+INSERT INTO Vitamin
+VALUES (3, "D", 100, "GRAM", 3);
+
+INSERT INTO Vitamin
+VALUES (4, "C", 100, "GRAM", 4);
 
 CREATE TABLE MealPlan(
 	mealplan_id					INT AUTO_INCREMENT,
