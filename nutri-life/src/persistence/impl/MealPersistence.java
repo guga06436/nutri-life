@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import model.Admin;
 import model.Food;
 import model.Meal;
 import model.MealPlan;
@@ -232,6 +233,37 @@ public class MealPersistence implements Persistence<Meal>{
 		}
 		
 		return meal;
+	}
+	
+	@Override
+	public List<Meal> retrieveMatch(Meal object) throws InfraException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Meal> meals = null;
+		
+		try {
+			meals = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT * FROM Meal WHERE meal_name LIKE ?");
+			ps.setString(1, "%" + object.getName() + "%");
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				meals.add(instantiateMeal(rs, null));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve any meal.");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve a meal: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return meals;
 	}
 	
 	private int removeUnusedFood(Map<Food, Map<Float, String>> portionedFoods, int mealId) throws InfraException {		

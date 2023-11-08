@@ -267,6 +267,37 @@ public class PatientPersistence implements Persistence<Patient>{
 		}
 		return pat;
 	}
+	
+	@Override
+	public List<Patient> retrieveMatch(Patient object) throws InfraException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Patient> patients = null;
+		
+		try {
+			patients = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT * FROM Patient WHERE patient_name LIKE ?");
+			ps.setString(1, "%" + object.getName() + "%");
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				patients.add(instantiatePatient(rs));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve any patient.");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve a patient: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return patients;
+	}
 
 	@Override
 	public int retrieveId(Patient object) throws InfraException {

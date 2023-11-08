@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import model.Meal;
 import model.Nutritionist;
 import model.Patient;
 import persistence.Persistence;
@@ -146,6 +147,37 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 		}
 		
 		return nutri;
+	}
+	
+	@Override
+	public List<Nutritionist> retrieveMatch(Nutritionist object) throws InfraException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Nutritionist> nutritionists = null;
+		
+		try {
+			nutritionists = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT * FROM Nutritionist WHERE nutritionist_name LIKE ?");
+			ps.setString(1, "%" + object.getName() + "%");
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				nutritionists.add(instantiateNutritionist(rs));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve any nutritionist.");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve a nutritionist: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return nutritionists;
 	}
 
 	@Override

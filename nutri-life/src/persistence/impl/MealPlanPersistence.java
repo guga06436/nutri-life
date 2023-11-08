@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import model.Food;
 import model.Meal;
 import model.MealPlan;
 import model.Nutritionist;
@@ -181,6 +182,37 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 		}
 		
 		return mealPlan;
+	}
+	
+	@Override
+	public List<MealPlan> retrieveMatch(MealPlan object) throws InfraException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<MealPlan> mealPlans = null;
+		
+		try {
+			mealPlans = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT * FROM MealPlan WHERE mealplan_name LIKE ?");
+			ps.setString(1, "%" + object.getPlanName() + "%");
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				mealPlans.add(instantiateMealPlan(rs, rs.getInt("mealplan_id")));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve any meal plan.");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve a meal plan: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return mealPlans;
 	}
 
 	@Override
