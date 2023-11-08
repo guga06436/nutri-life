@@ -7,6 +7,7 @@ import persistence.db.exception.InfraException;
 public interface Persistence<T> {
 	boolean insert(T object) throws InfraException;
 	T retrieve(T object) throws InfraException;
+	List<T> retrieveMatch(T object) throws InfraException;
 	boolean update(T object, int id) throws InfraException;
 	boolean delete(T object) throws InfraException;
 	List<T> listAll() throws InfraException;
