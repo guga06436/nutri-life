@@ -36,7 +36,7 @@ public class FoodManagerImpl implements FoodManager {
             Food f = new Food();
             f.setName(name);
             f.setFoodGroup(foodGroup);
-            List<Food> matchingFoods = persistence.retrieve(f);
+            List<Food> matchingFoods = persistence.retrieveMatch(f);
             if (matchingFoods.isEmpty()) {
                 String message = "No matching foods found";
                 log.logDebug(message);
