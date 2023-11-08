@@ -70,7 +70,7 @@ public class FoodView extends ViewSubject {
 
         int selection = -1;
         while (selection < 1 || selection > foods.size()) {
-            Application.showMessage("Enter the number of the Food Group: ", false);
+            Application.showMessage("Enter the number of the Food you want: ", false);
             selection = Application.readIntegerInput();
         }
         return foods.get(selection - 1);

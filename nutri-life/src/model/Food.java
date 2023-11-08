@@ -65,9 +65,20 @@ public class Food {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
-		return this.name + "(calories: " + this.calories + ")";
+		return "Food{" +
+				"name='" + name + '\'' +
+				", foodGroup=" + foodGroup +
+				", calories=" + calories +
+				", proteins=" + proteins +
+				", carbohydrates=" + carbohydrates +
+				", lipids=" + lipids +
+				", fibers=" + fibers +
+				", vitamins=" + vitamins +
+				", portion=" + portion +
+				", portionUnit='" + portionUnit + '\'' +
+				'}';
 	}
 }
