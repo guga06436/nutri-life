@@ -27,6 +27,8 @@ public class Patient {
 		this.cpf = cpf;
 		this.height = height;
 		this.weight = weight;
+		this.mealPlan = null;
+		this.nutritionist = null;
 	}
 	
 	public Patient(Patient patient){
@@ -37,6 +39,8 @@ public class Patient {
 		this.cpf = patient.getCpf();
 		this.height = patient.getHeight();
 		this.weight = patient.getWeight();
+		this.mealPlan = patient.getMealPlan();
+		this.nutritionist = patient.getNutritionist();
 	}
 
 	@Override
