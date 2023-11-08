@@ -99,8 +99,18 @@ public class MealManagerImpl implements MealManager {
 
 	@Override
 	public List<Meal> retrieve(Meal meal) throws EntityNotFoundException, InfraException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            List<Meal> matchingMeals = persistence.retrieveMatch(meal);
+            if (matchingMeals.isEmpty()) {
+                String message = "No matching meals found";
+                log.logDebug(message);
+                throw new EntityNotFoundException(message);
+            }
+            return matchingMeals;
+        } catch (InfraException e) {
+            log.logException(e);
+            throw e;
+        }
 	}
 
 	@Override
