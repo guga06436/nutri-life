@@ -83,7 +83,7 @@ public class FoodPersistence implements Persistence<Food>{
 		Food foodAux = null;
 		
 		try {
-			ps = conn.prepareStatement("SELECT * from Food WHERE food_name = ? AND food_group = ?");
+			ps = conn.prepareStatement("SELECT * FROM Food WHERE food_name = ? AND food_group = ?");
 			
 			ps.setString(1, food.getName());
 			ps.setInt(2, food.getFoodGroup().ordinal());
@@ -106,6 +106,38 @@ public class FoodPersistence implements Persistence<Food>{
 		}
 		
 		return foodAux;
+	}
+	
+	@Override
+	public List<Food> retrieveMatch(Food food) throws InfraException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Food> foods = null;
+		
+		try {
+			foods = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT * FROM Food WHERE food_group = ? AND food_name LIKE ?");
+			ps.setInt(1, food.getFoodGroup().ordinal());
+			ps.setString(2, "%" + food.getName() + "%");
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				foods.add(instantiateFood(rs));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve any food.");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve a food: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return foods;
 	}
 	
 	private boolean insertVitamins(Map<String, Map<Float, String>> vitamins, int foodId) throws InfraException {

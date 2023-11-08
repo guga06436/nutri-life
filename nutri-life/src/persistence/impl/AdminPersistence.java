@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Admin;
+import model.Food;
 import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
@@ -91,6 +92,37 @@ public class AdminPersistence implements Persistence<Admin>{
 		}
 		
 		return admin;
+	}
+	
+	@Override
+	public List<Admin> retrieveMatch(Admin object) throws InfraException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Admin> admins = null;
+		
+		try {
+			admins = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT * FROM SystemAdministrator WHERE admin_name LIKE ?");
+			ps.setString(1, "%" + object.getName() + "%");
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				admins.add(instantiateAdmin(rs));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve any admin.");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve a admin: null argument in method call");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return admins;
 	}
 
 	@Override
