@@ -27,9 +27,13 @@ public class MealFormView extends ViewSubject
     private List<Meal> meals;
     private HashMap<String, MealCommand> cmds = new HashMap<>();
 
-    public MealFormView(MealPlan mealPlan) throws InfraException {
+    public MealFormView(MealPlan mealPlan) {
     	this.mealPlan = mealPlan;
-    	initCommands();
+        try {
+            initCommands();
+        } catch (InfraException e) {
+            Application.showMessage(e.getMessage());
+        }
     }
     
     private void initCommands() throws InfraException {
@@ -50,7 +54,7 @@ public class MealFormView extends ViewSubject
             Application.showMessage("[2] View Meals");
             Application.showMessage("[3] Edit Meal");
             Application.showMessage("[4] Remove Meal");
-            Application.showMessage("[5] Restaurar Meal");
+            Application.showMessage("[5] Restore Meal");
             Application.showMessage("[6] Back to Meal Plan");
             Application.showMessage("Choose an option: ", false);
             int option = Application.readIntegerInput();
@@ -88,7 +92,7 @@ public class MealFormView extends ViewSubject
         }
     }
 
-    private void insert() throws Exception {
+    private void insert() {
         Application.showMessage("Create a New Meal:");
 
         Application.showMessage("Name: ", false);
@@ -97,7 +101,23 @@ public class MealFormView extends ViewSubject
         String time = Application.readStringInput();
         
         //FALTA PEGAR OS VALORES DE PORTIONEDFOODS DO BANCO DE DADOS
-        Map<Food, Map<Float, String>> portionedFoods = null;
+        Map<Food, Map<Float, String>> portionedFoods = new HashMap<>();
+        int option = -1;
+        do {
+            FoodView foodView = new FoodView();
+            Food food = foodView.chooseFood();
+            Application.showMessage("Type the quantity: ");
+            float quantity = Application.readFloatInput();
+            Application.showMessage("Type description: ");
+            String description = Application.readStringInput();
+
+            // Add values to HashMap
+            portionedFoods.put(food, new HashMap<>());
+            portionedFoods.get(food).put(quantity, description);
+
+            Application.showMessage("Do you want to continue? [0 TO QUIT]: ");
+
+        } while (option != 0);
 
         Meal newMeal = new Meal(name, time, portionedFoods, mealPlan);
 
@@ -109,6 +129,8 @@ public class MealFormView extends ViewSubject
             Application.showMessage("Meal created successfully.");
         } catch (RegisterException e) {
             Application.showMessage("Error: " + e.getMessage());
+        } catch (Exception e) {
+            Application.showMessage(e.getMessage());
         }
     }
 

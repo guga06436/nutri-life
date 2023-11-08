@@ -181,9 +181,8 @@ public class MealPlanView extends ViewSubject
 
             Application.showMessage("[1] Edit Plan Name");
             Application.showMessage("[2] Edit Goals");
-            Application.showMessage("[3] Add Meal");
-            Application.showMessage("[4] Remove Meal");
-            Application.showMessage("[5] Back to Main Menu");
+            Application.showMessage("[3] Edit Meals");
+            Application.showMessage("[4] Back to Main Menu");
             Application.showMessage("Choose an option: ", false);
             int option = Application.readIntegerInput();
             Application.readLineInput();
@@ -196,12 +195,16 @@ public class MealPlanView extends ViewSubject
                     updateGoal(mealplan);
                     break;
                 case 3:
-                    //addMeal();
+                    try {
+                        MealFormView mealFormView = new MealFormView(mealplan);
+                        mealFormView.run();
+                    } catch (InfraException e) {
+                        Application.showMessage(e.getMessage());
+                    } catch (Exception e) {
+                        Application.showMessage(e.getMessage());
+                    }
                     break;
                 case 4:
-                    //removeMeal();
-                    break;
-                case 5:
                     editing = false;
                     break;
                 default:
