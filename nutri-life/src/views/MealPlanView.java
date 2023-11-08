@@ -45,6 +45,7 @@ public class MealPlanView extends ViewSubject
 
             switch (option) {
                 case 1:
+                    notifyObservers("called createMealPlan()");
                     createMealPlan();
                     break;
                 case 2:

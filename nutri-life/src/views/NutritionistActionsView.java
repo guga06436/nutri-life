@@ -40,7 +40,8 @@ public class NutritionistActionsView extends ViewSubject {
             Application.showMessage("Welcome, " + loggedInNutritionist.getName() + "!");
             Application.showMessage("[1] Create Patient");
             Application.showMessage("[2] View Patients");
-            Application.showMessage("[3] Log out");
+            Application.showMessage("[3] Edit Patient Meal Plan");
+            Application.showMessage("[4] Log out");
             Application.showMessage("Choose an option: ");
             int option = Application.readIntegerInput();
             Application.readLineInput();
@@ -55,6 +56,10 @@ public class NutritionistActionsView extends ViewSubject {
                     viewPatients();
                     break;
                 case 3:
+                    notifyObservers("called editMealPlan()");
+                    editMealPlan();
+                    break;
+                case 4:
                     notifyObservers("exiting view");
                     Application.showMessage("Exiting...");
                     running = false;
@@ -73,17 +78,34 @@ public class NutritionistActionsView extends ViewSubject {
         } else {
             Iterator<Patient> iterator = new ListIterator<>(patientList);
             while (iterator.hasNext()) {
-                Application.showMessage(iterator.next().getName() + " MealPlan:" + '{' + iterator.next().getMealPlan() + '}');
+                Application.showMessage((iterator.getIndex()+1) + iterator.next().getName() + " MealPlan:" + '{' + iterator.next().getMealPlan().getPlanName() + '}');
             }
         }
     }
+
+    private void editMealPlan() {
+
+        viewPatients();
+
+        List<Patient> patientList = loggedInNutritionist.getPatients();
+        int selection = -1;
+        while (selection < 1 || selection > patientList.size()) {
+            Application.showMessage("Enter the number of the Patient you want to see: ", false);
+            selection = Application.readIntegerInput();
+        }
+
+        MealPlanView mealPlanView = new MealPlanView(patientList.get(selection-1), loggedInNutritionist);
+        mealPlanView.run();
+    }
+
+
     private void createPatient() {
 
         PatientManager managerPatient = null;
         try {
             managerPatient = new PatientManagerImpl();
         } catch (InfraException e) {
-            System.out.println(e.getMessage());
+            Application.showMessage(e.getMessage());
             Application.exitApplication(new ErrorApplicationStatus());
         }
 
@@ -125,11 +147,11 @@ public class NutritionistActionsView extends ViewSubject {
                 manager.updatePatients(this.loggedInNutritionist, managerPatient.retrieve(username, password));
                 this.loggedInNutritionist = manager.retrieve(this.loggedInNutritionist.getUsername(), this.loggedInNutritionist.getPassword());
             } catch (UpdateException e) {
-                System.out.println(e.getMessage());
+                Application.showMessage(e.getMessage());
             } catch (InfraException e) {
-                System.out.println(e.getMessage());
+                Application.showMessage(e.getMessage());
             } catch (EntityNotFoundException e) {
-                System.out.println(e.getMessage());
+                Application.showMessage(e.getMessage());
             }
         } else {
             Application.showMessage("Registration failed for patient.");
