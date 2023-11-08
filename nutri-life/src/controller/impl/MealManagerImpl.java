@@ -41,10 +41,7 @@ public class MealManagerImpl implements MealManager {
             validateTime(meal.getTime());
             caretaker.setOriginator(meal);
             return persistence.insert(meal);
-        } catch (RegisterException e) {
-            log.logException(e);
-            throw e;
-        } catch (InfraException e) {
+        } catch (RegisterException | InfraException e) {
             log.logException(e);
             throw e;
         }
@@ -63,8 +60,14 @@ public class MealManagerImpl implements MealManager {
 
     @Override
     public void deleteMeal(Meal meal) throws DeleteException {
-    	caretaker.removeOriginator(meal);
-        // TODO Auto-generated method stub
+        try {
+            String message = "Cannot delete meal.";
+            caretaker.removeOriginator(meal);
+            persistence.delete(meal);
+            throw new DeleteException(message);
+        } catch (InfraException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void validateMealPlan(MealPlan mealPlan) throws IllegalArgumentException {
@@ -84,16 +87,30 @@ public class MealManagerImpl implements MealManager {
 
 	@Override
 	public boolean updateMeal(Meal originalMeal, Meal updatedMeal) throws UpdateException {
-		caretaker.saveState(originalMeal);
-		
-		// FALTA FAZER A LÓGICA DO UPDATE
-		return false;
-	}
+        try {
+
+            validateTime(updatedMeal.getTime());
+            caretaker.saveState(originalMeal);
+            return persistence.update(originalMeal, persistence.retrieveId(updatedMeal));
+        } catch (RegisterException | InfraException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	@Override
 	public List<Meal> retrieve(Meal meal) throws EntityNotFoundException, InfraException {
-		// TODO Auto-generated method stub
-		return null;
+        try {
+            List<Meal> matchingMeals = persistence.retrieveMatch(meal);
+            if (matchingMeals.isEmpty()) {
+                String message = "No matching meals found";
+                log.logDebug(message);
+                throw new EntityNotFoundException(message);
+            }
+            return matchingMeals;
+        } catch (InfraException e) {
+            log.logException(e);
+            throw e;
+        }
 	}
 
 	@Override
