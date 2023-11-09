@@ -53,8 +53,13 @@ public class PatientActionsView extends ViewSubject
     }
 
     private void viewMealPlan() {
-        MealPlanPatientView mealPlanPatientView = new MealPlanPatientView(loggedInPatient, loggedInPatient.getNutritionist());
-        mealPlanPatientView.viewMealPlan();
+        MealPlanPatientView mealPlanPatientView;
+		try {
+			mealPlanPatientView = new MealPlanPatientView(loggedInPatient, manager.retrievePatientNutritionist(loggedInPatient));
+			mealPlanPatientView.viewMealPlan();
+		} catch (InfraException e) {
+			Application.showMessage(e.getMessage());
+		}
     }
 
 }

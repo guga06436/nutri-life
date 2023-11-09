@@ -72,7 +72,7 @@ public class NutritionistActionsView extends ViewSubject {
     }
 
     private void viewPatients() {
-        List<Patient> patientList = this.loggedInNutritionist.getPatients();
+        List<Patient> patientList = manager.listAllPatients(loggedInNutritionist);
         if (patientList.isEmpty()) {
             Application.showMessage("There is no patient");
         } else {
@@ -86,12 +86,19 @@ public class NutritionistActionsView extends ViewSubject {
     private void editMealPlan() {
 
         viewPatients();
-
-        List<Patient> patientList = loggedInNutritionist.getPatients();
+        
+        List<Patient> patientList = null;
         int selection = -1;
-        while (selection < 1 || selection > patientList.size()) {
-            Application.showMessage("Enter the number of the Patient you want to see: ", false);
-            selection = Application.readIntegerInput();
+        
+        try {
+	        patientList = manager.listAllPatients(loggedInNutritionist);
+	        while (selection < 1 || selection > patientList.size()) {
+	            Application.showMessage("Enter the number of the Patient you want to see: ", false);
+	            selection = Application.readIntegerInput();
+	        }
+        }
+        catch(InfraException e) {
+        	Application.showMessage(e.getMessage());
         }
 
         MealPlanView mealPlanView = new MealPlanView(patientList.get(selection-1), loggedInNutritionist);
@@ -134,11 +141,18 @@ public class NutritionistActionsView extends ViewSubject {
 
         boolean registerSuccess = false;
         try {
-            registerSuccess = managerPatient.add(username , password, name, cpf, age, height, weight, this.loggedInNutritionist);
+            registerSuccess = managerPatient.add(username , password, name, cpf, age, height, weight);
+            
+            if(registerSuccess) {
+            	manager.updatePatients(loggedInNutritionist, new Patient(username, password, name, cpf, age, height, weight));
+            }
         } catch (InfraException e) {
             Application.showMessage("Error with our database detected.");
         } catch (RegisterException e) {
             Application.showMessage(e.getMessage());
+        }
+        catch(UpdateException e) {
+        	Application.showMessage(e.getMessage());
         }
 
         if (registerSuccess) {
