@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -11,7 +10,6 @@ public class Nutritionist {
 	private String crn;
 	private String username;
 	private String password;
-	private List<Patient> patients;
 
 	public Nutritionist() {
 
@@ -23,7 +21,6 @@ public class Nutritionist {
 		this.crn = crn;
 		this.username = username;
 		this.password = password;
-		this.patients = patients;
 	}
 	
 	public Nutritionist(Nutritionist nutritionist) {
@@ -32,7 +29,6 @@ public class Nutritionist {
 		this.crn = nutritionist.getCrn();
 		this.username = nutritionist.getUsername();
 		this.password = nutritionist.getPassword();
-		this.patients = new ArrayList<>(nutritionist.getPatients());
 	}
 	
 	@Override
