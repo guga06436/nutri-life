@@ -1,9 +1,6 @@
 package views;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import controller.exceptions.RegisterException;
 import model.Food;
@@ -24,7 +21,7 @@ import service.viewobserver.ViewSubject;
 public class MealFormView extends ViewSubject
 {
     private MealPlan mealPlan;
-    private List<Meal> meals;
+    private List<Meal> meals = new ArrayList<>();
     private HashMap<String, MealCommand> cmds = new HashMap<>();
 
     public MealFormView(MealPlan mealPlan) {
