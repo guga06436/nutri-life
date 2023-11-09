@@ -349,4 +349,37 @@ public class NutritionistPersistence implements NutritionistPersistenceExs{
 		
 		return patients;
 	}
+
+	@Override
+	public boolean addNewPatient(Nutritionist nutritionist, Patient patient) throws InfraException {
+		FactoryPatient fp = new FactoryPatient();
+		PatientPersistence patientPersistence = null;
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			patientPersistence = fp.getPersistence();
+			
+			int nutritionistId = retrieveId(nutritionist);
+			int patientId = patientPersistence.retrieveId(patient);
+			
+			ps = conn.prepareStatement("INSERT INTO PatientNutritionist(patient_id, nutritionist_id) VALUES (?, ?)");
+			ps.setInt(1, patientId);
+			ps.setInt(2, nutritionistId);
+			
+			rowsAffected = ps.executeUpdate();
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to insert new patients");
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
+		return false;
+	}
 }

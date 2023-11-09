@@ -10,81 +10,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import model.Food;
 import model.Meal;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
-import persistence.Persistence;
+import persistence.MealPlanPersistenceExs;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
-public class MealPlanPersistence implements Persistence<MealPlan>{
+public class MealPlanPersistence implements MealPlanPersistenceExs{
 	private static Connection conn;
 	
 	public MealPlanPersistence() throws InfraException {
 		conn = Database.getConnection();
-	}
-	
-	private List<Meal> listAllMealsMealPlan(int mealPlanId) throws InfraException{
-		MealPersistence mealPersistence;
-		FactoryMeal factoryMeal = new FactoryMeal();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<Meal> allMealsMealPlan = null;
-		
-		try {
-			ps = conn.prepareStatement("SELECT meal_id FROM Meal WHERE mealplan_id = ?");
-			
-			ps.setInt(1, mealPlanId);
-			
-			rs = ps.executeQuery();
-			
-			allMealsMealPlan = new ArrayList<>(); 
-			mealPersistence = factoryMeal.getPersistence();
-			while(rs.next()) {
-				Meal meal = mealPersistence.retrieveById(rs.getInt(1));
-				
-				if(meal == null) {
-					throw new InfraException("Unable to retrieve a meal from the meal plan");
-				}
-				
-				allMealsMealPlan.add(meal);
-			}
-		}
-		catch(SQLException e) {
-			throw new InfraException("Unable to retrieve a meal plan");
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-		
-		return allMealsMealPlan;
-	}
-	
-	private MealPlan instantiateMealPlan(ResultSet rs, int mealPlanId) throws SQLException, InfraException{
-		FactoryPatient factoryPatient = new FactoryPatient();
-		PatientPersistence patientPersistence = null;
-		FactoryNutritionist factoryNutritionist = new FactoryNutritionist();
-		NutritionistPersistence nutritionistPersistence = null;
-		MealPlan mealPlan = new MealPlan();
-		
-		patientPersistence = factoryPatient.getPersistence();
-		nutritionistPersistence = factoryNutritionist.getPersistence();
-		
-		mealPlan.setPlanName(rs.getString("mealplan_name"));
-		mealPlan.setCreationDate(new Date(rs.getTimestamp("date_creation").getTime()));
-		mealPlan.setGoals(rs.getString("goals"));
-		mealPlan.setMeals(listAllMealsMealPlan(mealPlanId));
-		
-		Patient patient = patientPersistence.retrieveById(rs.getInt("patient_id"));
-		Nutritionist nutritionist = nutritionistPersistence.retrieveById(rs.getInt("nutritionist_id"));
-		
-		mealPlan.setPatient(patient);
-		mealPlan.setNutritionist(nutritionist);
-
-		return mealPlan;
 	}
 
 	@Override
@@ -154,35 +92,6 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 		
 		return false;
 	}
-
-	@Override
-	public MealPlan retrieve(MealPlan object) throws InfraException {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		MealPlan mealPlan = null;
-		
-		try {
-			int mealPlanId = retrieveId(object);
-			
-			ps = conn.prepareStatement("SELECT * FROM MealPlan WHERE mealplan_id = ?");
-			ps.setInt(1, mealPlanId);
-			
-			rs = ps.executeQuery();
-			
-			if(rs.next()) {
-				mealPlan = instantiateMealPlan(rs, mealPlanId);
-			}
-		}
-		catch(SQLException e) {
-			throw new InfraException("Unable to retrieve meal plan");
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-		
-		return mealPlan;
-	}
 	
 	@Override
 	public List<MealPlan> retrieveMatch(MealPlan object) throws InfraException{
@@ -198,7 +107,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				mealPlans.add(instantiateMealPlan(rs, rs.getInt("mealplan_id")));
+				mealPlans.add(instantiateMealPlan(rs));
 			}
 		}
 		catch(SQLException e) {
@@ -229,7 +138,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			rs = st.executeQuery("SELECT * FROM MealPlan");
 			
 			while(rs.next()) {
-				MealPlan mealPlan = instantiateMealPlan(rs, rs.getInt("mealplan_id"));
+				MealPlan mealPlan = instantiateMealPlan(rs);
 				
 				if(mealPlan == null) {
 					throw new InfraException("Unable to retrieve all meal plans");
@@ -422,7 +331,7 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 			rs = ps.executeQuery();
 			
 			if(rs.next()) {
-				mealPlan = instantiateMealPlan(rs, id);
+				mealPlan = instantiateMealPlan(rs);
 			}
 		}
 		catch(SQLException e) {
@@ -431,6 +340,150 @@ public class MealPlanPersistence implements Persistence<MealPlan>{
 		finally {
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
+		}
+		
+		return mealPlan;
+	}
+	
+	private List<Meal> listAllMealsMealPlan(int mealPlanId) throws InfraException{
+		MealPersistence mealPersistence;
+		FactoryMeal factoryMeal = new FactoryMeal();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Meal> allMealsMealPlan = null;
+		
+		try {
+			ps = conn.prepareStatement("SELECT meal_id FROM Meal WHERE mealplan_id = ?");
+			
+			ps.setInt(1, mealPlanId);
+			
+			rs = ps.executeQuery();
+			
+			allMealsMealPlan = new ArrayList<>(); 
+			mealPersistence = factoryMeal.getPersistence();
+			while(rs.next()) {
+				Meal meal = mealPersistence.retrieveById(rs.getInt(1));
+				
+				if(meal == null) {
+					throw new InfraException("Unable to retrieve a meal from the meal plan");
+				}
+				
+				allMealsMealPlan.add(meal);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve a meal plan");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return allMealsMealPlan;
+	}
+	
+	private MealPlan instantiateMealPlan(ResultSet rs) throws InfraException {
+		FactoryPatient fp = new FactoryPatient();
+		FactoryNutritionist fn = new FactoryNutritionist();
+		PatientPersistence patientPersistence = null;
+		NutritionistPersistence nutritionistPersistence = null;
+		MealPlan mealPlan = new MealPlan();
+		
+		try {
+			patientPersistence = fp.getPersistence();
+			nutritionistPersistence = fn.getPersistence();
+			
+			mealPlan.setPlanName(rs.getString("mealplan_name"));
+			mealPlan.setCreationDate(new Date(rs.getTimestamp("date_creation").getTime()));
+			mealPlan.setGoals(rs.getString("goals"));
+			
+			Patient patient = patientPersistence.retrieveById(rs.getInt("patient_id"));
+			Nutritionist nutritionist = nutritionistPersistence.retrieveById(rs.getInt("nutritionist_id"));
+			
+			mealPlan.setMeals(listAllMealsMealPlan(rs.getInt("mealplan_id")));
+			
+			mealPlan.setPatient(patient);
+			mealPlan.setNutritionist(nutritionist);
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to instantiate a meal plan");
+		}
+		
+		return mealPlan;
+	}
+
+	@Override
+	public MealPlan retrieve(MealPlan object) throws InfraException {
+		FactoryPatient fp = new FactoryPatient();
+		FactoryNutritionist fn = new FactoryNutritionist();
+		PatientPersistence patientPersistence = null;
+		NutritionistPersistence nutritionistPersistence = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		MealPlan mealPlan = null;
+		
+		try {
+			patientPersistence = fp.getPersistence();
+			nutritionistPersistence = fn.getPersistence();
+			
+			int patientId = patientPersistence.retrieveId(object.getPatient());
+			int nutritionistId = nutritionistPersistence.retrieveId(object.getNutritionist());
+			
+			ps = conn.prepareStatement("SELECT * FROM MealPlan WHERE patient_id = ? AND nutritionist_id = ?");
+			ps.setInt(1, patientId);
+			ps.setInt(2, nutritionistId);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				mealPlan = instantiateMealPlan(rs);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve a meal plan");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return mealPlan;
+	}
+
+	@Override
+	public MealPlan retrieveByPatient(Patient patient) throws InfraException {
+		FactoryPatient fp = new FactoryPatient();
+		PatientPersistence patientPersistence = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		MealPlan mealPlan = null;
+		
+		try {
+			patientPersistence = fp.getPersistence();
+			
+			int patientId = patientPersistence.retrieveId(patient);
+			
+			if(patientId < 0) {
+				throw new NullPointerException();
+			}
+			
+			ps = conn.prepareStatement("SELECT * FROM MealPlan WHERE patient_id = ?");
+			ps.setInt(1, patientId);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				mealPlan = instantiateMealPlan(rs);
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrive a meal plan");
+		}
+		catch(NullPointerException e) {
+			throw new InfraException("Unable to retrieve meal plan from patient: Null paramenter");
+		}
+		finally {
+			
 		}
 		
 		return mealPlan;
