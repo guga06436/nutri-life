@@ -56,6 +56,8 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 				
 				patients.add(p);
 			}
+			
+			nutritionist.setPatients(patients);
 		}
 		catch(SQLException e) {
 			throw new InfraException("Unable to retrieve nutritionist information");
