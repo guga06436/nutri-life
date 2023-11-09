@@ -6,17 +6,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import model.Nutritionist;
 import model.Patient;
-import persistence.Persistence;
+import persistence.NutritionistPersistenceExs;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
 
-public class NutritionistPersistence implements Persistence<Nutritionist>{
+public class NutritionistPersistence implements NutritionistPersistenceExs{
 	private static Connection conn;
 	
 	public NutritionistPersistence() throws InfraException {
@@ -318,5 +316,37 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 		}
 		
 		return nutri;
+	}
+
+	@Override
+	public List<Patient> listAllNutritionistPatients(Nutritionist nutritionist) throws InfraException {
+		FactoryPatient fp = new FactoryPatient();
+		PatientPersistence patientPersistence = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Patient> patients = null;
+		
+		try {
+			patients = new ArrayList<>();
+			ps = conn.prepareStatement("SELECT patient_id FROM PatientNutritionist WHERE nutritionist_id IN " + 
+										"(SELECT nutritionist_id FROM Nutritionist WHERE crn = ?)");
+			ps.setString(1, nutritionist.getCrn());
+			
+			rs = ps.executeQuery();
+			
+			patientPersistence = fp.getPersistence();
+			while(rs.next()) {
+				patients.add(patientPersistence.retrieveById(rs.getInt("patient_id")));
+			}
+		}
+		catch(SQLException e) {
+			throw new InfraException("Unable to retrieve patients from nutritionist");
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return patients;
 	}
 }
