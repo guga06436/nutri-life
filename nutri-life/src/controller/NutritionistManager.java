@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.List;
+
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
@@ -12,4 +14,5 @@ public interface NutritionistManager {
 	void updatePatients(Nutritionist nutritionist, Patient patient) throws UpdateException, InfraException;
 	Nutritionist retrieve(String username, String password) throws EntityNotFoundException, InfraException;
 	void listAll() throws InfraException;
+	List<Patient> listAllPatients(Nutritionist nutritionist) throws InfraException ;
 }
