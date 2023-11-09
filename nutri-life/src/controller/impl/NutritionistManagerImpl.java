@@ -1,6 +1,5 @@
 package controller.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,19 +8,18 @@ import controller.NutritionistManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
-import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
-import persistence.Persistence;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryNutritionist;
+import persistence.impl.NutritionistPersistence;
 import service.LogService;
 import service.impl.LogAdapter;
 import service.iterators.ListIterator;
 
 public class NutritionistManagerImpl implements NutritionistManager{
 	private static FactoryNutritionist fn;
-	private static Persistence<Nutritionist> persistence;
+	private static NutritionistPersistence persistence;
 	static final LogService log = LogAdapter.getInstance();
 	
 	public NutritionistManagerImpl() throws InfraException {
@@ -42,7 +40,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			validateUsername(username);
 			validatePassword(password);
 	
-			Nutritionist n = new Nutritionist(name, age, crn, username, password, new ArrayList<Patient>());
+			Nutritionist n = new Nutritionist(name, age, crn, username, password);
 			return persistence.insert(n);
 		}
 		catch(RegisterException e) {
@@ -117,8 +115,7 @@ public class NutritionistManagerImpl implements NutritionistManager{
 				log.logDebug(message);
 				throw new UpdateException(message);
 			}
-			nutritionist.getPatients().add(patient);
-			persistence.update(nutritionist, persistence.retrieveId(nutritionist));
+			persistence.addNewPatient(nutritionist, patient);
 		} catch (InfraException e) {
 			log.logException(e);
 			throw e;
@@ -133,17 +130,13 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			n.setPassword(password);
 
 			Nutritionist nutritionist = persistence.retrieve(n);
-			System.out.println(nutritionist.getPatients());
+			System.out.println(listAllPatients(nutritionist));
 	
 			if (nutritionist == null) {
 				String message = "Nutritionist not found";
 				
 				log.logDebug(message + "[username: " + username + "] [password: " + password + "]");
 				throw new EntityNotFoundException(message);
-			}
-
-			if (nutritionist.getPatients() == null) {
-				nutritionist.setPatients(new ArrayList<Patient>());
 			}
 	
 			return nutritionist;
@@ -168,5 +161,19 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			log.logException(e);
 			throw e;
 		}
+	}
+
+	@Override
+	public List<Patient> listAllPatients(Nutritionist nutritionist) throws InfraException {
+		List<Patient> patients = null;
+		
+		try {
+			patients = persistence.listAllNutritionistPatients(nutritionist);
+		} catch (InfraException e) {
+			log.logException(e);
+			throw e;
+		}
+		
+		return patients;
 	}
 }
