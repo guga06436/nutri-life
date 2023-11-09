@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import model.Meal;
 import model.Nutritionist;
 import model.Patient;
 import persistence.Persistence;
@@ -24,51 +23,50 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 		conn = Database.getConnection();
 	}
 	
-	private Nutritionist instantiateNutritionist(ResultSet rs) throws SQLException, InfraException{
-		FactoryPatient factoryPatient = new FactoryPatient();
-		PatientPersistence patientPersistence = null;
+	private Nutritionist instantiateNutritionist(ResultSet rs) throws InfraException {
+		Nutritionist nutri = new Nutritionist();
+		
+
+		try {
+			nutri.setName(rs.getString("nutritionist_name"));
+			nutri.setAge(rs.getInt("age"));
+			nutri.setCrn(rs.getString("crn"));
+			nutri.setUsername(rs.getString("username"));
+			nutri.setPassword(rs.getString("nutritionist_password"));
+		} catch (SQLException e) {
+			throw new InfraException("Cannot instantiate a nutritionist: SQL Error");
+		}
+		
+		return nutri;
+	}
+	
+	@Override
+	public Nutritionist retrieve(Nutritionist object) throws InfraException {
 		PreparedStatement ps = null;
-		ResultSet rsAux = null;
-		Nutritionist nutritionist = null;
+		ResultSet rs = null;
+		Nutritionist nutri = null;
 		
 		try {
-			nutritionist = new Nutritionist();
+			ps = conn.prepareStatement("SELECT * FROM Nutritionist WHERE username = ? AND nutritionist_password = ?");
+			ps.setString(1, object.getUsername());
+			ps.setString(2, object.getPassword());
 			
-			ps = conn.prepareStatement("SELECT patient_id FROM PatientNutritionist WHERE nutritionist_id = ?");
-			ps.setInt(1, rs.getInt("nutritionist_id"));
+			rs = ps.executeQuery();
 			
-			nutritionist.setName(rs.getString("nutritionist_name"));
-			nutritionist.setAge(rs.getInt("age"));
-			nutritionist.setCrn(rs.getString("crn"));
-			nutritionist.setUsername(rs.getString("username"));
-			nutritionist.setPassword(rs.getString("nutritionist_password"));
-			
-			rsAux = ps.executeQuery();
-			
-			List<Patient> patients = new ArrayList<>();
-			patientPersistence = factoryPatient.getPersistence();
 			while(rs.next()) {
-				Patient p = patientPersistence.retrieveById(rsAux.getInt("patient_id"));
-				
-				if(p == null) {
-					throw new InfraException("Unable to retrieve nutritionist information");
-				}
-				
-				patients.add(p);
+				nutri = instantiateNutritionist(rs);
 			}
-			
-			nutritionist.setPatients(patients);
 		}
 		catch(SQLException e) {
-			throw new InfraException("Unable to retrieve nutritionist information");
+			throw new InfraException("Unable to retrieve a nutritionist");
 		}
 		finally {
-			Database.closeResultSet(rsAux);
+			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
-
-		return nutritionist;
-	}	
+		
+		return nutri;
+	}
 	
 	@Override
 	public boolean insert(Nutritionist nutritionist) throws InfraException {
@@ -102,53 +100,6 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 		}
 		
 		return false;
-	}
-	
-	@Override
-	public Nutritionist retrieve(Nutritionist nutritionist) throws InfraException{
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Nutritionist nutri = null;
-		
-		try {
-			ps = conn.prepareStatement("SELECT * FROM Nutritionist WHERE username = ? AND "
-															+	"nutritionist_password = ?");
-			conn.setAutoCommit(false);
-			
-			ps.setString(1, nutritionist.getUsername());
-			ps.setString(2, nutritionist.getPassword());
-			
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				nutri = instantiateNutritionist(rs);
-				conn.commit();
-			}
-		}
-		catch(SQLException e) {
-			try {
-				conn.rollback();
-				throw new InfraException("Unable to retrieve a nutritionist");
-			}
-			catch(SQLException r) {
-				throw new InfraException("Unable to retrieve a nutritionist and roll back changed data");
-			}
-		}
-		catch(NullPointerException e) {
-			try {
-				conn.rollback();
-				throw new InfraException("Unable to find a nutritionist: null argument in method call");
-			}
-			catch(SQLException r) {
-				throw new InfraException("Unable to find a nutritionist and roll back changed data: null argument in method call");
-			}
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-		
-		return nutri;
 	}
 	
 	@Override
@@ -237,114 +188,6 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 		
 		return nutritionistId;
 	}
-	
-	private Set<String> retrievePatientsCpfsDatabase(int nutritionistId) throws InfraException {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Set<String> cpfs = null;
-		
-		try {
-			ps = conn.prepareStatement("SELECT cpf FROM Patient WHERE patient_id IN "
-									+ "(SELECT patient_id FROM PatientNutritionist WHERE nutritionist_id = ?)");
-
-			ps.setInt(1, nutritionistId);
-			rs = ps.executeQuery();
-
-			cpfs = new HashSet<>();
-			while(rs.next()) {
-				cpfs.add(rs.getString("cpf"));
-			}
-		}
-		catch(SQLException e) {
-			throw new InfraException("Unable to update nutritionist information: error retrieving patients");
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-		
-		return cpfs;
-	}
-	
-	private int updatePatientsNutritionist(List<Patient> patients, int id) throws InfraException {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		int rowsAffected = -1;
-		
-		try {
-			Set<String> cpfs = retrievePatientsCpfsDatabase(id);
-			
-			Set<String> cpfsAux = new HashSet<>();
-			for(Patient patient : patients) {
-				cpfsAux.add(patient.getCpf());
-			}
-			
-			cpfs.removeAll(cpfsAux);
-			
-			if(!cpfs.isEmpty()) {
-				for(String cpf : cpfs) {
-					ps = conn.prepareStatement("UPDATE PatientNutritionist SET nutritionist_id = ? WHERE patient_id IN "
-												+ "(SELECT patient_id FROM Patient WHERE cpf = ?)");
-					conn.setAutoCommit(false);
-					
-					ps.setInt(1, Types.NULL);
-					ps.setString(2, cpf);
-					
-					rowsAffected = ps.executeUpdate();
-					
-					if(rowsAffected < 0) {
-						throw new InfraException("Unable to update nutritionist information");
-					}
-				}
-			}
-			
-			cpfs = retrievePatientsCpfsDatabase(id);
-			
-			cpfsAux.removeAll(cpfs);
-			
-			if(!cpfsAux.isEmpty()) {
-				rowsAffected = -1;
-				List<Integer> patientsId = new ArrayList<>();
-				
-				for(String cpf : cpfsAux) {
-					ps = conn.prepareStatement("SELECT patient_id FROM Patient WHERE cpf = ?");
-					ps.setString(1, cpf);
-					
-					rs = ps.executeQuery();
-					
-					if(rs.next()) {
-						patientsId.add(rs.getInt("patient_id"));
-					}
-				}
-				
-				for(int patientId : patientsId) {
-					rowsAffected = -1;
-					ps = conn.prepareStatement("INSERT INTO PatientNutritionist(patient_id, nutritionist_id) VALUES (?, ?)");
-					ps.setInt(1, patientId);
-					ps.setInt(2, id);
-					
-					rowsAffected = ps.executeUpdate();
-				}
-			}
-			
-			conn.commit();
-		}
-		catch(SQLException e) {
-			try {
-				conn.rollback();
-				throw new InfraException("Unable to update nutritionist");
-			}
-			catch(SQLException r) {
-				throw new InfraException("Unable to update nutritionist and roll back");
-			}
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-		
-		return rowsAffected;
-	}
 
 	@Override
 	public boolean update(Nutritionist object, int id) throws InfraException {
@@ -361,7 +204,6 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			
 			ps = conn.prepareStatement("UPDATE Nutritionist SET nutritionist_name = ?, age = ?, crn = ?, username = ?, nutritionist_password = ?"
 										+ " WHERE nutritionist_id = ?");
-			conn.setAutoCommit(false);
 
 			ps.setString(1, object.getName());
 			ps.setInt(2, object.getAge());
@@ -371,20 +213,9 @@ public class NutritionistPersistence implements Persistence<Nutritionist>{
 			ps.setInt(6, id);
 			
 			rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				rowsAffected = updatePatientsNutritionist(object.getPatients(), id);
-				conn.commit();
-			}
 		}
 		catch(SQLException e) {
-			try {
-				conn.rollback();
-				throw new InfraException("Unable to update a nutritionist");
-			}
-			catch(SQLException r) {
-				throw new InfraException("Unable to update a nutritionist and roll back changed data");
-			}
+			throw new InfraException("Unable to update a nutritionist");
 		}
 		finally {
 			Database.closeResultSet(rs);
