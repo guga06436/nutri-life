@@ -13,7 +13,7 @@ import model.Meal;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
-import persistence.Persistence;
+import persistence.MealPlanPersistenceExs;
 import persistence.db.exception.InfraException;
 import persistence.impl.FactoryMealPlan;
 import service.LogService;
@@ -22,7 +22,7 @@ import service.impl.LogAdapter;
 @Data
 public class MealPlanManagerImpl implements MealPlanManager{
 	private static FactoryMealPlan fmp;
-	private static Persistence<MealPlan> persistence;
+	private static MealPlanPersistenceExs persistence;
 	private static final LogService log = LogAdapter.getInstance();
 	
 	public MealPlanManagerImpl() throws InfraException {
@@ -84,7 +84,7 @@ public class MealPlanManagerImpl implements MealPlanManager{
 	@Override
 	public MealPlan retrieve(Patient patient) throws EntityNotFoundException, InfraException {
 		try {
-			MealPlan mealPlan = persistence.retrieve(patient.getMealPlan());
+			MealPlan mealPlan = persistence.retrieveByPatient(patient);
 			if (mealPlan == null) {
 				String message = "MealPlan not found";
 				log.logDebug(message);
