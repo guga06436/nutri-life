@@ -1,7 +1,5 @@
 package model;
 
-import java.util.List;
-
 import lombok.Data;
 @Data
 public class Nutritionist {
@@ -15,7 +13,7 @@ public class Nutritionist {
 
 	}
 	
-	public Nutritionist(String name, int age, String crn, String username, String password, List<Patient> patients) {
+	public Nutritionist(String name, int age, String crn, String username, String password) {
 		this.name = name;
 		this.age = age;
 		this.crn = crn;
