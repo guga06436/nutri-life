@@ -6,12 +6,16 @@ import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
 import controller.impl.MealPlanManagerImpl;
+import model.Meal;
 import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.db.exception.InfraException;
 import service.status.ErrorApplicationStatus;
 import service.viewobserver.ViewSubject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MealPlanView extends ViewSubject
 {
@@ -110,10 +114,11 @@ public class MealPlanView extends ViewSubject
         String goals = Application.readStringInput();
 
         // You will need to handle the creation of meals here as per your application's requirements.
+        List<Meal> meals = new ArrayList<>();
 
         // Create a new MealPlan instance
         try {
-            manager.createMealPlan(planName, goals, null, patient, nutritionist);
+            manager.createMealPlan(planName, goals, meals, patient, nutritionist);
             Application.showMessage("Creation successful");
         } catch (RegisterException e) {
             Application.showMessage(e.getMessage());

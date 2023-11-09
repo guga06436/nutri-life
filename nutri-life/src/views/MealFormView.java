@@ -116,6 +116,7 @@ public class MealFormView extends ViewSubject
             portionedFoods.get(food).put(quantity, description);
 
             Application.showMessage("Do you want to continue? [0 TO QUIT]: ");
+            option = Application.readIntegerInput();
 
         } while (option != 0);
 

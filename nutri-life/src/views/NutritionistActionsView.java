@@ -1,12 +1,15 @@
 package views;
 
+import controller.MealPlanManager;
 import controller.NutritionistManager;
 import controller.PatientManager;
 import controller.exceptions.EntityNotFoundException;
 import controller.exceptions.RegisterException;
 import controller.exceptions.UpdateException;
+import controller.impl.MealPlanManagerImpl;
 import controller.impl.NutritionistManagerImpl;
 import controller.impl.PatientManagerImpl;
+import model.MealPlan;
 import model.Nutritionist;
 import model.Patient;
 import persistence.db.exception.InfraException;
@@ -72,13 +75,20 @@ public class NutritionistActionsView extends ViewSubject {
     }
 
     private void viewPatients() {
-        List<Patient> patientList = manager.listAllPatients(loggedInNutritionist);
+        List<Patient> patientList = null;
+        try {
+            patientList = manager.listAllPatients(this.loggedInNutritionist);
+        } catch (InfraException e) {
+            Application.showMessage(e.getMessage());
+            return;
+        }
         if (patientList.isEmpty()) {
             Application.showMessage("There is no patient");
         } else {
             Iterator<Patient> iterator = new ListIterator<>(patientList);
             while (iterator.hasNext()) {
-                Application.showMessage((iterator.getIndex()+1) + iterator.next().getName() + " MealPlan:" + '{' + iterator.next().getMealPlan().getPlanName() + '}');
+                Patient patient = iterator.next();
+                Application.showMessage((iterator.getIndex()) + patient.getName());
             }
         }
     }

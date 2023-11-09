@@ -130,7 +130,6 @@ public class NutritionistManagerImpl implements NutritionistManager{
 			n.setPassword(password);
 
 			Nutritionist nutritionist = persistence.retrieve(n);
-			System.out.println(listAllPatients(nutritionist));
 	
 			if (nutritionist == null) {
 				String message = "Nutritionist not found";
