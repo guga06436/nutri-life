@@ -38,6 +38,7 @@ public class MealPlanView extends ViewSubject
     public void run() {
         boolean running = true;
         while (running) {
+            Application.showMessage(patient.getName() + " - Meal Plan page");
             Application.showMessage("[1] Create Meal Plan");
             Application.showMessage("[2] View Meal Plan");
             Application.showMessage("[3] Edit Meal Plan");

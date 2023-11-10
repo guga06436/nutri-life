@@ -88,7 +88,7 @@ public class NutritionistActionsView extends ViewSubject {
             Iterator<Patient> iterator = new ListIterator<>(patientList);
             while (iterator.hasNext()) {
                 Patient patient = iterator.next();
-                Application.showMessage((iterator.getIndex()) + patient.getName());
+                Application.showMessage((iterator.getIndex()) + " " + patient.getName());
             }
         }
     }
