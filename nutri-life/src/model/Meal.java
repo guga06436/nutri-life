@@ -11,24 +11,20 @@ public class Meal {
 	private String time;
 	private Map<Food, Map<Float, String>> portionedFoods;
 	
-	private MealPlan mealPlan;
-	
 	public Meal() {
 		
 	}
 	
-	public Meal(String name, String time, Map<Food, Map<Float, String>> portionedFoods, MealPlan mealPlan) {
+	public Meal(String name, String time, Map<Food, Map<Float, String>> portionedFoods) {
 		this.name = name;
 		this.time = time;
 		this.portionedFoods = portionedFoods;
-		this.mealPlan = mealPlan;
 	}
 	
 	public Meal(Meal meal) {
 		this.name = meal.getName();
 		this.time = meal.getTime();
 		this.portionedFoods = new HashMap<>(meal.getPortionedFoods());
-		this.mealPlan = new MealPlan(meal.getMealPlan());
 	}
 	
 	public Memento saveMemento() {
@@ -44,7 +40,6 @@ public class Meal {
 		name = lastState.getName();
 		time = lastState.getTime();
 		portionedFoods = lastState.getPortionedFoods();
-		mealPlan = lastState.getMealPlan();
 	}
 
 	@Override
@@ -56,15 +51,15 @@ public class Meal {
 		if (getClass() != obj.getClass())
 			return false;
 		Meal other = (Meal) obj;
-		if (mealPlan == null) {
-			if (other.mealPlan != null)
-				return false;
-		} else if (!mealPlan.equals(other.mealPlan))
-			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
+			return false;
+		if (time == null) {
+			if (other.time != null)
+				return false;
+		} else if (!time.equals(other.time))
 			return false;
 		return true;
 	}
@@ -73,8 +68,8 @@ public class Meal {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((mealPlan == null) ? 0 : mealPlan.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((time == null) ? 0 : time.hashCode());
 		return result;
 	}
 	
@@ -94,5 +89,5 @@ public class Meal {
 		}
 		
 		return sb.toString();
-	}
+	}	
 }
