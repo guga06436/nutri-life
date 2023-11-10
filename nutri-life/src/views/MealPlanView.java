@@ -203,6 +203,7 @@ public class MealPlanView extends ViewSubject
                     try {
                         MealFormView mealFormView = new MealFormView(mealplan);
                         mealFormView.run();
+                        manager.updateMealPlan(mealplan, mealplan.getPlanName(), mealplan.getGoals(), mealplan.getMeals());
                     } catch (InfraException e) {
                         Application.showMessage(e.getMessage());
                     } catch (Exception e) {
