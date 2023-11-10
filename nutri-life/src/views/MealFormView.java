@@ -1,9 +1,6 @@
 package views;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import controller.exceptions.RegisterException;
 import model.Food;
@@ -29,6 +26,7 @@ public class MealFormView extends ViewSubject
 
     public MealFormView(MealPlan mealPlan) {
     	this.mealPlan = mealPlan;
+        this.meals = mealPlan.getMeals();
         try {
             initCommands();
         } catch (InfraException e) {
@@ -100,16 +98,15 @@ public class MealFormView extends ViewSubject
         String name = Application.readStringInput();
         Application.showMessage("Time: ", false);
         String time = Application.readStringInput();
-        
-        //FALTA PEGAR OS VALORES DE PORTIONEDFOODS DO BANCO DE DADOS
+
         Map<Food, Map<Float, String>> portionedFoods = new HashMap<>();
-        int option = -1;
+        int option;
         do {
             FoodView foodView = new FoodView();
             Food food = foodView.chooseFood();
             Application.showMessage("Type the quantity: ");
             float quantity = Application.readFloatInput();
-            Application.showMessage("Type description: ");
+            Application.showMessage("Type unity: ");
             String description = Application.readStringInput();
 
             // Add values to HashMap
@@ -140,6 +137,9 @@ public class MealFormView extends ViewSubject
         Application.showMessage("Meals in the Meal Plan:");
         for (Meal meal : mealPlan.getMeals()) {
             Application.showMessage(meal.getName() + " (" + meal.getTime() + ")");
+            for (Food food : meal.getPortionedFoods().keySet()) {
+                Application.showMessage(food.toString());
+            }
         }
     }
 
@@ -148,7 +148,7 @@ public class MealFormView extends ViewSubject
         String mealName = Application.readStringInput();
 
         Meal mealToEdit = null;
-        for (Meal meal : mealPlan.getMeals()) {
+        for (Meal meal : meals) {
             if (meal.getName().equals(mealName)) {
                 mealToEdit = meal;
                 break;
@@ -245,76 +245,5 @@ public class MealFormView extends ViewSubject
         	Application.showMessage("Error: " + e.getMessage());
         }
     }
-
-
-    /* Lógicas adcionais de food->meal
-
-    private void addFoodToMeal(Meal meal) {
-        System.out.print("Enter the name of the food: ");
-        String foodName = OptionHandler.readStringInput();
-
-
-        Food food = findFoodByName(foodName);
-
-        if (food == null) {
-            System.out.println("Food not found.");
-            return;
-        }
-
-        System.out.print("Enter the portion: ");
-        float portion = OptionHandler.readFloatInput();
-        System.out.print("Enter a description for the portion: ");
-        String portionDescription = OptionHandler.readStringInput();
-
-
-        meal.addFoodWithPortion(food, portion, portionDescription);
-    }
-
-    private void editFoodInMeal(Meal meal) {
-        System.out.print("Enter the name of the food to edit: ");
-        String foodName = OptionHandler.readStringInput();
-
-
-        Food food = findFoodByName(foodName);
-
-        if (food == null) {
-            System.out.println("Food not found.");
-            return;
-        }
-
-        if (meal.getFoods().contains(food)) {
-            System.out.print("Enter the new portion: ");
-            float newPortion = OptionHandler.readFloatInput();
-            System.out.print("Enter a new description for the portion: ");
-            String newPortionDescription = OptionHandler.readStringInput();
-
-
-            meal.updatePortion(food, newPortion, newPortionDescription);
-        } else {
-            System.out.println("Food not found in the meal.");
-        }
-    }
-
-    private void removeFoodFromMeal(Meal meal) {
-        System.out.print("Enter the name of the food to remove: ");
-        String foodName = OptionHandler.readStringInput();
-
-
-        Food food = findFoodByName(foodName);
-
-        if (food == null) {
-            System.out.println("Food not found.");
-            return;
-        }
-
-        if (meal.getFoods().contains(food)) {
-
-            meal.removeFood(food);
-            System.out.println("Food removed from the meal.");
-        } else {
-            System.out.println("Food not found in the meal.");
-        }
-    }
-    */
 
 }

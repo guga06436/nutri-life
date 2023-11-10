@@ -136,6 +136,7 @@ public class MealPlanView extends ViewSubject
             Application.showMessage(mealPlan.getCreationDate().toString());
             Application.showMessage(mealPlan.getMeals());
         } catch (InfraException e) {
+            e.printStackTrace();
             Application.showMessage(e.getMessage());
         } catch (EntityNotFoundException e) {
             Application.showMessage("There is no Meal Plan for this patient, please create one");

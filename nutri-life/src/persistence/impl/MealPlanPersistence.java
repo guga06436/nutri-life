@@ -524,7 +524,7 @@ public class MealPlanPersistence implements MealPlanPersistenceExs{
 		
 		try {
 			patientPersistence = fp.getPersistence();
-			
+
 			int patientId = patientPersistence.retrieveId(patient);
 			
 			if(patientId < 0) {
@@ -549,7 +549,7 @@ public class MealPlanPersistence implements MealPlanPersistenceExs{
 		finally {
 			
 		}
-		
+
 		return mealPlan;
 	}
 }

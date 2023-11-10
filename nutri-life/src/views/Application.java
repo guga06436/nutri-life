@@ -28,10 +28,10 @@ public class Application
 
     public static int readIntegerInput() {
         try {
-            return in.nextInt();
+            int var = in.nextInt();
+            return var;
         } catch (InputMismatchException e) {
             System.out.println("You must type an integer! Please try again: ");
-            in.next();
             return readIntegerInput();
         }
 
@@ -39,10 +39,10 @@ public class Application
 
     public static float readFloatInput() {
         try {
-            return in.nextFloat();
+            float var = in.nextFloat();
+            return var;
         } catch (InputMismatchException e) {
             System.out.println("You must type a float! Please try again: ");
-            in.next();
             return readFloatInput();
         }
     }

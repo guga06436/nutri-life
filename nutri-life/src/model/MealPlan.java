@@ -16,7 +16,7 @@ public class MealPlan {
     private Nutritionist nutritionist;
     
     public MealPlan() {
-    	
+		this.meals = new ArrayList<>();
     }
 
     public MealPlan(String planName, Date creationDate, String goals, List<Meal> meals, Patient patient, Nutritionist nutritionist) {
@@ -36,6 +36,10 @@ public class MealPlan {
     	this.patient = new Patient(mealPlan.getPatient());
     	this.nutritionist = new Nutritionist(mealPlan.getNutritionist());
     }
+
+	public void setMeals(List<Meal> meals) {
+		this.meals.addAll(meals);
+	}
 
 	@Override
 	public boolean equals(Object obj) {
