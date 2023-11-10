@@ -6,7 +6,7 @@ CREATE TABLE Patient(
 	patient_id			INT AUTO_INCREMENT,
     patient_name 		VARCHAR(50) NOT NULL,
     age					INT NOT NULL,
-    cpf					VARCHAR(13) NOT NULL,
+    cpf					VARCHAR(14) NOT NULL,
     height				FLOAT NOT NULL,
     weight 				FLOAT NOT NULL,
     username 			VARCHAR(30) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE Nutritionist(
 	nutritionist_id				INT AUTO_INCREMENT,
     nutritionist_name 			VARCHAR(50) NOT NULL,
     age							INT NOT NULL,
-    crn							VARCHAR(13) NOT NULL,
+    crn							VARCHAR(14) NOT NULL,
     username 					VARCHAR(30) NOT NULL,
     nutritionist_password		VARCHAR(30) NOT NULL,
     
