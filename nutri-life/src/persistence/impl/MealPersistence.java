@@ -11,10 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import model.Admin;
 import model.Food;
 import model.Meal;
-import model.MealPlan;
 import persistence.Persistence;
 import persistence.db.Database;
 import persistence.db.exception.InfraException;
@@ -26,12 +24,11 @@ public class MealPersistence implements Persistence<Meal>{
 		conn = Database.getConnection();
 	}
 	
-	private Meal instantiateMeal(ResultSet rs, MealPlan mealPlan) throws InfraException, SQLException {
+	private Meal instantiateMeal(ResultSet rs) throws InfraException, SQLException {
 		Meal meal = new Meal();
 		
 		meal.setName(rs.getString("meal_name"));
 		meal.setTime(rs.getString("meal_time"));
-		meal.setMealPlan(mealPlan);
 		meal.setPortionedFoods(retrieveAllFoodMeal(rs.getInt("meal_id")));
 		
 		return meal;
@@ -111,8 +108,9 @@ public class MealPersistence implements Persistence<Meal>{
 				ps.setInt(4, mealId);
 
 				rowsAffected = ps.executeUpdate();
-				conn.commit();
 			}
+			
+			conn.commit();
 		}
 		catch(SQLException e) {
 			try {
@@ -136,32 +134,16 @@ public class MealPersistence implements Persistence<Meal>{
 	
 	@Override
 	public boolean insert(Meal object) throws InfraException {
-		FactoryMealPlan factoryMp = new FactoryMealPlan();
-		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		boolean insertConfirmation = false;
 		
 		try {			
-			mpPersistence = factoryMp.getPersistence();
-			
-			ps = conn.prepareStatement("INSERT INTO Meal(meal_name, meal_time, mealplan_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-			conn.setAutoCommit(false);
+			ps = conn.prepareStatement("INSERT INTO Meal(meal_name, meal_time) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, object.getName());
 			ps.setString(2, object.getTime());
 			
-			int mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
-			
-			if(mealPlanId < 0) {
-				if(mpPersistence.insert(object.getMealPlan())) {
-					mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
-				}
-				else {
-					throw new InfraException("Unable to store meal informations");
-				}
-			}
-			
-			ps.setInt(3, mealPlanId);
+			conn.setAutoCommit(false);
 			
 			int rowsAffected = ps.executeUpdate();
 			
@@ -169,7 +151,7 @@ public class MealPersistence implements Persistence<Meal>{
 				int mealId = -1;
 				rs = ps.getGeneratedKeys();
 			
-				while(rs.next()) {
+				if(rs.next()) {
 					mealId = rs.getInt(1);
 					insertConfirmation = insertFoodMeal(object.getPortionedFoods(), mealId);
 				}
@@ -197,31 +179,19 @@ public class MealPersistence implements Persistence<Meal>{
 
 	@Override
 	public Meal retrieve(Meal object) throws InfraException {
-		FactoryMealPlan factoryMp = new FactoryMealPlan();
-		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Meal meal = null;
 		
-		try {
-			mpPersistence = factoryMp.getPersistence();
-			
-			int mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
-			
-			if(mealPlanId < 0) {
-				throw new InfraException("Unable to retrieve a meal");
-			}
-			
-			MealPlan mealPlan = mpPersistence.retrieveById(mealPlanId);
-			
-			ps = conn.prepareStatement("SELECT * FROM Meal WHERE meal_name = ? AND mealplan_id = ?");
+		try {			
+			ps = conn.prepareStatement("SELECT * FROM Meal WHERE meal_name = ? AND meal_time = ?");
 			ps.setString(1, object.getName());
-			ps.setInt(2, mealPlanId);
+			ps.setString(2, object.getTime());
 			
 			rs = ps.executeQuery();
 			
-			while(rs.next()) {
-				meal = instantiateMeal(rs, mealPlan);
+			if(rs.next()) {
+				meal = instantiateMeal(rs);
 			}
 		}
 		catch(SQLException e) {
@@ -249,7 +219,7 @@ public class MealPersistence implements Persistence<Meal>{
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				meals.add(instantiateMeal(rs, null));
+				meals.add(instantiateMeal(rs));
 			}
 		}
 		catch(SQLException e) {
@@ -345,6 +315,7 @@ public class MealPersistence implements Persistence<Meal>{
 			
 			ps = conn.prepareStatement("SELECT food_id FROM FoodMeal WHERE mealId = ?");
 			conn.setAutoCommit(false);
+			
 			ps.setInt(1, mealId);
 			
 			rs = ps.executeQuery();
@@ -352,7 +323,7 @@ public class MealPersistence implements Persistence<Meal>{
 			foodPersistence = factoryFood.getPersistence();
 			while(rs.next()) {
 				int rowsAffected = -1;
-				Food aux = foodPersistence.retrieveById(rs.getInt(1));
+				Food aux = foodPersistence.retrieveById(rs.getInt("food_id"));
 				
 				if(aux == null) {
 					throw new InfraException("Unable to update a meal");
@@ -380,10 +351,11 @@ public class MealPersistence implements Persistence<Meal>{
 			}
 			
 			if(!portionedFoods.isEmpty()) {
-				updateConfirmation = insertFoodMeal(portionedFoods, mealId);
+				insertFoodMeal(portionedFoods, mealId);
 			}
 			
 			conn.commit();
+			updateConfirmation = true;
 		}
 		catch(SQLException e) {
 			try {
@@ -443,26 +415,16 @@ public class MealPersistence implements Persistence<Meal>{
 	@SuppressWarnings("resource")
 	@Override
 	public boolean delete(Meal object) throws InfraException {
-		FactoryMealPlan factoryMp = new FactoryMealPlan();
-		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 		
-		try {
-			mpPersistence = factoryMp.getPersistence();
-			
-			int mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
-			
-			if(mealPlanId < 0) {
-				throw new InfraException("Unable to delete a meal");
-			}
-			
+		try {			
 			int mealId = retrieveId(object);
 			
-			ps = conn.prepareStatement("DELETE FROM Meal WHERE meal_id = ? AND mealplan_id = ?");
-			conn.setAutoCommit(false);
+			ps = conn.prepareStatement("DELETE FROM MealMealPlan WHERE meal_id = ?");
 			ps.setInt(1, mealId);
-			ps.setInt(2, mealPlanId);
+			
+			conn.setAutoCommit(false);
 			
 			rowsAffected = ps.executeUpdate();
 			
@@ -472,7 +434,14 @@ public class MealPersistence implements Persistence<Meal>{
 				ps = conn.prepareStatement("DELETE FROM FoodMeal WHERE meal_id = ?");
 				ps.setInt(1, mealId);
 				
+				ps.executeUpdate();
+				
+				ps = conn.prepareStatement("DELETE FROM Meal WHERE meal_id = ? AND meal_name = ?");
+				ps.setInt(1, mealId);
+				ps.setString(2, object.getName());
+				
 				rowsAffected = ps.executeUpdate();
+				
 				conn.commit();
 			}
 		}
@@ -498,28 +467,18 @@ public class MealPersistence implements Persistence<Meal>{
 
 	@Override
 	public List<Meal> listAll() throws InfraException {
-		FactoryMealPlan factoryMp = new FactoryMealPlan();
-		MealPlanPersistence mpPersistence = null;
 		Statement st = null;
 		ResultSet rs = null;
 		List<Meal> allMeals;
 		
 		try {
-			mpPersistence = factoryMp.getPersistence();
-			
 			st = conn.createStatement();
 			
 			rs = st.executeQuery("SELECT * FROM Meal");
 			
 			allMeals = new ArrayList<>();
 			while(rs.next()) {
-				MealPlan mealPlan = mpPersistence.retrieveById(rs.getInt("mealplan_id"));
-				
-				if(mealPlan == null) {
-					throw new InfraException("Unable to retrieve all meals");
-				}
-				
-				Meal meal = instantiateMeal(rs, mealPlan);
+				Meal meal = instantiateMeal(rs);
 				
 				allMeals.add(meal);
 			}
@@ -537,24 +496,14 @@ public class MealPersistence implements Persistence<Meal>{
 
 	@Override
 	public int retrieveId(Meal object) throws InfraException {
-		FactoryMealPlan factoryMp = new FactoryMealPlan();
-		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int mealId = -1;
 		
-		try {
-			mpPersistence = factoryMp.getPersistence();
-			
-			int mealPlanId = mpPersistence.retrieveId(object.getMealPlan());
-			
-			if(mealPlanId < 0) {
-				throw new InfraException("Unable to retrieve meal ID");
-			}
-			
-			ps = conn.prepareStatement("SELECT meal_id FROM Meal WHERE meal_name = ? AND mealplan_id = ?");
+		try {			
+			ps = conn.prepareStatement("SELECT meal_id FROM Meal WHERE meal_name = ? AND meal_time = ?");
 			ps.setString(1, object.getName());
-			ps.setInt(2, mealPlanId);
+			ps.setString(2, object.getTime());
 			
 			rs = ps.executeQuery();
 			
@@ -575,8 +524,6 @@ public class MealPersistence implements Persistence<Meal>{
 
 	@Override
 	public Meal retrieveById(int id) throws InfraException {
-		FactoryMealPlan factoryMp = new FactoryMealPlan();
-		MealPlanPersistence mpPersistence = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Meal meal = null;
@@ -587,15 +534,8 @@ public class MealPersistence implements Persistence<Meal>{
 			
 			rs = ps.executeQuery();
 			
-			mpPersistence = factoryMp.getPersistence();
-			while(rs.next()) {
-				MealPlan mealPlan= mpPersistence.retrieveById(rs.getInt("mealplan_id"));
-				
-				if(mealPlan == null) {
-					throw new InfraException("Unable to retrieve a meal");
-				}
-				
-				meal = instantiateMeal(rs, mealPlan);
+			if(rs.next()) {
+				meal = instantiateMeal(rs);
 			}
 		}
 		catch(SQLException e) {
