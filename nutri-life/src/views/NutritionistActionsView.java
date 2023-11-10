@@ -165,21 +165,5 @@ public class NutritionistActionsView extends ViewSubject {
         	Application.showMessage(e.getMessage());
         }
 
-        if (registerSuccess) {
-            Application.showMessage("Registration successful for patient " + name);
-            try {
-                manager.updatePatients(this.loggedInNutritionist, managerPatient.retrieve(username, password));
-                this.loggedInNutritionist = manager.retrieve(this.loggedInNutritionist.getUsername(), this.loggedInNutritionist.getPassword());
-            } catch (UpdateException e) {
-                Application.showMessage(e.getMessage());
-            } catch (InfraException e) {
-                Application.showMessage(e.getMessage());
-            } catch (EntityNotFoundException e) {
-                Application.showMessage(e.getMessage());
-            }
-        } else {
-            Application.showMessage("Registration failed for patient.");
-        }
-
     }
 }
