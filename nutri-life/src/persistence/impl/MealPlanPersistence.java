@@ -276,11 +276,14 @@ public class MealPlanPersistence implements MealPlanPersistenceExs{
 					rowsAffected = -1;
 					int mealId = mealPersistence.retrieveId(meal);
 					
-					if(mealId < 0) {
-						mealPersistence.insert(meal);
-						
-						mealId = mealPersistence.retrieveId(meal);
-						
+					ps = conn.prepareStatement("SELECT * FROM MealMealPlan WHERE meal_id = ?");
+					ps.setInt(1, mealId);
+					
+					rs = ps.executeQuery();
+					if(rs.next()) {
+						mealPersistence.update(meal, mealId);
+					}
+					else {
 						ps = conn.prepareStatement("INSERT INTO MealMealPlan(mealplan_id, meal_id) VALUES(?, ?)");
 						ps.setInt(1, id);
 						ps.setInt(2, mealId);
@@ -290,9 +293,6 @@ public class MealPlanPersistence implements MealPlanPersistenceExs{
 						if(rowsAffected < 0) {
 							throw new InfraException("Unable to update a meal plan");
 						}
-					}
-					else {
-						mealPersistence.update(meal, mealId);
 					}
 				}
 			
@@ -438,7 +438,6 @@ public class MealPlanPersistence implements MealPlanPersistenceExs{
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
-		
 		return allMealsMealPlan;
 	}
 	
