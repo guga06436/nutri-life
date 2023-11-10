@@ -82,7 +82,6 @@ public class MealFormView extends ViewSubject
                 case 6:
                     notifyObservers("exiting view");
                     Application.showMessage("Returning to Meal Plan...");
-                    mealPlan.setMeals(meals);
                     running = false;
                     break;
                 default:
