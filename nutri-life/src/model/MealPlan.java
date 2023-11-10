@@ -38,7 +38,7 @@ public class MealPlan {
     }
 
 	public void setMeals(List<Meal> meals) {
-		this.meals.addAll(meals);
+		this.meals = meals;
 	}
 
 	@Override
