@@ -57,6 +57,7 @@ public class MealPlanManagerImpl implements MealPlanManager{
 				log.logDebug(message);
 				throw new UpdateException(message);
 			}
+			
 			MealPlan mp = new MealPlan(planName, mealPlan.getCreationDate(), goals, meals, mealPlan.getPatient(), mealPlan.getNutritionist());
 			persistence.update(mp, persistence.retrieveId(mp));
 		} catch (InfraException e) {
