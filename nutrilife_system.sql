@@ -61,12 +61,12 @@ CREATE TABLE Food(
     portion						FLOAT NOT NULL,
     portion_unit				VARCHAR(20) NOT NULL,
     
-    CONSTRAINT non_negative_calories CHECK (calories > 0.0),
-    CONSTRAINT non_negative_proteins CHECK (proteins > 0.0),
-    CONSTRAINT non_negative_carbohydrates CHECK (carbohydrates > 0.0),
-    CONSTRAINT non_negative_lipids CHECK (lipids > 0.0),
-    CONSTRAINT non_negative_fibers CHECK (fibers > 0.0),
-    CONSTRAINT food_non_negative_portion CHECK (portion > 0.0),
+    CONSTRAINT non_negative_calories CHECK (calories >= 0.0),
+    CONSTRAINT non_negative_proteins CHECK (proteins >= 0.0),
+    CONSTRAINT non_negative_carbohydrates CHECK (carbohydrates >= 0.0),
+    CONSTRAINT non_negative_lipids CHECK (lipids >= 0.0),
+    CONSTRAINT non_negative_fibers CHECK (fibers >= 0.0),
+    CONSTRAINT food_non_negative_portion CHECK (portion >= 0.0),
     
     PRIMARY KEY(food_id)
 );
