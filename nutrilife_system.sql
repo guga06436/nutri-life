@@ -78,7 +78,7 @@ CREATE TABLE Vitamin(
     portion_unit				VARCHAR(20) NOT NULL,
     food_id 					INT NOT NULL,
     
-    CONSTRAINT vitamin_non_negative_portion CHECK (portion > 0.0),
+    CONSTRAINT vitamin_non_negative_portion CHECK (portion >= 0.0),
     
     PRIMARY KEY(vitamin_id, food_id),
     FOREIGN KEY(food_id) REFERENCES Food(food_id)
@@ -111,7 +111,7 @@ CREATE TABLE FoodMeal(
     portion_unit				VARCHAR(20) NOT NULL,
     meal_id						INT NOT NULL,
     
-	CONSTRAINT food_meal_non_negative_portion CHECK (portion > 0.0),
+	CONSTRAINT food_meal_non_negative_portion CHECK (portion >= 0.0),
     
     PRIMARY KEY(food_id, meal_id),
     FOREIGN KEY(food_id) REFERENCES Food(food_id),
