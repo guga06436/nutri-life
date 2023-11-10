@@ -2,7 +2,6 @@ package views;
 
 import controller.PatientManager;
 import controller.exceptions.EntityNotFoundException;
-import controller.exceptions.RegisterException;
 import controller.impl.PatientManagerImpl;
 import model.Patient;
 import persistence.db.exception.InfraException;
