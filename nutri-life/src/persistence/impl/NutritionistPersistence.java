@@ -328,9 +328,8 @@ public class NutritionistPersistence implements NutritionistPersistenceExs{
 		
 		try {
 			patients = new ArrayList<>();
-			ps = conn.prepareStatement("SELECT patient_id FROM PatientNutritionist WHERE nutritionist_id IN " + 
-										"(SELECT nutritionist_id FROM Nutritionist WHERE crn = ?)");
-			ps.setString(1, nutritionist.getCrn());
+			ps = conn.prepareStatement("SELECT patient_id FROM PatientNutritionist WHERE nutritionist_id = ?");
+			ps.setInt(1, retrieveId(nutritionist));
 			
 			rs = ps.executeQuery();
 			
