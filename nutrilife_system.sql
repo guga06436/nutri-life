@@ -51,14 +51,14 @@ CREATE TABLE SystemAdministrator(
 
 CREATE TABLE Food(
 	food_id						INT AUTO_INCREMENT,
-    food_name 					VARCHAR(50) NOT NULL,
+    food_name 					VARCHAR(150) NOT NULL,
     food_group					INT NOT NULL,
-    calories					DECIMAL NOT NULL,
-    proteins 					DECIMAL NOT NULL,
-    carbohydrates				DECIMAL NOT NULL,
-    lipids						DECIMAL NOT NULL,
-    fibers						DECIMAL NOT NULL,
-    portion						DECIMAL NOT NULL,
+    calories					FLOAT NOT NULL,
+    proteins 					FLOAT NOT NULL,
+    carbohydrates				FLOAT NOT NULL,
+    lipids						FLOAT NOT NULL,
+    fibers						FLOAT NOT NULL,
+    portion						FLOAT NOT NULL,
     portion_unit				VARCHAR(20) NOT NULL,
     
     CONSTRAINT non_negative_calories CHECK (calories > 0.0),
@@ -71,22 +71,10 @@ CREATE TABLE Food(
     PRIMARY KEY(food_id)
 );
 
-INSERT INTO Food
-VALUES (1, "Arroz", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
-
-INSERT INTO Food
-VALUES (2, "Macarrão", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
-
-INSERT INTO Food
-VALUES (3, "Feijão", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
-
-INSERT INTO Food
-VALUES (4, "Pão", 0, 100, 10, 50, 5, 100, 1, "KILOGRAM");
-
 CREATE TABLE Vitamin(
 	vitamin_id	 				INT AUTO_INCREMENT,
     vitamin_name				VARCHAR(30) NOT NULL,
-    portion						DECIMAL NOT NULL,
+    portion						FLOAT NOT NULL,
     portion_unit				VARCHAR(20) NOT NULL,
     food_id 					INT NOT NULL,
     
@@ -95,18 +83,6 @@ CREATE TABLE Vitamin(
     PRIMARY KEY(vitamin_id, food_id),
     FOREIGN KEY(food_id) REFERENCES Food(food_id)
 );
-
-INSERT INTO Vitamin
-VALUES (1, "B", 100, "GRAM", 1);
-
-INSERT INTO Vitamin
-VALUES (2, "E", 100, "GRAM", 2);
-
-INSERT INTO Vitamin
-VALUES (3, "D", 100, "GRAM", 3);
-
-INSERT INTO Vitamin
-VALUES (4, "C", 100, "GRAM", 4);
 
 CREATE TABLE MealPlan(
 	mealplan_id					INT AUTO_INCREMENT,
@@ -125,15 +101,13 @@ CREATE TABLE Meal(
 	meal_id 					INT AUTO_INCREMENT,
     meal_name 					VARCHAR(15) NOT NULL,
     meal_time 					VARCHAR(10) NOT NULL,
-    mealplan_id					INT NOT NULL,
     
-    PRIMARY KEY(meal_id, mealplan_id),
-    FOREIGN KEY(mealplan_id) REFERENCES MealPlan(mealplan_id)
+    PRIMARY KEY(meal_id)
 );
 
 CREATE TABLE FoodMeal(
     food_id 					INT NOT NULL,
-    portion						DECIMAL NOT NULL,
+    portion						FLOAT NOT NULL,
     portion_unit				VARCHAR(20) NOT NULL,
     meal_id						INT NOT NULL,
     
@@ -141,5 +115,14 @@ CREATE TABLE FoodMeal(
     
     PRIMARY KEY(food_id, meal_id),
     FOREIGN KEY(food_id) REFERENCES Food(food_id),
+    FOREIGN KEY(meal_id) REFERENCES Meal(meal_id)
+);
+
+CREATE TABLE MealMealPlan(
+	mealplan_id 				INT NOT NULL,
+    meal_id 					INT NOT NULL,
+    
+    PRIMARY KEY(mealplan_id, meal_id),
+    FOREIGN KEY(mealplan_id) REFERENCES MealPlan(mealplan_id),
     FOREIGN KEY(meal_id) REFERENCES Meal(meal_id)
 );
